@@ -14,6 +14,12 @@ pip install -e .
 pip install pytest
 ```
 
+## Avvio dashboard
+```bash
+attila-dash
+# poi apri http://localhost:8050
+```
+
 ## Esecuzione test
 ```bash
 pytest
