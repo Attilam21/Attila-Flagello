@@ -1,6 +1,6 @@
 # Attila-Flagello
 
-Progetto operativo per automazione agenti su Cursor.
+Progetto operativo per l'automazione di agenti su Cursor.
 
 ## Requisiti
 - Python >= 3.10
