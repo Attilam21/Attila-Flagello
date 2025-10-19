@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { EmptyState } from '../components/ui/EmptyState'
-import { Button } from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
+import Button from '../components/ui/Button'
 import { 
   Trophy, 
   TrendingUp, 
@@ -13,6 +13,8 @@ import {
 } from 'lucide-react'
 
 const Home = ({ user }) => {
+  console.log('🏠 Home component rendering with user:', user?.email)
+  
   const [summary, setSummary] = useState(null)
   const [routineState, setRoutineState] = useState({ running: false, remainingSec: 0 })
   const [coachNote, setCoachNote] = useState('')
@@ -20,6 +22,7 @@ const Home = ({ user }) => {
 
   // Simula dati fittizi per demo
   useEffect(() => {
+    console.log('📊 Loading mock summary data...')
     const mockSummary = {
       kda: { kills: 12, deaths: 3, assists: 8 },
       winRate: 75,
@@ -31,6 +34,7 @@ const Home = ({ user }) => {
       rank: 'Diamond III'
     }
     setSummary(mockSummary)
+    console.log('✅ Mock summary loaded:', mockSummary)
   }, [])
 
   const handleCoachBoost = () => {

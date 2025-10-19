@@ -7,10 +7,10 @@ const Badge = ({
   ...props 
 }) => {
   const variants = {
-    neutral: 'bg-surface text-muted border-surface',
-    success: 'bg-success/10 text-success border-success/20',
-    warn: 'bg-warn/10 text-warn border-warn/20',
-    error: 'bg-error/10 text-error border-error/20'
+    neutral: 'bg-gray-800 text-gray-400 border-gray-700',
+    success: 'bg-green-900/20 text-green-400 border-green-800/20',
+    warn: 'bg-yellow-900/20 text-yellow-400 border-yellow-800/20',
+    error: 'bg-red-900/20 text-red-400 border-red-800/20'
   }
 
   return (

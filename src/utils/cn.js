@@ -1,5 +1,4 @@
-import { clsx } from 'clsx'
-
-export function cn(...inputs) {
-  return clsx(inputs)
+// Utility function for conditional class names
+export const cn = (...classes) => {
+  return classes.filter(Boolean).join(' ')
 }

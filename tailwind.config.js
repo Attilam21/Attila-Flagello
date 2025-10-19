@@ -7,25 +7,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: { 
-          DEFAULT: '#0A66FF', 
-          fg: '#FFFFFF' 
-        },
-        bg: '#0B1020',
-        surface: '#11182A',
-        muted: '#9AA4B2',
-        success: '#16A34A',
-        warn: '#F59E0B',
-        error: '#DC2626'
-      },
-      borderRadius: { 
-        xl: '1rem', 
-        '2xl': '1.25rem' 
-      },
-      boxShadow: { 
-        soft: '0 10px 25px -12px rgba(0,0,0,.35)' 
+        primary: '#10B981',
+        'primary-fg': '#FFFFFF',
+        surface: '#1F2937',
+        muted: '#9CA3AF',
+        border: '#374151',
       }
     },
   },
   plugins: [],
 }
+

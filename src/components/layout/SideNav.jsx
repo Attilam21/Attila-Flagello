@@ -1,4 +1,3 @@
-import { cn } from '../../utils/cn'
 import { 
   Home, 
   Users, 
@@ -10,7 +9,8 @@ import {
 
 const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home },
+    { id: 'home', label: 'Home', icon: Home },
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'rosa', label: 'Rosa', icon: Users },
     { id: 'match', label: 'Match', icon: Target },
     { id: 'statistiche', label: 'Statistiche', icon: BarChart3 },
@@ -18,26 +18,21 @@ const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
   ]
 
   return (
-    <div className="w-64 bg-surface border-r border-surface">
-      <div className="p-6">
-        <h1 className="text-xl font-bold text-white">🏆 eFootballLab</h1>
+    <div className="sidebar">
+      <div className="sidebar-header">
+        <h1 className="sidebar-title">🏆 eFootballLab</h1>
       </div>
       
-      <nav className="px-4 pb-4">
+      <nav className="sidebar-nav">
         {navItems.map((item) => {
           const Icon = item.icon
           return (
             <button
               key={item.id}
               onClick={() => onPageChange(item.id)}
-              className={cn(
-                'w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors',
-                currentPage === item.id
-                  ? 'bg-primary text-primary-fg'
-                  : 'text-muted hover:bg-surface hover:text-white'
-              )}
+              className={`nav-item ${currentPage === item.id ? 'active' : ''}`}
             >
-              <Icon className="h-5 w-5" />
+              <Icon size={20} />
               {item.label}
             </button>
           )
@@ -45,23 +40,19 @@ const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
       </nav>
 
       {user && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-surface">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-                <span className="text-xs font-medium text-primary-fg">
-                  {user.email?.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <span className="text-sm text-muted truncate">
-                {user.email}
-              </span>
+        <div className="sidebar-footer">
+          <div className="user-info">
+            <div className="user-avatar">
+              {user.email?.charAt(0).toUpperCase()}
             </div>
+            <span className="user-email">
+              {user.email}
+            </span>
             <button
               onClick={onLogout}
-              className="p-1 text-muted hover:text-white transition-colors"
+              className="logout-btn"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut size={16} />
             </button>
           </div>
         </div>

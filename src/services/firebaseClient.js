@@ -7,19 +7,30 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // Configurazione Firebase
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "attila-475314.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "attila-475314",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "attila-475314.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "814206807853",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:814206807853:web:256884e64c9d867509eda4"
 };
 
 // Inizializza Firebase
+console.log('🔥 Initializing Firebase with config:', {
+  apiKey: firebaseConfig.apiKey ? '✅ Set' : '❌ Missing',
+  authDomain: firebaseConfig.authDomain ? '✅ Set' : '❌ Missing',
+  projectId: firebaseConfig.projectId ? '✅ Set' : '❌ Missing',
+  storageBucket: firebaseConfig.storageBucket ? '✅ Set' : '❌ Missing',
+  messagingSenderId: firebaseConfig.messagingSenderId ? '✅ Set' : '❌ Missing',
+  appId: firebaseConfig.appId ? '✅ Set' : '❌ Missing'
+});
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+console.log('✅ Firebase initialized successfully');
 
 // Helper per upload immagine match
 export const uploadMatchImage = async (file, userId) => {

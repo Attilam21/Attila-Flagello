@@ -1,31 +1,42 @@
-import { cn } from '../../utils/cn'
-
-const EmptyState = ({ 
-  icon: Icon, 
-  title, 
-  description, 
-  action, 
-  className,
-  ...props 
-}) => {
+const EmptyState = ({ icon: Icon, title, description, action }) => {
   return (
-    <div
-      className={cn(
-        'flex flex-col items-center justify-center py-12 px-6 text-center',
-        className
-      )}
-      {...props}
-    >
+    <div style={{
+      textAlign: 'center',
+      padding: '48px 24px',
+      background: '#1F2937',
+      border: '1px solid #374151',
+      borderRadius: '16px',
+      margin: '24px 0'
+    }}>
       {Icon && (
-        <div className="mb-4 rounded-full bg-surface p-3">
-          <Icon className="h-6 w-6 text-muted" />
+        <div style={{
+          width: '64px',
+          height: '64px',
+          margin: '0 auto 16px',
+          color: '#9CA3AF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Icon size={32} />
         </div>
       )}
-      <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
-      {description && (
-        <p className="mb-6 max-w-sm text-sm text-muted">{description}</p>
-      )}
-      {action && <div>{action}</div>}
+      <h3 style={{
+        fontSize: '18px',
+        fontWeight: '600',
+        color: '#FFFFFF',
+        marginBottom: '8px'
+      }}>
+        {title}
+      </h3>
+      <p style={{
+        fontSize: '14px',
+        color: '#9CA3AF',
+        marginBottom: '24px'
+      }}>
+        {description}
+      </p>
+      {action}
     </div>
   )
 }

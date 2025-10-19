@@ -2,7 +2,7 @@ import { cn } from '../../utils/cn'
 
 const LoadingSkeleton = ({ className, ...props }) => (
   <div
-    className={cn('animate-pulse rounded-xl bg-surface', className)}
+    className={cn('animate-pulse rounded-xl bg-gray-800', className)}
     {...props}
   />
 )

@@ -17,7 +17,7 @@ const TableBody = ({ className, ...props }) => (
 const TableRow = ({ className, ...props }) => (
   <tr
     className={cn(
-      'border-b border-surface transition-colors hover:bg-surface/50 data-[state=selected]:bg-surface',
+      'border-b border-gray-800 transition-colors hover:bg-gray-800/50 data-[state=selected]:bg-gray-800',
       className
     )}
     {...props}
@@ -27,7 +27,7 @@ const TableRow = ({ className, ...props }) => (
 const TableHead = ({ className, ...props }) => (
   <th
     className={cn(
-      'h-12 px-4 text-left align-middle font-medium text-muted [&:has([role=checkbox])]:pr-0',
+      'h-12 px-4 text-left align-middle font-medium text-gray-400 [&:has([role=checkbox])]:pr-0',
       className
     )}
     {...props}

@@ -1,3 +1,4 @@
+<<<<<<< Current (Your changes)
 # 🏆 eFootballLab - OCR Firebase Integration
 
 Sistema integrato per l'analisi OCR dei tabellini eFootball utilizzando Firebase + Google Vision API.
@@ -216,3 +217,40 @@ npx firebase-tools emulators:start --debug
 ---
 
 **Sviluppato per eFootballLab** 🏆
+=======
+# Attila-Flagello
+
+Progetto operativo per l'automazione di agenti su Cursor.
+
+## Requisiti
+- Python >= 3.10
+
+## Setup rapido
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -e .
+pip install pytest
+```
+
+## Avvio dashboard
+```bash
+attila-dash
+# poi apri http://localhost:8050
+```
+
+## Esecuzione test
+```bash
+pytest
+```
+
+## Struttura
+```
+src/attila_flagello/  # codice sorgente del pacchetto
+tests/                # test
+```
+
+## CI
+GitHub Actions esegue i test su push e pull request per tutti i branch.
+>>>>>>> Incoming (Background Agent changes)

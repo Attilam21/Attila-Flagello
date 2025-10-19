@@ -8,18 +8,18 @@ const Dashboard = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-muted">Panoramica generale del tuo eFootballLab</p>
+        <p className="text-gray-400">Panoramica generale del tuo eFootballLab</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <p className="text-sm font-medium text-muted">Squadra</p>
-            <Users className="h-4 w-4 text-muted" />
+            <p className="text-sm font-medium text-gray-400">Squadra</p>
+            <Users className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">0</div>
-            <p className="text-xs text-muted">Giocatori in rosa</p>
+            <p className="text-xs text-gray-400">Giocatori in rosa</p>
           </CardContent>
         </Card>
 
