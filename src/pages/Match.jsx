@@ -1,43 +1,42 @@
 import { useState, useEffect } from 'react';
 import { uploadMatchImage, listenToOCRResults, listenToMatchStatus } from '../services/firebaseClient';
 
-const Match = () => {
+const Match = ({ user }) => {
   const [file, setFile] = useState(null);
-  const [matchId, setMatchId] = useState('');
   const [uploading, setUploading] = useState(false);
   const [matchStatus, setMatchStatus] = useState(null);
   const [ocrResult, setOcrResult] = useState(null);
   const [error, setError] = useState(null);
 
-  // Genera matchId di default (data odierna)
-  useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    setMatchId(today);
-  }, []);
+  if (!user) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          ❌ Devi essere loggato per accedere a questa pagina
+        </div>
+      </div>
+    );
+  }
 
   // Listener per stato match
   useEffect(() => {
-    if (!matchId) return;
-
-    const unsubscribe = listenToMatchStatus(matchId, (status) => {
+    const unsubscribe = listenToMatchStatus(user.uid, (status) => {
       setMatchStatus(status);
       console.log('📊 Match status updated:', status);
     });
 
     return () => unsubscribe();
-  }, [matchId]);
+  }, [user.uid]);
 
   // Listener per risultati OCR
   useEffect(() => {
-    if (!matchId) return;
-
-    const unsubscribe = listenToOCRResults(matchId, (result) => {
+    const unsubscribe = listenToOCRResults(user.uid, (result) => {
       setOcrResult(result);
       console.log('🔍 OCR result received:', result);
     });
 
     return () => unsubscribe();
-  }, [matchId]);
+  }, [user.uid]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -48,8 +47,8 @@ const Match = () => {
   };
 
   const handleUpload = async () => {
-    if (!file || !matchId) {
-      setError('Seleziona un file e inserisci un Match ID');
+    if (!file) {
+      setError('Seleziona un file');
       return;
     }
 
@@ -57,10 +56,10 @@ const Match = () => {
     setError(null);
 
     try {
-      console.log('🚀 Starting upload...', { matchId, fileName: file.name });
+      console.log('🚀 Starting upload...', { userId: user.uid, fileName: file.name });
       const startTime = Date.now();
 
-      const result = await uploadMatchImage(file, matchId);
+      const result = await uploadMatchImage(file, user.uid);
       
       const uploadTime = Date.now() - startTime;
       console.log(`✅ Upload completed in ${uploadTime}ms:`, result);
@@ -106,19 +105,6 @@ const Match = () => {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Match ID
-            </label>
-            <input
-              type="text"
-              value={matchId}
-              onChange={(e) => setMatchId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="es. 2024-10-18"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
               Seleziona Immagine
             </label>
             <input
@@ -136,7 +122,7 @@ const Match = () => {
 
           <button
             onClick={handleUpload}
-            disabled={!file || !matchId || uploading}
+            disabled={!file || uploading}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {uploading ? '⏳ Caricamento...' : '🚀 Carica su Firebase'}
@@ -206,7 +192,7 @@ const Match = () => {
               Testo Rilevato:
             </label>
             <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-auto max-h-96 whitespace-pre-wrap">
-              {ocrResult.fullText || 'Nessun testo rilevato'}
+              {ocrResult.text || 'Nessun testo rilevato'}
             </pre>
           </div>
 
@@ -239,7 +225,6 @@ const Match = () => {
       <div className="mt-8 bg-blue-50 rounded-lg p-6">
         <h3 className="text-lg font-semibold mb-3">ℹ️ Come usare</h3>
         <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
-          <li>Inserisci un Match ID (es. data del match)</li>
           <li>Seleziona uno screenshot del tabellino eFootball</li>
           <li>Clicca "Carica su Firebase"</li>
           <li>L'immagine viene salvata su Firebase Storage</li>

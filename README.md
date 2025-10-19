@@ -4,12 +4,14 @@ Sistema integrato per l'analisi OCR dei tabellini eFootball utilizzando Firebase
 
 ## 🚀 Funzionalità
 
+- **Autenticazione**: Login/Registrazione Email/Password
 - **Upload immagini**: Carica screenshot dei tabellini eFootball
 - **OCR automatico**: Google Vision API estrae testo dalle immagini
 - **Storage Firebase**: Immagini salvate su Firebase Storage
 - **Cloud Functions**: Trigger automatico OCR al caricamento
 - **Firestore**: Risultati OCR salvati in tempo reale
 - **UI React**: Interfaccia moderna con TailwindCSS
+- **Protezione route**: Accesso solo per utenti autenticati
 
 ## 📋 Prerequisiti
 
@@ -90,15 +92,17 @@ Apri http://localhost:5173/
 ## 🏗️ Architettura
 
 ```
-📸 Screenshot Upload
+🔐 Email/Password Auth
     ↓
-🗄️ Firebase Storage (matches/{matchId}/{timestamp}.png)
+📸 Screenshot Upload (protezione auth)
+    ↓
+🗄️ Firebase Storage (matches/{userId}/{timestamp}.png)
     ↓
 ⚡ Cloud Function Trigger (onFinalize)
     ↓
 🔍 Google Vision OCR API
     ↓
-📊 Firestore (matches/{matchId}/ocr/{docId})
+📊 Firestore (matches/{userId}/ocr/{autoId})
     ↓
 🖥️ React UI (Real-time listener)
 ```
@@ -108,10 +112,11 @@ Apri http://localhost:5173/
 ```
 src/
 ├── pages/
+│   ├── Login.jsx          # Pagina login/registrazione
 │   └── Match.jsx          # Pagina upload e visualizzazione OCR
 ├── services/
-│   └── firebaseClient.js  # Client Firebase + helpers
-└── App.jsx                # Router principale
+│   └── firebaseClient.js  # Client Firebase + auth + helpers
+└── App.jsx                # Router principale con protezione auth
 
 functions/
 ├── index.js               # Cloud Functions + Vision OCR
@@ -123,12 +128,12 @@ tailwind.config.js         # Configurazione TailwindCSS
 
 ## 🔧 Cloud Functions
 
-### `onImageUploaded`
+### `onImageUpload`
 
 - **Trigger**: Firebase Storage `onFinalize`
-- **Input**: Immagine caricata su `matches/{matchId}/`
+- **Input**: Immagine caricata su `matches/{userId}/`
 - **Processo**: 
-  1. Estrae matchId dal path
+  1. Estrae userId dal path
   2. Chiama Google Vision OCR
   3. Salva risultato su Firestore
   4. Aggiorna stato match
@@ -136,23 +141,22 @@ tailwind.config.js         # Configurazione TailwindCSS
 ### Schema Firestore
 
 ```javascript
-// matches/{matchId}
+// matches/{userId}
 {
-  matchId: "2024-10-18",
-  filePath: "matches/2024-10-18/1697654321000.png",
+  userId: "user123",
+  filePath: "matches/user123/1697654321000.png",
   status: "processed", // uploaded → processing → processed
   createdAt: timestamp,
   lastOCRAt: timestamp,
   ocrCount: 1
 }
 
-// matches/{matchId}/ocr/{docId}
+// matches/{userId}/ocr/{autoId}
 {
-  matchId: "2024-10-18",
-  filePath: "matches/2024-10-18/1697654321000.png",
-  fullText: "Risultato 3-2\nGiocatore 1: 85'\n...",
-  words: [{ text: "Risultato", boundingBox: {...} }],
-  confidence: 0.95,
+  userId: "user123",
+  filePath: "matches/user123/1697654321000.png",
+  text: "Risultato 3-2\nGiocatore 1: 85'\n...",
+  createdAt: timestamp,
   processingTimeMs: 1250,
   status: "completed"
 }

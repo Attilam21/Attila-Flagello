@@ -9,12 +9,12 @@ admin.initializeApp();
 const visionClient = new vision.ImageAnnotatorClient();
 
 // Cloud Function che si attiva quando un'immagine viene caricata su Storage
-exports.onImageUploaded = functions.storage.object().onFinalize(async (object) => {
+exports.onImageUpload = functions.storage.object().onFinalize(async (object) => {
   const fileBucket = object.bucket;
   const filePath = object.name;
   const contentType = object.contentType;
 
-  console.log('🔍 Triggered onImageUploaded:', { filePath, contentType });
+  console.log('🔍 Triggered onImageUpload:', { filePath, contentType });
 
   // Verifica che sia un'immagine
   if (!contentType || !contentType.startsWith('image/')) {
@@ -22,15 +22,15 @@ exports.onImageUploaded = functions.storage.object().onFinalize(async (object) =
     return null;
   }
 
-  // Estrai matchId dal path "matches/{matchId}/..."
+  // Estrai userId dal path "matches/{userId}/..."
   const pathParts = filePath.split('/');
   if (pathParts.length < 3 || pathParts[0] !== 'matches') {
     console.log('⏭️ Skipping non-match file:', filePath);
     return null;
   }
 
-  const matchId = pathParts[1];
-  console.log('📸 Processing image for match:', matchId);
+  const userId = pathParts[1];
+  console.log('📸 Processing image for user:', userId);
 
   try {
     // Costruisci URI per Vision API
@@ -58,20 +58,18 @@ exports.onImageUploaded = functions.storage.object().onFinalize(async (object) =
 
       // Salva risultato OCR su Firestore
       const ocrResult = {
-        matchId,
+        userId,
         filePath,
-        fullText,
-        words,
-        confidence: detections[0].score || 0,
-        processedAt: admin.firestore.FieldValue.serverTimestamp(),
+        text: fullText,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
         processingTimeMs: ocrTime,
         status: 'completed'
       };
 
-      // Salva in matches/{matchId}/ocr/{docId}
+      // Salva in matches/{userId}/ocr/{autoId}
       const ocrRef = admin.firestore()
         .collection('matches')
-        .doc(matchId)
+        .doc(userId)
         .collection('ocr')
         .doc();
 
@@ -80,7 +78,7 @@ exports.onImageUploaded = functions.storage.object().onFinalize(async (object) =
       // Aggiorna stato match
       await admin.firestore()
         .collection('matches')
-        .doc(matchId)
+        .doc(userId)
         .update({
           status: 'processed',
           lastOCRAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -88,9 +86,8 @@ exports.onImageUploaded = functions.storage.object().onFinalize(async (object) =
         });
 
       console.log('✅ OCR result saved:', {
-        matchId,
+        userId,
         textLength: fullText.length,
-        wordsCount: words.length,
         processingTime: ocrTime
       });
 
@@ -100,19 +97,17 @@ exports.onImageUploaded = functions.storage.object().onFinalize(async (object) =
       
       // Salva risultato vuoto
       const ocrResult = {
-        matchId,
+        userId,
         filePath,
-        fullText: '',
-        words: [],
-        confidence: 0,
-        processedAt: admin.firestore.FieldValue.serverTimestamp(),
+        text: '',
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
         processingTimeMs: ocrTime,
         status: 'no_text_detected'
       };
 
       await admin.firestore()
         .collection('matches')
-        .doc(matchId)
+        .doc(userId)
         .collection('ocr')
         .add(ocrResult);
 
@@ -124,20 +119,20 @@ exports.onImageUploaded = functions.storage.object().onFinalize(async (object) =
     // Salva errore
     await admin.firestore()
       .collection('matches')
-      .doc(matchId)
+      .doc(userId)
       .collection('ocr')
       .add({
-        matchId,
+        userId,
         filePath,
         error: error.message,
-        processedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
         status: 'error'
       });
 
     // Aggiorna stato match
     await admin.firestore()
       .collection('matches')
-      .doc(matchId)
+      .doc(userId)
       .update({
         status: 'error',
         lastError: error.message

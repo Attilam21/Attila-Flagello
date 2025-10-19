@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { collection, doc, setDoc, addDoc, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
@@ -16,15 +17,16 @@ const firebaseConfig = {
 
 // Inizializza Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
 // Helper per upload immagine match
-export const uploadMatchImage = async (file, matchId) => {
+export const uploadMatchImage = async (file, userId) => {
   try {
     const timestamp = Date.now();
     const fileName = `${timestamp}.png`;
-    const storagePath = `matches/${matchId}/${fileName}`;
+    const storagePath = `matches/${userId}/${fileName}`;
     
     // Upload su Firebase Storage
     const storageRef = ref(storage, storagePath);
@@ -33,7 +35,7 @@ export const uploadMatchImage = async (file, matchId) => {
     
     // Salva metadati su Firestore
     const matchDoc = {
-      matchId,
+      userId,
       filePath: storagePath,
       downloadURL,
       status: 'uploaded',
@@ -41,11 +43,11 @@ export const uploadMatchImage = async (file, matchId) => {
       fileName
     };
     
-    await setDoc(doc(db, 'matches', matchId), matchDoc);
+    await setDoc(doc(db, 'matches', userId), matchDoc);
     
-    console.log('✅ Immagine caricata:', { matchId, filePath: storagePath });
+    console.log('✅ Immagine caricata:', { userId, filePath: storagePath });
     
-    return { matchId, filePath: storagePath, downloadURL };
+    return storagePath;
   } catch (error) {
     console.error('❌ Errore upload:', error);
     throw error;
@@ -53,8 +55,8 @@ export const uploadMatchImage = async (file, matchId) => {
 };
 
 // Helper per ascoltare risultati OCR
-export const listenToOCRResults = (matchId, callback) => {
-  const ocrRef = collection(db, 'matches', matchId, 'ocr');
+export const listenToOCRResults = (userId, callback) => {
+  const ocrRef = collection(db, 'matches', userId, 'ocr');
   const q = query(ocrRef, orderBy('createdAt', 'desc'), limit(1));
   
   return onSnapshot(q, (snapshot) => {
@@ -66,8 +68,8 @@ export const listenToOCRResults = (matchId, callback) => {
 };
 
 // Helper per ascoltare stato match
-export const listenToMatchStatus = (matchId, callback) => {
-  const matchRef = doc(db, 'matches', matchId);
+export const listenToMatchStatus = (userId, callback) => {
+  const matchRef = doc(db, 'matches', userId);
   
   return onSnapshot(matchRef, (doc) => {
     if (doc.exists()) {
@@ -76,4 +78,4 @@ export const listenToMatchStatus = (matchId, callback) => {
   });
 };
 
-export { app, db, storage };
+export { app, auth, db, storage };

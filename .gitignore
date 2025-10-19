@@ -6,7 +6,7 @@ dist-ssr
 # Environment variables
 .env*
 functions/.runtimeconfig.json
-service-account*.json
+*service-account*.json
 
 # Firebase
 .firebase/
