@@ -55,7 +55,7 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard />
+        return <Dashboard user={user} />
       case 'rosa':
         return <Rosa />
       case 'match':
@@ -65,7 +65,7 @@ function App() {
       case 'avversario':
         return <Avversario />
       default:
-        return <Dashboard />
+        return <Dashboard user={user} />
     }
   }
 
