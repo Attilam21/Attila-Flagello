@@ -1,126 +1,214 @@
-# Attila-Flagello
-Progetto operativo per automazione agenti su Cursor
+# 🏆 eFootballLab - OCR Firebase Integration
 
-## 🤖 Agent Management System
+Sistema integrato per l'analisi OCR dei tabellini eFootball utilizzando Firebase + Google Vision API.
 
-Un sistema completo per la gestione e automazione di agenti AI con interfaccia web, comunicazione inter-agente, monitoraggio e logging avanzato.
+## 🚀 Funzionalità
 
-### Caratteristiche Principali
+- **Upload immagini**: Carica screenshot dei tabellini eFootball
+- **OCR automatico**: Google Vision API estrae testo dalle immagini
+- **Storage Firebase**: Immagini salvate su Firebase Storage
+- **Cloud Functions**: Trigger automatico OCR al caricamento
+- **Firestore**: Risultati OCR salvati in tempo reale
+- **UI React**: Interfaccia moderna con TailwindCSS
 
-- **Gestione Agenti**: Creazione, avvio, arresto e riavvio di agenti
-- **Tipi di Agenti**: Generale, Coding, Research, Automation, Monitoring, Communication
-- **Comunicazione**: Sistema di messaggistica e eventi tra agenti
-- **Monitoraggio**: Health checks, metriche di performance, statistiche
-- **Interfaccia Web**: Dashboard per monitoraggio e controllo in tempo reale
-- **Logging Avanzato**: Sistema di logging strutturato con rotazione file
-- **Task Management**: Coda di task con priorità e scheduling
+## 📋 Prerequisiti
 
-### Struttura del Progetto
+1. **Node.js** v18+ e npm
+2. **Firebase Project** con PROJECT_ID: `attila-475314`
+3. **Google Vision API** attivata
+4. **Firebase CLI** installato
 
-```
-├── agent_manager.py          # Sistema principale di gestione agenti
-├── agent_communication.py   # Sistema di comunicazione inter-agente
-├── agent_logging.py         # Sistema di logging avanzato
-├── web_interface.py         # Interfaccia web Flask
-├── example_usage.py         # Esempi di utilizzo
-├── requirements.txt         # Dipendenze Python
-└── README.md               # Questo file
-```
+## ⚙️ Setup
 
-### Installazione
+### 1. Configurazione Firebase
 
-1. Installa le dipendenze:
 ```bash
-pip install -r requirements.txt
+# Login Firebase
+npx firebase-tools login
+
+# Seleziona progetto
+npx firebase-tools use attila-475314
+
+# Attiva Vision API
+# Vai su: https://console.cloud.google.com/apis/library/vision.googleapis.com
 ```
 
-2. Esegui l'esempio:
+### 2. Variabili Ambiente
+
+Crea `.env.local` con i tuoi valori Firebase:
+
+```env
+VITE_FIREBASE_API_KEY=xxx
+VITE_FIREBASE_AUTH_DOMAIN=xxx
+VITE_FIREBASE_PROJECT_ID=attila-475314
+VITE_FIREBASE_STORAGE_BUCKET=attila-475314.appspot.com
+VITE_FIREBASE_APP_ID=xxx
+VITE_FIREBASE_MESSAGING_SENDER_ID=xxx
+```
+
+### 3. Installazione Dipendenze
+
 ```bash
-python example_usage.py
+# Dipendenze client
+npm install
+
+# Dipendenze Cloud Functions
+cd functions
+npm install
+cd ..
 ```
 
-3. Avvia l'interfaccia web:
+### 4. Deploy Cloud Functions
+
 ```bash
-python web_interface.py
+# Deploy functions
+npx firebase-tools deploy --only functions
+
+# Oppure usa emulator per sviluppo
+npx firebase-tools emulators:start
 ```
 
-4. Apri il browser su: http://localhost:5000
+## 🎯 Utilizzo
 
-### Utilizzo
+### Avvio Sviluppo
 
-#### Creazione di Agenti
-
-```python
-from agent_manager import AgentManager, AgentConfig, AgentType, GeneralAgent
-
-# Crea un agente generale
-config = AgentConfig(
-    name="MyAgent",
-    agent_type=AgentType.GENERAL,
-    max_concurrent_tasks=5
-)
-agent = GeneralAgent(config)
+```bash
+npm run dev
 ```
 
-#### Gestione Task
+Apri http://localhost:5173/
 
-```python
-from agent_manager import AgentTask
+### Flusso OCR
 
-# Crea un task
-task = AgentTask(
-    id="task-1",
-    agent_id="",
-    task_type="echo",
-    payload={"message": "Hello World"}
-)
+1. **Vai su "⚽ Match OCR"**
+2. **Inserisci Match ID** (es. data del match)
+3. **Seleziona screenshot** del tabellino eFootball
+4. **Clicca "Carica su Firebase"**
+5. **Attendi elaborazione** (automatica)
+6. **Visualizza testo OCR** in tempo reale
 
-# Invia il task al sistema
-await agent_manager.submit_task(task)
+## 🏗️ Architettura
+
+```
+📸 Screenshot Upload
+    ↓
+🗄️ Firebase Storage (matches/{matchId}/{timestamp}.png)
+    ↓
+⚡ Cloud Function Trigger (onFinalize)
+    ↓
+🔍 Google Vision OCR API
+    ↓
+📊 Firestore (matches/{matchId}/ocr/{docId})
+    ↓
+🖥️ React UI (Real-time listener)
 ```
 
-#### Comunicazione tra Agenti
+## 📁 Struttura Progetto
 
-```python
-from agent_communication import AgentCommunicationHub, MessageType
+```
+src/
+├── pages/
+│   └── Match.jsx          # Pagina upload e visualizzazione OCR
+├── services/
+│   └── firebaseClient.js  # Client Firebase + helpers
+└── App.jsx                # Router principale
 
-# Invia un messaggio broadcast
-await hub.broadcast_message(
-    "agent-1",
-    MessageType.STATUS_UPDATE,
-    {"status": "running"}
-)
+functions/
+├── index.js               # Cloud Functions + Vision OCR
+└── package.json           # Dipendenze functions
+
+firebase.json              # Configurazione Firebase
+tailwind.config.js         # Configurazione TailwindCSS
 ```
 
-### API Web
+## 🔧 Cloud Functions
 
-- `GET /api/status` - Stato del sistema
-- `GET /api/agents` - Lista agenti
-- `POST /api/agents/{id}/start` - Avvia agente
-- `POST /api/agents/{id}/stop` - Ferma agente
-- `POST /api/agents/{id}/restart` - Riavvia agente
-- `GET /api/tasks` - Lista task
-- `POST /api/tasks` - Crea nuovo task
+### `onImageUploaded`
 
-### Logging
+- **Trigger**: Firebase Storage `onFinalize`
+- **Input**: Immagine caricata su `matches/{matchId}/`
+- **Processo**: 
+  1. Estrae matchId dal path
+  2. Chiama Google Vision OCR
+  3. Salva risultato su Firestore
+  4. Aggiorna stato match
 
-Il sistema include logging avanzato con:
-- Rotazione automatica dei file
-- Categorizzazione dei log (system, agent, task, communication, health, performance)
-- Monitoraggio in tempo reale
-- Analisi e metriche
+### Schema Firestore
 
-### Monitoraggio
+```javascript
+// matches/{matchId}
+{
+  matchId: "2024-10-18",
+  filePath: "matches/2024-10-18/1697654321000.png",
+  status: "processed", // uploaded → processing → processed
+  createdAt: timestamp,
+  lastOCRAt: timestamp,
+  ocrCount: 1
+}
 
-- Health checks automatici
-- Metriche di performance
-- Statistiche di utilizzo
-- Alerting per problemi di salute
+// matches/{matchId}/ocr/{docId}
+{
+  matchId: "2024-10-18",
+  filePath: "matches/2024-10-18/1697654321000.png",
+  fullText: "Risultato 3-2\nGiocatore 1: 85'\n...",
+  words: [{ text: "Risultato", boundingBox: {...} }],
+  confidence: 0.95,
+  processingTimeMs: 1250,
+  status: "completed"
+}
+```
 
-### Estensibilità
+## 🚨 Troubleshooting
 
-Il sistema è progettato per essere facilmente estendibile:
-- Nuovi tipi di agenti
-- Handler personalizzati per messaggi ed eventi
-- Plugin per funzionalità aggiuntive
-- Integrazione con sistemi esterni
+### Errori Comuni
+
+1. **"Failed to authenticate"**
+   ```bash
+   npx firebase-tools login
+   ```
+
+2. **"Vision API not enabled"**
+   - Vai su: https://console.cloud.google.com/apis/library/vision.googleapis.com
+   - Abilita per progetto `attila-475314`
+
+3. **"Firebase config missing"**
+   - Verifica `.env.local` con valori corretti
+   - Riavvia dev server
+
+4. **"Cloud Function timeout"**
+   - Aumenta timeout in `firebase.json`
+   - Verifica credenziali service account
+
+### Log Debug
+
+```bash
+# Logs Cloud Functions
+npx firebase-tools functions:log
+
+# Emulator logs
+npx firebase-tools emulators:start --debug
+```
+
+## 📊 Performance
+
+- **Upload**: ~2-5s per immagine
+- **OCR Processing**: ~1-3s (Google Vision)
+- **Firestore Write**: ~200-500ms
+- **UI Update**: Real-time (<100ms)
+
+## 🔒 Sicurezza
+
+- ✅ Nessun segreto nel repo
+- ✅ Variabili ambiente protette
+- ✅ Service account esclusi da git
+- ✅ Firebase Security Rules configurate
+
+## 📈 Monitoraggio
+
+- **Firebase Console**: Storage, Functions, Firestore
+- **Google Cloud Console**: Vision API usage
+- **Browser DevTools**: Network, Console logs
+
+---
+
+**Sviluppato per eFootballLab** 🏆

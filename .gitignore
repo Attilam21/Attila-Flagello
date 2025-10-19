@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment variables
+.env*
+functions/.runtimeconfig.json
+service-account*.json
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
