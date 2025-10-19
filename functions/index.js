@@ -13,8 +13,9 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
   const fileBucket = object.bucket;
   const filePath = object.name;
   const contentType = object.contentType;
+  const requestId = object.name.split('/').pop().split('.')[0];
 
-  console.log('🔍 Triggered onImageUpload:', { filePath, contentType });
+  console.log('🔍 Triggered onImageUpload:', { filePath, contentType, requestId });
 
   // Verifica che sia un'immagine
   if (!contentType || !contentType.startsWith('image/')) {
@@ -22,22 +23,37 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
     return null;
   }
 
-  // Estrai userId dal path "matches/{userId}/..."
+  // Estrai userId dal path "uploads/{userId}/..."
   const pathParts = filePath.split('/');
-  if (pathParts.length < 3 || pathParts[0] !== 'matches') {
-    console.log('⏭️ Skipping non-match file:', filePath);
+  if (pathParts.length < 3 || pathParts[0] !== 'uploads') {
+    console.log('⏭️ Skipping non-upload file:', filePath);
     return null;
   }
 
   const userId = pathParts[1];
-  console.log('📸 Processing image for user:', userId);
+  console.log('📸 Processing image for user:', userId, 'requestId:', requestId);
 
   try {
+    const startTime = Date.now();
+    
+    // Aggiorna stato a processing
+    await admin.firestore()
+      .collection('matches')
+      .doc(userId)
+      .collection('ocr')
+      .doc('latest')
+      .set({
+        userId,
+        filePath,
+        status: 'processing',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        requestId
+      });
+
     // Costruisci URI per Vision API
     const imageUri = `gs://${fileBucket}/${filePath}`;
     
     console.log('🔍 Calling Vision API on:', imageUri);
-    const startTime = Date.now();
 
     // Chiama Google Vision OCR
     const [result] = await visionClient.textDetection(imageUri);
@@ -46,49 +62,41 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
     const ocrTime = Date.now() - startTime;
     console.log(`⚡ OCR completed in ${ocrTime}ms`);
 
+    functions.logger.info('OCR processing completed', {
+      requestId,
+      uid: userId,
+      path: filePath,
+      processingTimeMs: ocrTime
+    });
+
     if (detections && detections.length > 0) {
       // Estrai tutto il testo rilevato
       const fullText = detections[0].description || '';
-      
-      // Estrai anche le singole parole con posizioni
-      const words = detections.slice(1).map(annotation => ({
-        text: annotation.description,
-        boundingBox: annotation.boundingPoly
-      }));
 
       // Salva risultato OCR su Firestore
       const ocrResult = {
         userId,
         filePath,
         text: fullText,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        status: 'done',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         processingTimeMs: ocrTime,
-        status: 'completed'
+        requestId
       };
 
-      // Salva in matches/{userId}/ocr/{autoId}
-      const ocrRef = admin.firestore()
-        .collection('matches')
-        .doc(userId)
-        .collection('ocr')
-        .doc();
-
-      await ocrRef.set(ocrResult);
-
-      // Aggiorna stato match
+      // Salva in matches/{userId}/ocr/latest
       await admin.firestore()
         .collection('matches')
         .doc(userId)
-        .update({
-          status: 'processed',
-          lastOCRAt: admin.firestore.FieldValue.serverTimestamp(),
-          ocrCount: admin.firestore.FieldValue.increment(1)
-        });
+        .collection('ocr')
+        .doc('latest')
+        .set(ocrResult);
 
       console.log('✅ OCR result saved:', {
         userId,
         textLength: fullText.length,
-        processingTime: ocrTime
+        processingTime: ocrTime,
+        requestId
       });
 
       return ocrResult;
@@ -100,42 +108,42 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
         userId,
         filePath,
         text: '',
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        status: 'done',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         processingTimeMs: ocrTime,
-        status: 'no_text_detected'
+        requestId
       };
 
       await admin.firestore()
         .collection('matches')
         .doc(userId)
         .collection('ocr')
-        .add(ocrResult);
+        .doc('latest')
+        .set(ocrResult);
 
       return ocrResult;
     }
   } catch (error) {
-    console.error('❌ Error processing image:', error);
+    functions.logger.error('OCR processing failed', {
+      requestId,
+      uid: userId,
+      path: filePath,
+      error: error.message
+    });
     
     // Salva errore
     await admin.firestore()
       .collection('matches')
       .doc(userId)
       .collection('ocr')
-      .add({
+      .doc('latest')
+      .set({
         userId,
         filePath,
-        error: error.message,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        status: 'error'
-      });
-
-    // Aggiorna stato match
-    await admin.firestore()
-      .collection('matches')
-      .doc(userId)
-      .update({
         status: 'error',
-        lastError: error.message
+        error: error.message,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        requestId
       });
 
     throw error;

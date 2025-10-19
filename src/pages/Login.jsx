@@ -1,108 +1,169 @@
-import { useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebaseClient';
+import { useState } from 'react'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../services/firebaseClient'
 
 const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isSignUp, setIsSignUp] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     try {
       if (isSignUp) {
         // Registrazione
-        await createUserWithEmailAndPassword(auth, email, password);
-        console.log('✅ Utente registrato:', email);
+        await createUserWithEmailAndPassword(auth, email, password)
+        console.log('✅ Utente registrato:', email)
       } else {
         // Login
-        await signInWithEmailAndPassword(auth, email, password);
-        console.log('✅ Utente loggato:', email);
+        await signInWithEmailAndPassword(auth, email, password)
+        console.log('✅ Utente loggato:', email)
       }
       
-      onLogin();
+      onLogin()
     } catch (err) {
-      console.error('❌ Errore auth:', err);
-      setError(err.message);
+      console.error('❌ Errore auth:', err)
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
+
+  const styles = {
+    container: {
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#f3f4f6',
+      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif'
+    },
+    card: {
+      maxWidth: '400px',
+      width: '100%',
+      backgroundColor: 'white',
+      borderRadius: '0.5rem',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      padding: '2rem'
+    },
+    title: {
+      textAlign: 'center',
+      fontSize: '1.875rem',
+      fontWeight: 'bold',
+      color: '#1f2937',
+      marginBottom: '0.5rem'
+    },
+    subtitle: {
+      textAlign: 'center',
+      fontSize: '0.875rem',
+      color: '#6b7280',
+      marginBottom: '2rem'
+    },
+    form: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1rem'
+    },
+    input: {
+      width: '100%',
+      padding: '0.75rem',
+      border: '1px solid #d1d5db',
+      borderRadius: '0.375rem',
+      fontSize: '0.875rem',
+      outline: 'none',
+      transition: 'border-color 0.2s'
+    },
+    button: {
+      width: '100%',
+      padding: '0.75rem',
+      backgroundColor: '#2563eb',
+      color: 'white',
+      border: 'none',
+      borderRadius: '0.375rem',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s'
+    },
+    buttonDisabled: {
+      backgroundColor: '#9ca3af',
+      cursor: 'not-allowed'
+    },
+    error: {
+      backgroundColor: '#fef2f2',
+      border: '1px solid #fecaca',
+      color: '#dc2626',
+      padding: '0.75rem',
+      borderRadius: '0.375rem',
+      fontSize: '0.875rem'
+    },
+    toggle: {
+      textAlign: 'center',
+      marginTop: '1rem'
+    },
+    toggleButton: {
+      color: '#2563eb',
+      textDecoration: 'none',
+      fontSize: '0.875rem',
+      cursor: 'pointer',
+      background: 'none',
+      border: 'none'
+    }
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            🏆 eFootballLab
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            {isSignUp ? 'Crea il tuo account' : 'Accedi al tuo account'}
-          </p>
-        </div>
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <h2 style={styles.title}>🏆 eFootballLab</h2>
+        <p style={styles.subtitle}>
+          {isSignUp ? 'Crea il tuo account' : 'Accedi al tuo account'}
+        </p>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
+        <form style={styles.form} onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={styles.input}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={styles.input}
+            required
+          />
+          
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              ...styles.button,
+              ...(loading ? styles.buttonDisabled : {})
+            }}
+          >
+            {loading ? '⏳ Caricamento...' : (isSignUp ? '📝 Registrati' : '🔑 Accedi')}
+          </button>
 
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div style={styles.error}>
               ❌ {error}
             </div>
           )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {loading ? '⏳ Caricamento...' : (isSignUp ? '📝 Registrati' : '🔑 Accedi')}
-            </button>
-          </div>
-
-          <div className="text-center">
+          <div style={styles.toggle}>
             <button
               type="button"
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-indigo-600 hover:text-indigo-500 text-sm"
+              style={styles.toggleButton}
             >
               {isSignUp ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati'}
             </button>
@@ -110,7 +171,7 @@ const Login = ({ onLogin }) => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

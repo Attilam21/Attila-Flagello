@@ -26,13 +26,13 @@ export const uploadMatchImage = async (file, userId) => {
   try {
     const timestamp = Date.now();
     const fileName = `${timestamp}.png`;
-    const storagePath = `matches/${userId}/${fileName}`;
-    
+    const storagePath = `uploads/${userId}/${fileName}`;
+
     // Upload su Firebase Storage
     const storageRef = ref(storage, storagePath);
     const snapshot = await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(snapshot.ref);
-    
+
     // Salva metadati su Firestore
     const matchDoc = {
       userId,
@@ -42,11 +42,11 @@ export const uploadMatchImage = async (file, userId) => {
       createdAt: new Date(),
       fileName
     };
-    
+
     await setDoc(doc(db, 'matches', userId), matchDoc);
-    
+
     console.log('✅ Immagine caricata:', { userId, filePath: storagePath });
-    
+
     return storagePath;
   } catch (error) {
     console.error('❌ Errore upload:', error);
@@ -54,11 +54,11 @@ export const uploadMatchImage = async (file, userId) => {
   }
 };
 
-// Helper per ascoltare risultati OCR
+// Helper per ascoltare risultati OCR in tempo reale
 export const listenToOCRResults = (userId, callback) => {
   const ocrRef = collection(db, 'matches', userId, 'ocr');
-  const q = query(ocrRef, orderBy('createdAt', 'desc'), limit(1));
-  
+  const q = query(ocrRef, orderBy('updatedAt', 'desc'), limit(1));
+
   return onSnapshot(q, (snapshot) => {
     if (!snapshot.empty) {
       const latestOCR = snapshot.docs[0].data();
