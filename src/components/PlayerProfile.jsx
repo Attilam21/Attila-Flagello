@@ -10,7 +10,12 @@ import {
   TrendingUp,
 } from 'lucide-react';
 
-const PlayerProfile = ({ player, onEdit, showEditButton = true, onImageUpload }) => {
+const PlayerProfile = ({
+  player,
+  onEdit,
+  showEditButton = true,
+  onImageUpload,
+}) => {
   const [activeTab, setActiveTab] = useState('overview');
 
   if (!player) {
@@ -441,7 +446,7 @@ const PlayerProfile = ({ player, onEdit, showEditButton = true, onImageUpload })
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => onImageUpload(e, 'profile')}
+                onChange={e => onImageUpload(e, 'profile')}
                 style={{ display: 'none' }}
                 id="player-profile-upload"
               />
@@ -451,11 +456,11 @@ const PlayerProfile = ({ player, onEdit, showEditButton = true, onImageUpload })
               >
                 📸 Profilo
               </label>
-              
+
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => onImageUpload(e, 'stats')}
+                onChange={e => onImageUpload(e, 'stats')}
                 style={{ display: 'none' }}
                 id="player-stats-upload"
               />
@@ -465,11 +470,11 @@ const PlayerProfile = ({ player, onEdit, showEditButton = true, onImageUpload })
               >
                 📊 Statistiche
               </label>
-              
+
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => onImageUpload(e, 'skills')}
+                onChange={e => onImageUpload(e, 'skills')}
                 style={{ display: 'none' }}
                 id="player-skills-upload"
               />

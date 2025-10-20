@@ -610,10 +610,6 @@ const PlayerManagement = ({ user }) => {
     setIsEditing(true);
   };
 
-  const handleEditPlayer = player => {
-    setSelectedPlayer(player);
-    setIsEditing(true);
-  };
 
   const handleViewPlayer = player => {
     setSelectedPlayer(player);

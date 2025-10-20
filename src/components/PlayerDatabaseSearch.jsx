@@ -7,7 +7,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
     position: '',
     overallMin: '',
     overallMax: '',
-    club: ''
+    club: '',
   });
   const [searchResults, setSearchResults] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
@@ -23,7 +23,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
     setSearchResults(results);
   };
 
-  const handlePlayerClick = (player) => {
+  const handlePlayerClick = player => {
     setSelectedPlayer(player);
   };
 
@@ -37,7 +37,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -46,12 +46,26 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       position: '',
       overallMin: '',
       overallMax: '',
-      club: ''
+      club: '',
     });
     setSearchQuery('');
   };
 
-  const positions = ['GK', 'CB', 'LB', 'RB', 'LWB', 'RWB', 'DMF', 'CMF', 'AMF', 'LWF', 'RWF', 'SS', 'CF'];
+  const positions = [
+    'GK',
+    'CB',
+    'LB',
+    'RB',
+    'LWB',
+    'RWB',
+    'DMF',
+    'CMF',
+    'AMF',
+    'LWF',
+    'RWF',
+    'SS',
+    'CF',
+  ];
 
   const styles = {
     overlay: {
@@ -65,7 +79,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '20px'
+      padding: '20px',
     },
     modal: {
       backgroundColor: '#1a1a1a',
@@ -77,7 +91,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
-      border: '1px solid #333'
+      border: '1px solid #333',
     },
     header: {
       display: 'flex',
@@ -85,13 +99,13 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       alignItems: 'center',
       marginBottom: '20px',
       paddingBottom: '16px',
-      borderBottom: '1px solid #333'
+      borderBottom: '1px solid #333',
     },
     title: {
       color: '#fff',
       fontSize: '24px',
       fontWeight: 'bold',
-      margin: 0
+      margin: 0,
     },
     closeButton: {
       background: 'linear-gradient(135deg, #ff6b6b, #ee5a52)',
@@ -102,13 +116,13 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       cursor: 'pointer',
       fontSize: '14px',
       fontWeight: '600',
-      transition: 'all 0.3s ease'
+      transition: 'all 0.3s ease',
     },
     searchSection: {
       display: 'flex',
       gap: '12px',
       marginBottom: '20px',
-      flexWrap: 'wrap'
+      flexWrap: 'wrap',
     },
     searchInput: {
       flex: 1,
@@ -120,7 +134,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       color: '#fff',
       fontSize: '14px',
       outline: 'none',
-      transition: 'border-color 0.3s ease'
+      transition: 'border-color 0.3s ease',
     },
     filterButton: {
       background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
@@ -131,7 +145,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       cursor: 'pointer',
       fontSize: '14px',
       fontWeight: '600',
-      transition: 'all 0.3s ease'
+      transition: 'all 0.3s ease',
     },
     clearButton: {
       background: 'linear-gradient(135deg, #ffa726, #ff9800)',
@@ -142,31 +156,31 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       cursor: 'pointer',
       fontSize: '14px',
       fontWeight: '600',
-      transition: 'all 0.3s ease'
+      transition: 'all 0.3s ease',
     },
     filtersPanel: {
       backgroundColor: '#2a2a2a',
       borderRadius: '8px',
       padding: '16px',
       marginBottom: '20px',
-      border: '1px solid #444'
+      border: '1px solid #444',
     },
     filtersGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-      gap: '12px'
+      gap: '12px',
     },
     filterGroup: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '4px'
+      gap: '4px',
     },
     filterLabel: {
       color: '#ccc',
       fontSize: '12px',
       fontWeight: '600',
       textTransform: 'uppercase',
-      letterSpacing: '0.5px'
+      letterSpacing: '0.5px',
     },
     filterSelect: {
       padding: '8px 12px',
@@ -175,7 +189,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       backgroundColor: '#1a1a1a',
       color: '#fff',
       fontSize: '14px',
-      outline: 'none'
+      outline: 'none',
     },
     filterInput: {
       padding: '8px 12px',
@@ -184,20 +198,20 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       backgroundColor: '#1a1a1a',
       color: '#fff',
       fontSize: '14px',
-      outline: 'none'
+      outline: 'none',
     },
     content: {
       display: 'flex',
       gap: '20px',
       flex: 1,
-      overflow: 'hidden'
+      overflow: 'hidden',
     },
     resultsList: {
       flex: 1,
       overflowY: 'auto',
       border: '1px solid #333',
       borderRadius: '8px',
-      backgroundColor: '#2a2a2a'
+      backgroundColor: '#2a2a2a',
     },
     playerCard: {
       padding: '16px',
@@ -206,30 +220,30 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       transition: 'background-color 0.3s ease',
       display: 'flex',
       alignItems: 'center',
-      gap: '16px'
+      gap: '16px',
     },
     playerInfo: {
-      flex: 1
+      flex: 1,
     },
     playerName: {
       color: '#fff',
       fontSize: '16px',
       fontWeight: '600',
-      marginBottom: '4px'
+      marginBottom: '4px',
     },
     playerDetails: {
       color: '#aaa',
       fontSize: '14px',
       display: 'flex',
       gap: '12px',
-      flexWrap: 'wrap'
+      flexWrap: 'wrap',
     },
     playerOverall: {
       fontSize: '18px',
       fontWeight: 'bold',
       color: '#4ecdc4',
       minWidth: '40px',
-      textAlign: 'center'
+      textAlign: 'center',
     },
     playerPosition: {
       background: 'linear-gradient(135deg, #667eea, #764ba2)',
@@ -237,25 +251,25 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       padding: '4px 8px',
       borderRadius: '4px',
       fontSize: '12px',
-      fontWeight: '600'
+      fontWeight: '600',
     },
     selectedPlayer: {
       flex: 1,
       padding: '20px',
       border: '1px solid #333',
       borderRadius: '8px',
-      backgroundColor: '#2a2a2a'
+      backgroundColor: '#2a2a2a',
     },
     selectedTitle: {
       color: '#fff',
       fontSize: '18px',
       fontWeight: 'bold',
-      marginBottom: '16px'
+      marginBottom: '16px',
     },
     selectedInfo: {
       color: '#ccc',
       fontSize: '14px',
-      marginBottom: '8px'
+      marginBottom: '8px',
     },
     selectButton: {
       background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
@@ -268,14 +282,14 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
       fontWeight: '600',
       transition: 'all 0.3s ease',
       marginTop: '20px',
-      width: '100%'
+      width: '100%',
     },
     noResults: {
       textAlign: 'center',
       color: '#aaa',
       padding: '40px',
-      fontSize: '16px'
-    }
+      fontSize: '16px',
+    },
   };
 
   return (
@@ -293,7 +307,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
             type="text"
             placeholder="Cerca giocatore, squadra, nazionalità..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             style={styles.searchInput}
           />
           <button
@@ -314,12 +328,14 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
                 <label style={styles.filterLabel}>Posizione</label>
                 <select
                   value={filters.position}
-                  onChange={(e) => handleFilterChange('position', e.target.value)}
+                  onChange={e => handleFilterChange('position', e.target.value)}
                   style={styles.filterSelect}
                 >
                   <option value="">Tutte le posizioni</option>
                   {positions.map(pos => (
-                    <option key={pos} value={pos}>{pos}</option>
+                    <option key={pos} value={pos}>
+                      {pos}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -328,7 +344,9 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
                 <input
                   type="number"
                   value={filters.overallMin}
-                  onChange={(e) => handleFilterChange('overallMin', e.target.value)}
+                  onChange={e =>
+                    handleFilterChange('overallMin', e.target.value)
+                  }
                   style={styles.filterInput}
                   placeholder="es. 80"
                 />
@@ -338,7 +356,9 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
                 <input
                   type="number"
                   value={filters.overallMax}
-                  onChange={(e) => handleFilterChange('overallMax', e.target.value)}
+                  onChange={e =>
+                    handleFilterChange('overallMax', e.target.value)
+                  }
                   style={styles.filterInput}
                   placeholder="es. 95"
                 />
@@ -348,7 +368,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
                 <input
                   type="text"
                   value={filters.club}
-                  onChange={(e) => handleFilterChange('club', e.target.value)}
+                  onChange={e => handleFilterChange('club', e.target.value)}
                   style={styles.filterInput}
                   placeholder="es. Real Madrid"
                 />
@@ -360,16 +380,15 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
         <div style={styles.content}>
           <div style={styles.resultsList}>
             {searchResults.length === 0 ? (
-              <div style={styles.noResults}>
-                Nessun giocatore trovato
-              </div>
+              <div style={styles.noResults}>Nessun giocatore trovato</div>
             ) : (
-              searchResults.map((player) => (
+              searchResults.map(player => (
                 <div
                   key={player.id}
                   style={{
                     ...styles.playerCard,
-                    backgroundColor: selectedPlayer?.id === player.id ? '#444' : 'transparent'
+                    backgroundColor:
+                      selectedPlayer?.id === player.id ? '#444' : 'transparent',
                   }}
                   onClick={() => handlePlayerClick(player)}
                 >
@@ -377,7 +396,9 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
                   <div style={styles.playerInfo}>
                     <div style={styles.playerName}>{player.name}</div>
                     <div style={styles.playerDetails}>
-                      <span style={styles.playerPosition}>{player.position}</span>
+                      <span style={styles.playerPosition}>
+                        {player.position}
+                      </span>
                       <span>{player.club}</span>
                       <span>{player.nationality}</span>
                       <span>Età: {player.age}</span>
@@ -413,7 +434,8 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
                 <strong>Piede Debole:</strong> {selectedPlayer.weakFoot}/5
               </div>
               <div style={styles.selectedInfo}>
-                <strong>Resistenza Infortuni:</strong> {selectedPlayer.injuryResistance}/5
+                <strong>Resistenza Infortuni:</strong>{' '}
+                {selectedPlayer.injuryResistance}/5
               </div>
               <div style={styles.selectedInfo}>
                 <strong>Forma:</strong> {selectedPlayer.form}
@@ -424,7 +446,7 @@ const PlayerDatabaseSearch = ({ onPlayerSelect, onClose }) => {
               <div style={styles.selectedInfo}>
                 <strong>AI Playstyle:</strong> {selectedPlayer.aiPlaystyle}
               </div>
-              
+
               <button style={styles.selectButton} onClick={handleSelectPlayer}>
                 Seleziona Giocatore
               </button>

@@ -61,7 +61,9 @@ export const uploadMatchImage = async (file, userId) => {
     const uid = currentUid || userId;
     if (!uid) throw new Error('Utente non autenticato');
     if (userId && userId !== uid) {
-      console.warn('uploadMatchImage: userId mismatch, using authenticated uid');
+      console.warn(
+        'uploadMatchImage: userId mismatch, using authenticated uid'
+      );
     }
     const timestamp = Date.now();
     const fileName = `${timestamp}.png`;
@@ -84,7 +86,10 @@ export const uploadMatchImage = async (file, userId) => {
 
     await setDoc(doc(db, 'matches', uid), matchDoc);
 
-    console.log('✅ Immagine caricata:', { userId: uid, filePath: storagePath });
+    console.log('✅ Immagine caricata:', {
+      userId: uid,
+      filePath: storagePath,
+    });
 
     return downloadURL;
   } catch (error) {

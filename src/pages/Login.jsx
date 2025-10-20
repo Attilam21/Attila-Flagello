@@ -43,8 +43,13 @@ const Login = ({ onLogin }) => {
     } catch (err) {
       console.error('❌ Errore auth:', err);
       const code = err?.code || '';
-      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
-        setError('Password errata. Riprova o usa "Registrati" se è il primo accesso.');
+      if (
+        code === 'auth/wrong-password' ||
+        code === 'auth/invalid-credential'
+      ) {
+        setError(
+          'Password errata. Riprova o usa "Registrati" se è il primo accesso.'
+        );
       } else if (code === 'auth/email-already-in-use') {
         setError('Email già in uso. Prova ad accedere invece di registrarti.');
       } else if (code === 'auth/too-many-requests') {
