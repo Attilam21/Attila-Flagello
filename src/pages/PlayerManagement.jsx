@@ -8,15 +8,13 @@ import {
 } from '../services/firebaseClient';
 import PlayerProfile from '../components/PlayerProfile';
 import FormationBuilder from '../components/FormationBuilder';
-import PlayerEditForm from '../components/PlayerEditForm';
 import CompletePlayerEditor from '../components/CompletePlayerEditor';
 import { realOCRService } from '../services/realOCRService';
-import { Camera, Upload, CheckCircle, AlertCircle, Plus } from 'lucide-react';
+import { Camera, CheckCircle, AlertCircle, Plus } from 'lucide-react';
 
 const PlayerManagement = ({ user }) => {
   const [players, setPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPosition, setFilterPosition] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
@@ -27,8 +25,6 @@ const PlayerManagement = ({ user }) => {
   const [uploadStatus, setUploadStatus] = useState(null);
   const [ocrResult, setOcrResult] = useState(null);
   const [showOCRModal, setShowOCRModal] = useState(false);
-  const [playerImages, setPlayerImages] = useState([]);
-  const [currentImageType, setCurrentImageType] = useState('profile');
 
   // Editor States
   const [showCompleteEditor, setShowCompleteEditor] = useState(false);
@@ -602,8 +598,8 @@ const PlayerManagement = ({ user }) => {
 
   const handleAddPlayer = () => {
     console.log('Adding new player...');
-    setSelectedPlayer(null); // Reset selected player
-    setIsEditing(true);
+    setShowCompleteEditor(true);
+    setEditingPlayer(null);
   };
 
   const handleViewPlayer = player => {
@@ -611,94 +607,25 @@ const PlayerManagement = ({ user }) => {
     setViewMode('profile');
   };
 
-  const handleSavePlayer = async playerData => {
-    if (!user) return;
-    try {
-      if (selectedPlayer && selectedPlayer.id) {
-        await updatePlayer(user.uid, selectedPlayer.id, playerData);
-      } else {
-        await addPlayer(user.uid, {
-          ...playerData,
-          stats: playerData.attackingStats || playerData.stats || {},
-          physical: playerData.physical || {
-            height: 180,
-            weight: 70,
-            preferredFoot: 'Right',
-          },
-          abilities: playerData.abilities || [],
-          aiPlayStyles: playerData.aiPlayStyles || [],
-          boosters: playerData.boosters || [],
-          form: playerData.advanced?.form || 'B',
-          preferredFoot: playerData.physical?.preferredFoot || 'Right',
-          weakFootFrequency:
-            playerData.advanced?.weakFootFrequency || 'Occasionally',
-          weakFootAccuracy: playerData.advanced?.weakFootAccuracy || 'High',
-          injuryResistance: playerData.advanced?.injuryResistance || 'Medium',
-          alternativePositions: playerData.alternativePositions || [],
-        });
-      }
-      setIsEditing(false);
-      setSelectedPlayer(null);
-    } catch (error) {
-      console.error('❌ Error saving player:', error);
-    }
-  };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setSelectedPlayer(null);
-  };
-
-  // OCR Functions
+  // Simplified OCR Functions
   const handleImageUpload = async event => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Reset input
     event.target.value = '';
-
     setIsUploading(true);
     setUploadStatus('processing');
-    setOcrResult(null);
 
     try {
-      console.log('🔍 Processing player image with OCR...');
-
-      // Timeout di sicurezza per evitare caricamento infinito
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(
-          () => reject(new Error('OCR timeout - immagine troppo complessa')),
-          20000
-        )
-      );
-
-      const ocrPromise = realOCRService.processImage(file);
-      const result = await Promise.race([ocrPromise, timeoutPromise]);
-
+      const result = await realOCRService.processImage(file);
       setOcrResult(result);
       setUploadStatus('success');
       setShowOCRModal(true);
-
-      console.log('✅ OCR completed:', result);
     } catch (error) {
       console.error('❌ OCR failed:', error);
-
-      // Gestione errori più specifica
-      let errorMessage = 'Errore sconosciuto';
-      if (error.message.includes('timeout')) {
-        errorMessage =
-          "L'immagine è troppo complessa. Prova con una foto più chiara e semplice.";
-      } else if (error.message.includes('network')) {
-        errorMessage = 'Errore di connessione. Riprova più tardi.';
-      } else if (error.message.includes('format')) {
-        errorMessage = 'Formato immagine non supportato. Usa JPG o PNG.';
-      } else {
-        errorMessage =
-          "Non è stato possibile analizzare l'immagine. Prova con una foto più chiara.";
-      }
-
       setUploadStatus('error');
-      setOcrResult({ error: errorMessage });
+      setOcrResult({ error: 'Errore durante l\'analisi dell\'immagine' });
     } finally {
       setIsUploading(false);
     }
@@ -712,32 +639,8 @@ const PlayerManagement = ({ user }) => {
     setUploadStatus('uploading');
 
     try {
-      const result = await uploadPlayerImage(
-        user.uid,
-        selectedPlayer.id,
-        file,
-        kind
-      );
-      console.log('✅ Player image uploaded:', result);
+      await uploadPlayerImage(user.uid, selectedPlayer.id, file, kind);
       setUploadStatus('success');
-
-      // Se è un'immagine di profilo, prova l'OCR
-      if (kind === 'profile') {
-        setUploadStatus('processing');
-        try {
-          const ocrData = await realOCRService.analyzePlayerImage(file);
-          if (ocrData) {
-            setOcrResult(ocrData);
-            setShowOCRModal(true);
-            setUploadStatus('ocr-completed');
-          } else {
-            setUploadStatus('success');
-          }
-        } catch (ocrError) {
-          console.warn('OCR analysis failed:', ocrError);
-          setUploadStatus('success');
-        }
-      }
     } catch (err) {
       console.error('❌ Player image upload failed:', err);
       setUploadStatus('error');
@@ -748,11 +651,9 @@ const PlayerManagement = ({ user }) => {
   };
 
   const handleAddPlayerFromOCR = () => {
-    if (!ocrResult) return;
+    if (!ocrResult || !user) return;
 
-    // Converte i dati OCR in formato giocatore
     const newPlayer = {
-      id: Date.now(),
       name: ocrResult.playerName || 'Giocatore Sconosciuto',
       position: ocrResult.position || 'Unknown',
       rating: ocrResult.rating || 0,
@@ -761,26 +662,14 @@ const PlayerManagement = ({ user }) => {
       team: ocrResult.team || 'Unknown',
       stats: ocrResult.stats || {},
       abilities: ocrResult.abilities || [],
-      aiPlayStyles: ocrResult.aiPlayStyles || [],
-      build: ocrResult.build || 'Standard',
-      buildDescription: ocrResult.buildDescription || '',
-      buildEfficiency: ocrResult.buildEfficiency || 0,
       boosters: ocrResult.boosters || [],
       physical: ocrResult.physical || {},
-      form: ocrResult.form || 'B',
-      preferredFoot: ocrResult.preferredFoot || 'Right',
-      weakFootFrequency: ocrResult.weakFootFrequency || 'Occasionally',
-      weakFootAccuracy: ocrResult.weakFootAccuracy || 'High',
-      injuryResistance: ocrResult.injuryResistance || 'Medium',
-      alternativePositions: ocrResult.alternativePositions || [],
     };
 
-    setPlayers(prev => [...prev, newPlayer]);
+    addPlayer(user.uid, newPlayer);
     setShowOCRModal(false);
     setOcrResult(null);
     setUploadStatus(null);
-
-    console.log('✅ Player added from OCR:', newPlayer);
   };
 
   // Editor functions
@@ -791,14 +680,12 @@ const PlayerManagement = ({ user }) => {
 
   const handleSaveEditedPlayer = async editedPlayer => {
     if (!user) return;
-
     try {
       await updatePlayer(user.uid, editedPlayer.id, editedPlayer);
       setShowCompleteEditor(false);
       setEditingPlayer(null);
-      console.log('✅ Giocatore modificato:', editedPlayer.name);
     } catch (error) {
-      console.error('❌ Errore modifica giocatore:', error);
+      console.error('❌ Error updating player:', error);
     }
   };
 
@@ -811,7 +698,6 @@ const PlayerManagement = ({ user }) => {
     if (!user) return;
     try {
       await deletePlayerById(user.uid, playerId);
-      console.log('✅ Player deleted:', playerId);
     } catch (error) {
       console.error('❌ Error deleting player:', error);
     }
@@ -1221,14 +1107,6 @@ const PlayerManagement = ({ user }) => {
         </div>
       </div>
 
-      {/* Player Edit Form Modal */}
-      {isEditing && (
-        <PlayerEditForm
-          player={selectedPlayer}
-          onSave={handleSavePlayer}
-          onCancel={handleCancelEdit}
-        />
-      )}
 
       {/* OCR Results Modal */}
       {showOCRModal && ocrResult && (
