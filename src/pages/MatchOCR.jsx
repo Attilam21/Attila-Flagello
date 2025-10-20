@@ -3,6 +3,8 @@ import {
   uploadMatchImage,
   listenToOCRResults,
   listenToMatchStatus,
+  saveMatchStats,
+  listenToMatchHistory,
 } from '../services/firebaseClient';
 import { ocrService } from '../services/ocrService';
 import { advancedOCRService } from '../services/advancedOCRService';
@@ -26,6 +28,7 @@ const MatchOCR = ({ user }) => {
   const [imageType, setImageType] = useState(null);
   // Manual match stats mode
   const [manualMode, setManualMode] = useState(false);
+  const [history, setHistory] = useState([]);
   const [manual, setManual] = useState({
     homeTeam: '',
     awayTeam: '',
@@ -84,6 +87,11 @@ const MatchOCR = ({ user }) => {
     setImageType('match_stats');
     setOcrStatus('done');
     setOcrText('Inserimento manuale completato');
+    if (user?.uid) {
+      saveMatchStats(user.uid, match).catch(err =>
+        console.warn('saveMatchStats failed', err)
+      );
+    }
   };
 
   const handleManualReset = () => {
@@ -134,6 +142,15 @@ const MatchOCR = ({ user }) => {
     //     unsubscribe();
     //   }
     // };
+  }, [user]);
+
+  // History subscription
+  useEffect(() => {
+    if (!user) return;
+    const unsub = listenToMatchHistory(user.uid, items => setHistory(items));
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
   }, [user]);
 
   if (!user) {
@@ -281,6 +298,14 @@ const MatchOCR = ({ user }) => {
       clearTimeout(timeoutId);
       setOcrStatus('done');
       setOcrText('Analisi completata con successo!');
+
+      if ((ocrResult.type || detectedType) === 'match_stats' && user?.uid) {
+        try {
+          await saveMatchStats(user.uid, ocrResult);
+        } catch (e) {
+          console.warn('saveMatchStats failed', e);
+        }
+      }
 
       // Log telemetria success
       console.log('📊 OCR upload success:', {
@@ -719,6 +744,87 @@ const MatchOCR = ({ user }) => {
               </button>
             </div>
           </form>
+        )}
+      </div>
+
+      {/* Match history and averages */}
+      <div style={styles.card}>
+        <h2 style={styles.title}>🗂 Storico Partite</h2>
+        {history.length === 0 ? (
+          <div className="text-sm text-gray-600">Nessuna partita salvata.</div>
+        ) : (
+          <div className="space-y-3">
+            {/* Averages */}
+            {(() => {
+              const n = history.length;
+              const avg = key => {
+                const sum = history.reduce(
+                  (acc, m) => acc + (m.teamStats?.[key]?.home ?? 0),
+                  0
+                );
+                const sumAway = history.reduce(
+                  (acc, m) => acc + (m.teamStats?.[key]?.away ?? 0),
+                  0
+                );
+                return {
+                  home: Math.round((sum / n) * 10) / 10,
+                  away: Math.round((sumAway / n) * 10) / 10,
+                };
+              };
+              const avgPoss = avg('possession');
+              const avgShots = avg('totalShots');
+              const avgOn = avg('shotsOnTarget');
+              return (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                  <div className="text-sm font-semibold mb-2">
+                    Medie ultime {n} partite
+                  </div>
+                  <div className="grid grid-cols-3 text-sm">
+                    <div>
+                      Possesso: {avgPoss.home}% vs {avgPoss.away}%
+                    </div>
+                    <div>
+                      Tiri: {avgShots.home} vs {avgShots.away}
+                    </div>
+                    <div>
+                      Tiri in porta: {avgOn.home} vs {avgOn.away}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* List */}
+            <ul className="divide-y divide-gray-200">
+              {history.map(h => (
+                <li
+                  key={h.id}
+                  className="py-2 flex items-center justify-between"
+                >
+                  <div className="text-sm text-gray-700">
+                    <span className="font-semibold">
+                      {h.homeTeam ?? 'Home'}
+                    </span>{' '}
+                    {h.homeScore ?? '-'} - {h.awayScore ?? '-'}{' '}
+                    <span className="font-semibold">
+                      {h.awayTeam ?? 'Away'}
+                    </span>
+                  </div>
+                  <button
+                    className="px-3 py-1 rounded text-white"
+                    style={{ background: '#2563EB' }}
+                    onClick={() => {
+                      setAnalyzedData(h);
+                      setImageType('match_stats');
+                      setOcrStatus('done');
+                    }}
+                  >
+                    Apri
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
 

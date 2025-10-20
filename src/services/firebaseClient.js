@@ -11,6 +11,7 @@ import {
   query,
   orderBy,
   limit,
+  Timestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -104,6 +105,27 @@ export const listenToMatchStatus = (userId, callback) => {
     if (doc.exists()) {
       callback(doc.data());
     }
+  });
+};
+
+// Save parsed match statistics under user collection
+export const saveMatchStats = async (userId, match) => {
+  const colRef = collection(db, 'users', userId, 'matches');
+  const payload = {
+    ...match,
+    createdAt: Timestamp.now(),
+  };
+  const refDoc = await addDoc(colRef, payload);
+  return { id: refDoc.id, ...payload };
+};
+
+// Subscribe to user's match history (latest first)
+export const listenToMatchHistory = (userId, callback, limitCount = 20) => {
+  const colRef = collection(db, 'users', userId, 'matches');
+  const q = query(colRef, orderBy('createdAt', 'desc'), limit(limitCount));
+  return onSnapshot(q, snap => {
+    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    callback(items);
   });
 };
 
