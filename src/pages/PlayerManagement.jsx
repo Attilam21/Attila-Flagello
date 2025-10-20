@@ -10,7 +10,7 @@ import PlayerProfile from '../components/PlayerProfile';
 import FormationBuilder from '../components/FormationBuilder';
 import CompletePlayerEditor from '../components/CompletePlayerEditor';
 import { realOCRService } from '../services/realOCRService';
-import { Camera, CheckCircle, AlertCircle, Plus } from 'lucide-react';
+import { Camera, CheckCircle, AlertCircle } from 'lucide-react';
 
 const PlayerManagement = ({ user }) => {
   const [players, setPlayers] = useState([]);
@@ -607,7 +607,6 @@ const PlayerManagement = ({ user }) => {
     setViewMode('profile');
   };
 
-
   // Simplified OCR Functions
   const handleImageUpload = async event => {
     const file = event.target.files[0];
@@ -625,7 +624,7 @@ const PlayerManagement = ({ user }) => {
     } catch (error) {
       console.error('❌ OCR failed:', error);
       setUploadStatus('error');
-      setOcrResult({ error: 'Errore durante l\'analisi dell\'immagine' });
+      setOcrResult({ error: "Errore durante l'analisi dell'immagine" });
     } finally {
       setIsUploading(false);
     }
@@ -1106,7 +1105,6 @@ const PlayerManagement = ({ user }) => {
           </div>
         </div>
       </div>
-
 
       {/* OCR Results Modal */}
       {showOCRModal && ocrResult && (
