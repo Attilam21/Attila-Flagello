@@ -9,7 +9,7 @@ import {
 import PlayerProfile from '../components/PlayerProfile';
 import FormationBuilder from '../components/FormationBuilder';
 import PlayerEditForm from '../components/PlayerEditForm';
-import PlayerDatabaseSearch from '../components/PlayerDatabaseSearch';
+import AdvancedPlayerSearch from '../components/AdvancedPlayerSearch';
 import { realOCRService } from '../services/realOCRService';
 import { Camera, Upload, CheckCircle, AlertCircle, Database, Plus } from 'lucide-react';
 
@@ -31,7 +31,7 @@ const PlayerManagement = ({ user }) => {
   const [currentImageType, setCurrentImageType] = useState('profile');
 
   // Database States
-  const [showDatabaseSearch, setShowDatabaseSearch] = useState(false);
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
 
   // Live players from Firestore
   useEffect(() => {
@@ -783,40 +783,17 @@ const PlayerManagement = ({ user }) => {
   };
 
   // Database functions
-  const handleDatabasePlayerSelect = async (dbPlayer) => {
+  const handleAdvancedPlayerSelect = async (player) => {
     if (!user) return;
 
     try {
-      // Convert database player to our format
-      const newPlayer = {
-        name: dbPlayer.name,
-        position: dbPlayer.position,
-        overall: dbPlayer.overall,
-        age: dbPlayer.age,
-        nationality: dbPlayer.nationality,
-        club: dbPlayer.club,
-        preferredFoot: dbPlayer.preferredFoot,
-        weakFoot: dbPlayer.weakFoot,
-        injuryResistance: dbPlayer.injuryResistance,
-        form: dbPlayer.form,
-        playstyle: dbPlayer.playstyle,
-        aiPlaystyle: dbPlayer.aiPlaystyle,
-        stats: dbPlayer.stats,
-        skills: dbPlayer.skills,
-        playerSkills: dbPlayer.playerSkills,
-        boosters: dbPlayer.boosters,
-        physicalAttributes: dbPlayer.physicalAttributes,
-        source: 'database', // Mark as from database
-        createdAt: new Date().toISOString()
-      };
-
-      // Add to Firestore
-      await addPlayer(user.uid, newPlayer);
+      // Il giocatore è già convertito dal componente AdvancedPlayerSearch
+      await addPlayer(user.uid, player);
       
-      // Close database search
-      setShowDatabaseSearch(false);
+      // Close advanced search
+      setShowAdvancedSearch(false);
       
-      console.log('✅ Giocatore aggiunto dal database:', newPlayer.name);
+      console.log('✅ Giocatore aggiunto dal database avanzato:', player.name);
     } catch (error) {
       console.error('❌ Errore aggiunta giocatore:', error);
     }
@@ -868,8 +845,8 @@ const PlayerManagement = ({ user }) => {
           <div style={styles.uploadButtons}>
             <button
               onClick={() => {
-                console.log('Database button clicked!');
-                setShowDatabaseSearch(true);
+                console.log('Advanced Database button clicked!');
+                setShowAdvancedSearch(true);
               }}
               style={{
                 ...styles.addButton,
@@ -1365,11 +1342,12 @@ const PlayerManagement = ({ user }) => {
         </div>
       )}
 
-      {/* Database Search Modal */}
-      {showDatabaseSearch && (
-        <PlayerDatabaseSearch
-          onPlayerSelect={handleDatabasePlayerSelect}
-          onClose={() => setShowDatabaseSearch(false)}
+      {/* Advanced Database Search Modal */}
+      {showAdvancedSearch && (
+        <AdvancedPlayerSearch
+          isOpen={showAdvancedSearch}
+          onPlayerSelect={handleAdvancedPlayerSelect}
+          onClose={() => setShowAdvancedSearch(false)}
         />
       )}
     </div>
