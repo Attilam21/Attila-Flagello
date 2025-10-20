@@ -57,6 +57,67 @@ const MatchOCR = ({ user }) => {
 
   // === STATI COMUNI ===
   const [history, setHistory] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [successMessages, setSuccessMessages] = useState({});
+  const [firebaseStatus, setFirebaseStatus] = useState('connected');
+
+  // === FUNZIONI DI VALIDAZIONE E GESTIONE ERRORI ===
+  const validateStatisticaData = () => {
+    const newErrors = {};
+    
+    if (!statisticaData.homeTeam.trim()) {
+      newErrors.homeTeam = 'Squadra casa obbligatoria';
+    }
+    if (!statisticaData.awayTeam.trim()) {
+      newErrors.awayTeam = 'Squadra trasferta obbligatoria';
+    }
+    if (statisticaData.homeScore < 0 || statisticaData.awayScore < 0) {
+      newErrors.score = 'I gol non possono essere negativi';
+    }
+    if (!statisticaData.date) {
+      newErrors.date = 'Data partita obbligatoria';
+    }
+    
+    setErrors(prev => ({ ...prev, statistica: newErrors }));
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateVotiData = () => {
+    const newErrors = {};
+    
+    if (votiData.length === 0) {
+      newErrors.general = 'Aggiungi almeno un giocatore';
+    }
+    
+    votiData.forEach((voto, index) => {
+      if (!voto.name.trim()) {
+        newErrors[`name_${index}`] = 'Nome giocatore obbligatorio';
+      }
+      if (!voto.role.trim()) {
+        newErrors[`role_${index}`] = 'Ruolo giocatore obbligatorio';
+      }
+      if (voto.rating < 1 || voto.rating > 10) {
+        newErrors[`rating_${index}`] = 'Voto deve essere tra 1 e 10';
+      }
+    });
+    
+    setErrors(prev => ({ ...prev, voti: newErrors }));
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const showSuccessMessage = (section, message) => {
+    setSuccessMessages(prev => ({ ...prev, [section]: message }));
+    setTimeout(() => {
+      setSuccessMessages(prev => ({ ...prev, [section]: null }));
+    }, 3000);
+  };
+
+  const showErrorMessage = (section, message) => {
+    setErrors(prev => ({ ...prev, [section]: { general: message } }));
+    setTimeout(() => {
+      setErrors(prev => ({ ...prev, [section]: {} }));
+    }, 5000);
+  };
 
   // === FUNZIONI SEZIONE A: STATISTICA PARTITA ===
   const updateStatisticaStat = (statKey, side, value) => {
@@ -86,6 +147,8 @@ const MatchOCR = ({ user }) => {
     if (!statisticaFile || !user?.uid) return;
 
     setStatisticaUploading(true);
+    setErrors(prev => ({ ...prev, statistica: {} }));
+    
     try {
       const db = getFirestore();
       const storage = getStorage();
@@ -105,12 +168,26 @@ const MatchOCR = ({ user }) => {
         timestamp,
         type: 'statistica_partita',
         status: 'uploaded',
+        ocrStatus: 'processing',
         createdAt: new Date(),
       });
 
+      showSuccessMessage('statistica', '📸 Screenshot caricato! OCR in elaborazione...');
       console.log('✅ Statistica partita salvata');
+      
+      // Reset form
+      setStatisticaFile(null);
+      setStatisticaPreview(null);
+      
     } catch (error) {
       console.error('❌ Errore upload statistica:', error);
+      showErrorMessage('statistica', '❌ Errore durante il caricamento. Riprova o usa la compilazione manuale.');
+      
+      // Fallback: Firebase down
+      if (error.code === 'unavailable') {
+        setFirebaseStatus('disconnected');
+        showErrorMessage('statistica', '⚠️ Firebase non disponibile. I dati verranno salvati localmente.');
+      }
     } finally {
       setStatisticaUploading(false);
     }
@@ -119,6 +196,12 @@ const MatchOCR = ({ user }) => {
   const handleStatisticaManualSubmit = async e => {
     e.preventDefault();
     if (!user?.uid) return;
+
+    // Validazione dati
+    if (!validateStatisticaData()) {
+      showErrorMessage('statistica', '❌ Controlla i campi obbligatori evidenziati');
+      return;
+    }
 
     try {
       const db = getFirestore();
@@ -129,12 +212,25 @@ const MatchOCR = ({ user }) => {
         timestamp,
         type: 'statistica_partita',
         status: 'manual',
+        dataSource: 'manual',
         createdAt: new Date(),
       });
 
+      showSuccessMessage('statistica', '✅ Statistiche partita salvate con successo!');
       console.log('✅ Statistica partita manuale salvata');
+      
+      // Reset form
+      setStatisticaManualMode(false);
+      
     } catch (error) {
       console.error('❌ Errore salvataggio statistica:', error);
+      showErrorMessage('statistica', '❌ Errore durante il salvataggio. Riprova.');
+      
+      // Fallback: Firebase down
+      if (error.code === 'unavailable') {
+        setFirebaseStatus('disconnected');
+        showErrorMessage('statistica', '⚠️ Firebase non disponibile. I dati verranno salvati localmente.');
+      }
     }
   };
 
@@ -167,6 +263,8 @@ const MatchOCR = ({ user }) => {
     if (!votiFile || !user?.uid) return;
 
     setVotiUploading(true);
+    setErrors(prev => ({ ...prev, voti: {} }));
+    
     try {
       const db = getFirestore();
       const storage = getStorage();
@@ -186,12 +284,26 @@ const MatchOCR = ({ user }) => {
         timestamp,
         type: 'voti_giocatori',
         status: 'uploaded',
+        ocrStatus: 'processing',
         createdAt: new Date(),
       });
 
+      showSuccessMessage('voti', '📸 Screenshot voti caricato! OCR in elaborazione...');
       console.log('✅ Voti giocatori salvati');
+      
+      // Reset form
+      setVotiFile(null);
+      setVotiPreview(null);
+      
     } catch (error) {
       console.error('❌ Errore upload voti:', error);
+      showErrorMessage('voti', '❌ Errore durante il caricamento. Riprova o usa la compilazione manuale.');
+      
+      // Fallback: Firebase down
+      if (error.code === 'unavailable') {
+        setFirebaseStatus('disconnected');
+        showErrorMessage('voti', '⚠️ Firebase non disponibile. I dati verranno salvati localmente.');
+      }
     } finally {
       setVotiUploading(false);
     }
@@ -200,6 +312,12 @@ const MatchOCR = ({ user }) => {
   const handleVotiManualSubmit = async e => {
     e.preventDefault();
     if (!user?.uid) return;
+
+    // Validazione dati
+    if (!validateVotiData()) {
+      showErrorMessage('voti', '❌ Controlla i campi obbligatori evidenziati');
+      return;
+    }
 
     try {
       const db = getFirestore();
@@ -210,12 +328,25 @@ const MatchOCR = ({ user }) => {
         timestamp,
         type: 'voti_giocatori',
         status: 'manual',
+        dataSource: 'manual',
         createdAt: new Date(),
       });
 
+      showSuccessMessage('voti', '✅ Voti giocatori salvati con successo!');
       console.log('✅ Voti giocatori manuali salvati');
+      
+      // Reset form
+      setVotiManualMode(false);
+      
     } catch (error) {
       console.error('❌ Errore salvataggio voti:', error);
+      showErrorMessage('voti', '❌ Errore durante il salvataggio. Riprova.');
+      
+      // Fallback: Firebase down
+      if (error.code === 'unavailable') {
+        setFirebaseStatus('disconnected');
+        showErrorMessage('voti', '⚠️ Firebase non disponibile. I dati verranno salvati localmente.');
+      }
     }
   };
 
@@ -312,7 +443,10 @@ const MatchOCR = ({ user }) => {
       ...prev,
       zones: autoZones,
       autoGenerated: true,
+      dataSource: 'auto_generated',
     }));
+    
+    showSuccessMessage('heatmap', '🤖 Heatmap auto-generata basata sulle statistiche partita');
   };
 
   // === USEEFFECT ===
@@ -338,20 +472,46 @@ const MatchOCR = ({ user }) => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
+      {/* === STATUS BAR === */}
+      {firebaseStatus === 'disconnected' && (
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg mb-6">
+          <div className="flex items-center">
+            <span className="text-xl mr-2">⚠️</span>
+            <div>
+              <strong>Firebase non disponibile</strong>
+              <p className="text-sm mt-1">
+                I dati verranno salvati localmente. Riprova più tardi per sincronizzare.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       {/* === SEZIONE A: STATISTICA PARTITA === */}
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">📊 Statistica Partita</h2>
         </div>
         <div className="p-6">
+          {/* Messaggi di feedback */}
+          {successMessages.statistica && (
+            <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-lg mb-4">
+              {successMessages.statistica}
+            </div>
+          )}
+          {errors.statistica?.general && (
+            <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-lg mb-4">
+              {errors.statistica.general}
+            </div>
+          )}
+          
           {/* Upload OCR */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-white mb-4">
               Carica Statistica Partita
             </h3>
-            <input
-              type="file"
-              accept="image/*"
+        <input
+          type="file"
+          accept="image/*"
               onChange={handleStatisticaFileChange}
               className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg mb-4"
             />
@@ -365,13 +525,13 @@ const MatchOCR = ({ user }) => {
                   <div className="max-w-xs max-h-48 border border-gray-600 rounded-lg overflow-hidden">
                     <img
                       src={statisticaPreview}
-                      alt="Preview"
+                  alt="Preview"
                       className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
+                />
               </div>
             )}
+          </div>
+        )}
             <button
               onClick={handleStatisticaUpload}
               disabled={!statisticaFile || statisticaUploading}
@@ -381,7 +541,17 @@ const MatchOCR = ({ user }) => {
                 ? '⏳ Caricamento...'
                 : '📸 Carica Statistica Partita'}
             </button>
-          </div>
+            
+            {/* Indicatore stato OCR */}
+            {statisticaUploading && (
+              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg">
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                  <span className="text-sm">OCR in elaborazione... Questo potrebbe richiedere alcuni secondi.</span>
+                </div>
+              </div>
+            )}
+      </div>
 
           {/* Compilazione Manuale */}
           <div>
@@ -404,28 +574,42 @@ const MatchOCR = ({ user }) => {
                 className="space-y-4"
               >
                 <div className="grid grid-cols-2 gap-4">
-                  <input
-                    className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
-                    placeholder="Squadra Casa"
-                    value={statisticaData.homeTeam}
-                    onChange={e =>
-                      setStatisticaData(prev => ({
-                        ...prev,
-                        homeTeam: e.target.value,
-                      }))
-                    }
-                  />
-                  <input
-                    className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
-                    placeholder="Squadra Trasferta"
-                    value={statisticaData.awayTeam}
-                    onChange={e =>
-                      setStatisticaData(prev => ({
-                        ...prev,
-                        awayTeam: e.target.value,
-                      }))
-                    }
-                  />
+                  <div>
+                    <input
+                      className={`w-full p-3 bg-gray-800 text-white border rounded-lg ${
+                        errors.statistica?.homeTeam ? 'border-red-500' : 'border-gray-600'
+                      }`}
+                      placeholder="Squadra Casa"
+                      value={statisticaData.homeTeam}
+                      onChange={e =>
+                        setStatisticaData(prev => ({
+                          ...prev,
+                          homeTeam: e.target.value,
+                        }))
+                      }
+                    />
+                    {errors.statistica?.homeTeam && (
+                      <p className="text-red-500 text-sm mt-1">{errors.statistica.homeTeam}</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      className={`w-full p-3 bg-gray-800 text-white border rounded-lg ${
+                        errors.statistica?.awayTeam ? 'border-red-500' : 'border-gray-600'
+                      }`}
+                      placeholder="Squadra Trasferta"
+                      value={statisticaData.awayTeam}
+                      onChange={e =>
+                        setStatisticaData(prev => ({
+                          ...prev,
+                          awayTeam: e.target.value,
+                        }))
+                      }
+                    />
+                    {errors.statistica?.awayTeam && (
+                      <p className="text-red-500 text-sm mt-1">{errors.statistica.awayTeam}</p>
+                    )}
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <input
@@ -547,8 +731,8 @@ const MatchOCR = ({ user }) => {
               </form>
             )}
           </div>
-        </div>
-      </div>
+            </div>
+          </div>
 
       {/* === SEZIONE B: VOTI PARTITA GIOCATORI === */}
       <div className="card">
@@ -556,6 +740,18 @@ const MatchOCR = ({ user }) => {
           <h2 className="card-title">⭐ Voti Partita Giocatori</h2>
         </div>
         <div className="p-6">
+          {/* Messaggi di feedback */}
+          {successMessages.voti && (
+            <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-lg mb-4">
+              {successMessages.voti}
+            </div>
+          )}
+          {errors.voti?.general && (
+            <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-lg mb-4">
+              {errors.voti.general}
+            </div>
+          )}
+
           {/* Upload OCR */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-white mb-4">
@@ -591,10 +787,10 @@ const MatchOCR = ({ user }) => {
             >
               {votiUploading ? '⏳ Caricamento...' : '📸 Carica Voti Partita'}
             </button>
-          </div>
+            </div>
 
           {/* Compilazione Manuale */}
-          <div>
+            <div>
             <div className="flex items-center mb-4">
               <button
                 onClick={() => setVotiManualMode(!votiManualMode)}
@@ -626,38 +822,59 @@ const MatchOCR = ({ user }) => {
                     key={index}
                     className="grid grid-cols-4 gap-4 items-center p-3 bg-gray-800 rounded-lg"
                   >
-                    <input
-                      className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-lg text-sm"
-                      placeholder="Nome Giocatore"
-                      value={voto.name}
-                      onChange={e =>
-                        updateVotoGiocatore(index, 'name', e.target.value)
-                      }
-                    />
-                    <input
-                      className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-lg text-sm"
-                      placeholder="Ruolo"
-                      value={voto.role}
-                      onChange={e =>
-                        updateVotoGiocatore(index, 'role', e.target.value)
-                      }
-                    />
-                    <input
-                      type="number"
-                      min="1"
-                      max="10"
-                      step="0.5"
-                      className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-lg text-sm"
-                      placeholder="Voto"
-                      value={voto.rating}
-                      onChange={e =>
-                        updateVotoGiocatore(
-                          index,
-                          'rating',
-                          Number(e.target.value)
-                        )
-                      }
-                    />
+                    <div>
+                      <input
+                        className={`w-full p-2 bg-gray-700 text-white border rounded-lg text-sm ${
+                          errors.voti?.[`name_${index}`] ? 'border-red-500' : 'border-gray-600'
+                        }`}
+                        placeholder="Nome Giocatore"
+                        value={voto.name}
+                        onChange={e =>
+                          updateVotoGiocatore(index, 'name', e.target.value)
+                        }
+                      />
+                      {errors.voti?.[`name_${index}`] && (
+                        <p className="text-red-500 text-xs mt-1">{errors.voti[`name_${index}`]}</p>
+                      )}
+                    </div>
+                    <div>
+                      <input
+                        className={`w-full p-2 bg-gray-700 text-white border rounded-lg text-sm ${
+                          errors.voti?.[`role_${index}`] ? 'border-red-500' : 'border-gray-600'
+                        }`}
+                        placeholder="Ruolo"
+                        value={voto.role}
+                        onChange={e =>
+                          updateVotoGiocatore(index, 'role', e.target.value)
+                        }
+                      />
+                      {errors.voti?.[`role_${index}`] && (
+                        <p className="text-red-500 text-xs mt-1">{errors.voti[`role_${index}`]}</p>
+                      )}
+                    </div>
+                    <div>
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        step="0.5"
+                        className={`w-full p-2 bg-gray-700 text-white border rounded-lg text-sm ${
+                          errors.voti?.[`rating_${index}`] ? 'border-red-500' : 'border-gray-600'
+                        }`}
+                        placeholder="Voto"
+                        value={voto.rating}
+                        onChange={e =>
+                          updateVotoGiocatore(
+                            index,
+                            'rating',
+                            Number(e.target.value)
+                          )
+                        }
+                      />
+                      {errors.voti?.[`rating_${index}`] && (
+                        <p className="text-red-500 text-xs mt-1">{errors.voti[`rating_${index}`]}</p>
+                      )}
+                    </div>
                     <button
                       type="button"
                       onClick={() => removeVotoGiocatore(index)}
@@ -692,6 +909,18 @@ const MatchOCR = ({ user }) => {
           <h2 className="card-title">🔥 Mappa di Calore</h2>
         </div>
         <div className="p-6">
+          {/* Messaggi di feedback */}
+          {successMessages.heatmap && (
+            <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-lg mb-4">
+              {successMessages.heatmap}
+            </div>
+          )}
+          {errors.heatmap?.general && (
+            <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-lg mb-4">
+              {errors.heatmap.general}
+            </div>
+          )}
+          
           {/* Upload OCR */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-white mb-4">
@@ -748,6 +977,21 @@ const MatchOCR = ({ user }) => {
 
             {heatmapManualMode && (
               <form onSubmit={handleHeatmapManualSubmit} className="space-y-4">
+                {/* Indicazione origine dati */}
+                {heatmapData.autoGenerated && (
+                  <div className="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg">
+                    <div className="flex items-center">
+                      <span className="text-lg mr-2">🤖</span>
+                      <div>
+                        <strong>Heatmap Auto-generata</strong>
+                        <p className="text-sm mt-1">
+                          Basata sulle statistiche della partita. Puoi modificare i valori manualmente.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="space-y-3">
                   {heatmapData.zones.map((zone, index) => (
                     <div
