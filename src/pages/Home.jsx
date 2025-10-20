@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import EmptyState from '../components/ui/EmptyState';
 import Button from '../components/ui/Button';
+import { getFirestore, collection, doc, getDoc, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import {
   Trophy,
   TrendingUp,
@@ -16,12 +18,49 @@ const Home = ({ user, onPageChange }) => {
   console.log('🏠 Home component rendering with user:', user?.email);
 
   const [summary, setSummary] = useState(null);
+  const [heroData, setHeroData] = useState({
+    ultimaPartita: null,
+    statoRosa: null,
+    consiglioIA: null,
+    warning: null
+  });
   const [routineState, setRoutineState] = useState({
     running: false,
     remainingSec: 0,
   });
   const [coachNote, setCoachNote] = useState('');
   const [showSnackbar, setShowSnackbar] = useState(false);
+
+  // Carica dati Hero Section
+  useEffect(() => {
+    loadHeroData();
+  }, []);
+
+  async function loadHeroData() {
+    const auth = getAuth();
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
+
+    const db = getFirestore();
+
+    try {
+      // Carica ultimo OCR (ultima partita)
+      const ocrRef = doc(db, `matches/${userId}/ocr/latest`);
+      const ocrSnap = await getDoc(ocrRef);
+      const ultimaPartita = ocrSnap.exists() ? ocrSnap.data() : null;
+
+      console.log('✅ Dati Hero caricati:', { ultimaPartita });
+      
+      setHeroData({
+        ultimaPartita,
+        statoRosa: { rating: 85, giocatori: 11 }, // TODO: caricare da DB
+        consiglioIA: { preview: 'Migliora il possesso palla' }, // TODO: caricare da DB
+        warning: null
+      });
+    } catch (error) {
+      console.error('❌ Errore caricamento Hero:', error);
+    }
+  }
 
   // Simula dati calcistici per eFootball
   useEffect(() => {
@@ -121,6 +160,63 @@ const Home = ({ user, onPageChange }) => {
 
   return (
     <div>
+      {/* Hero Section KPI */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Card Ultima Partita */}
+        <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:shadow-lg transition cursor-pointer">
+          <h3 className="text-xl font-bold mb-3 text-white">⚽ Ultima Partita</h3>
+          <p className="text-gray-400">
+            {heroData.ultimaPartita?.status === 'done' 
+              ? `Testo rilevato: ${heroData.ultimaPartita.text?.substring(0, 50)}...`
+              : 'Nessuna partita'}
+          </p>
+          <button 
+            onClick={() => onPageChange('matchocr')}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Vedi Dettagli
+          </button>
+        </div>
+
+        {/* Card Stato Rosa */}
+        <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:shadow-lg transition cursor-pointer">
+          <h3 className="text-xl font-bold mb-3 text-white">👥 Stato Rosa</h3>
+          <p className="text-gray-400">
+            {heroData.statoRosa 
+              ? `Rating: ${heroData.statoRosa.rating}, Giocatori: ${heroData.statoRosa.giocatori}`
+              : 'Caricamento...'}
+          </p>
+          <button 
+            onClick={() => onPageChange('rosa')}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Gestisci Rosa
+          </button>
+        </div>
+
+        {/* Card Consiglio IA */}
+        <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:shadow-lg transition cursor-pointer">
+          <h3 className="text-xl font-bold mb-3 text-white">🤖 Ultimo Consiglio IA</h3>
+          <p className="text-gray-400">
+            {heroData.consiglioIA?.preview || 'Nessun consiglio'}
+          </p>
+          <button 
+            onClick={() => onPageChange('statistiche')}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Vedi Report
+          </button>
+        </div>
+
+        {/* Card Warning */}
+        <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:shadow-lg transition cursor-pointer">
+          <h3 className="text-xl font-bold mb-3 text-white">⚠️ Warning/Trend</h3>
+          <p className="text-gray-400">
+            {heroData.warning || 'Tutto ok'}
+          </p>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="home-header">
         <div>
