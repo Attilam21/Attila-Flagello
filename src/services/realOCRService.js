@@ -76,8 +76,10 @@ class RealOCRService {
     if (lowerText.includes('formation') || lowerText.includes('tactics') || lowerText.includes('lineup')) {
       return 'formation_2d';
     }
-    if (lowerText.includes('shooting') || lowerText.includes('passing') || lowerText.includes('dribbling')) {
-      return 'player_stats';
+    if (lowerText.includes('shooting') || lowerText.includes('passing') || lowerText.includes('dribbling') || 
+        lowerText.includes('comportamento offensivo') || lowerText.includes('controllo palla') ||
+        lowerText.includes('finalizzazione') || lowerText.includes('velocità') || lowerText.includes('accelerazione')) {
+      return 'player_profile';
     }
     if (lowerText.includes('possession') || lowerText.includes('shots') || lowerText.includes('match')) {
       return 'match_stats';
@@ -86,7 +88,7 @@ class RealOCRService {
       return 'heatmap';
     }
     
-    return 'unknown';
+    return 'player_profile'; // Default per profili giocatori
   }
 
   parseTextToStructuredData(text, imageType) {
@@ -95,6 +97,8 @@ class RealOCRService {
     switch (imageType) {
       case 'formation_2d':
         return this.parseFormation2D(lines);
+      case 'player_profile':
+        return this.parsePlayerProfile(lines);
       case 'player_stats':
         return this.parsePlayerStats(lines);
       case 'match_stats':
@@ -131,6 +135,114 @@ class RealOCRService {
       type: 'formation_2d',
       formation: formation,
       players: players,
+      rawText: text,
+      confidence: 0.85
+    };
+  }
+
+  parsePlayerProfile(lines) {
+    const playerData = {
+      playerName: null,
+      rating: null,
+      position: null,
+      age: null,
+      nationality: null,
+      team: null,
+      stats: {},
+      abilities: [],
+      aiPlayStyles: [],
+      physical: {},
+      boosters: [],
+      form: null,
+      preferredFoot: null,
+      weakFootFrequency: null,
+      weakFootAccuracy: null,
+      injuryResistance: null
+    };
+
+    lines.forEach(line => {
+      const trimmedLine = line.trim();
+      
+      // Nome giocatore (linea principale)
+      if (trimmedLine.match(/^[A-Za-z\s]+$/) && !trimmedLine.includes(':') && trimmedLine.length > 3) {
+        playerData.playerName = trimmedLine;
+      }
+      
+      // Rating e posizione (es. "95 CLD", "98 DC")
+      const ratingMatch = trimmedLine.match(/(\d+)\s+([A-Z]{2,3})/);
+      if (ratingMatch) {
+        playerData.rating = parseInt(ratingMatch[1]);
+        playerData.position = ratingMatch[2];
+      }
+      
+      // Età
+      const ageMatch = trimmedLine.match(/età[:\s]*(\d+)/i);
+      if (ageMatch) {
+        playerData.age = parseInt(ageMatch[1]);
+      }
+      
+      // Altezza
+      const heightMatch = trimmedLine.match(/altezza[:\s]*(\d+)\s*cm/i);
+      if (heightMatch) {
+        playerData.physical.height = parseInt(heightMatch[1]);
+      }
+      
+      // Peso
+      const weightMatch = trimmedLine.match(/peso[:\s]*(\d+)\s*kg/i);
+      if (weightMatch) {
+        playerData.physical.weight = parseInt(weightMatch[1]);
+      }
+      
+      // Statistiche numeriche
+      const statMatch = trimmedLine.match(/([A-Za-z\s]+):\s*(\d+)/);
+      if (statMatch) {
+        const statName = statMatch[1].trim().toLowerCase();
+        const value = parseInt(statMatch[2]);
+        
+        // Mappa le statistiche
+        if (statName.includes('comportamento offensivo')) playerData.stats.offensiveAwareness = value;
+        else if (statName.includes('controllo palla')) playerData.stats.ballControl = value;
+        else if (statName.includes('dribbling')) playerData.stats.dribbling = value;
+        else if (statName.includes('finalizzazione')) playerData.stats.finishing = value;
+        else if (statName.includes('velocità')) playerData.stats.speed = value;
+        else if (statName.includes('accelerazione')) playerData.stats.acceleration = value;
+        else if (statName.includes('passaggio')) playerData.stats.passing = value;
+        else if (statName.includes('contrasto')) playerData.stats.tackling = value;
+        else if (statName.includes('resistenza')) playerData.stats.stamina = value;
+        else if (statName.includes('salto')) playerData.stats.jumping = value;
+        else if (statName.includes('forza')) playerData.stats.physical = value;
+      }
+      
+      // Abilità speciali
+      const abilityKeywords = ['elastico', 'sombrero', 'tiro a salire', 'passaggio calibrato', 'cross calibrato', 
+                              'rabona', 'marcatore', 'scivolata', 'disimpegno acrobatico', 'spirito combattivo'];
+      abilityKeywords.forEach(ability => {
+        if (trimmedLine.toLowerCase().includes(ability)) {
+          playerData.abilities.push(ability);
+        }
+      });
+      
+      // Stili di gioco IA
+      const playstyleKeywords = ['treno in corsa', 'crossatore', 'regista creativo', 'terzino offensivo'];
+      playstyleKeywords.forEach(playstyle => {
+        if (trimmedLine.toLowerCase().includes(playstyle)) {
+          playerData.aiPlayStyles.push(playstyle);
+        }
+      });
+      
+      // Booster
+      const boosterMatch = trimmedLine.match(/booster[:\s]*([^:]+)[:\s]*effetto[:\s]*([+-]?\d+)/i);
+      if (boosterMatch) {
+        playerData.boosters.push({
+          name: boosterMatch[1].trim(),
+          effect: boosterMatch[2].trim()
+        });
+      }
+    });
+    
+    return {
+      type: 'player_profile',
+      ...playerData,
       rawText: text,
       confidence: 0.85
     };

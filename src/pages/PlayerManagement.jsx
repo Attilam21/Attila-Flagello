@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PlayerProfile from '../components/PlayerProfile';
 import FormationBuilder from '../components/FormationBuilder';
 import PlayerEditForm from '../components/PlayerEditForm';
+import { realOCRService } from '../services/realOCRService';
+import { Camera, Upload, CheckCircle, AlertCircle } from 'lucide-react';
 
 const PlayerManagement = ({ user }) => {
   const [players, setPlayers] = useState([]);
@@ -11,6 +13,12 @@ const PlayerManagement = ({ user }) => {
   const [filterPosition, setFilterPosition] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
   const [viewMode, setViewMode] = useState('list'); // 'list', 'profile', 'formation'
+  
+  // OCR States
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState(null);
+  const [ocrResult, setOcrResult] = useState(null);
+  const [showOCRModal, setShowOCRModal] = useState(false);
 
   // Carica giocatori esistenti
   useEffect(() => {
@@ -243,6 +251,242 @@ const PlayerManagement = ({ user }) => {
       transform: 'translateY(-2px)',
       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
     },
+
+    // OCR Styles
+    uploadSection: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+    },
+
+    modalOverlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000,
+    },
+
+    modalContent: {
+      backgroundColor: 'white',
+      borderRadius: '1rem',
+      padding: '2rem',
+      maxWidth: '600px',
+      width: '90%',
+      maxHeight: '80vh',
+      overflow: 'auto',
+      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+    },
+
+    modalHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '1.5rem',
+      borderBottom: '1px solid #E5E7EB',
+      paddingBottom: '1rem',
+    },
+
+    modalTitle: {
+      fontSize: '1.5rem',
+      fontWeight: 'bold',
+      color: '#1F2937',
+      margin: 0,
+    },
+
+    closeButton: {
+      backgroundColor: 'transparent',
+      border: 'none',
+      fontSize: '1.5rem',
+      cursor: 'pointer',
+      color: '#6B7280',
+      padding: '0.5rem',
+      borderRadius: '0.5rem',
+    },
+
+    ocrResults: {
+      marginBottom: '1.5rem',
+    },
+
+    ocrSection: {
+      marginBottom: '1.5rem',
+    },
+
+    ocrSectionTitle: {
+      fontSize: '1.125rem',
+      fontWeight: 'bold',
+      color: '#1F2937',
+      marginBottom: '0.75rem',
+    },
+
+    ocrData: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+      gap: '0.75rem',
+    },
+
+    ocrItem: {
+      padding: '0.75rem',
+      backgroundColor: '#F9FAFB',
+      borderRadius: '0.5rem',
+      border: '1px solid #E5E7EB',
+    },
+
+    statsGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+      gap: '0.5rem',
+    },
+
+    statItem: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: '0.5rem',
+      backgroundColor: '#F3F4F6',
+      borderRadius: '0.375rem',
+    },
+
+    statLabel: {
+      fontWeight: '500',
+      color: '#374151',
+    },
+
+    statValue: {
+      fontWeight: 'bold',
+      color: '#1F2937',
+    },
+
+    abilitiesList: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '0.5rem',
+    },
+
+    abilityTag: {
+      backgroundColor: '#DBEAFE',
+      color: '#1E40AF',
+      padding: '0.25rem 0.75rem',
+      borderRadius: '1rem',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+    },
+
+    modalActions: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      gap: '1rem',
+      borderTop: '1px solid #E5E7EB',
+      paddingTop: '1rem',
+    },
+
+    cancelButton: {
+      backgroundColor: '#F3F4F6',
+      color: '#374151',
+      padding: '0.75rem 1.5rem',
+      borderRadius: '0.5rem',
+      border: 'none',
+      fontWeight: '500',
+      cursor: 'pointer',
+    },
+
+    confirmButton: {
+      backgroundColor: '#10B981',
+      color: 'white',
+      padding: '0.75rem 1.5rem',
+      borderRadius: '0.5rem',
+      border: 'none',
+      fontWeight: '500',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+    },
+
+    statusOverlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000,
+    },
+
+    statusContent: {
+      backgroundColor: 'white',
+      borderRadius: '1rem',
+      padding: '2rem',
+      textAlign: 'center',
+      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+    },
+
+    loadingSpinner: {
+      width: '40px',
+      height: '40px',
+      border: '4px solid #E5E7EB',
+      borderTop: '4px solid #10B981',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+      margin: '0 auto 1rem',
+    },
+
+    statusText: {
+      fontSize: '1.125rem',
+      color: '#374151',
+      margin: 0,
+    },
+
+    errorOverlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000,
+    },
+
+    errorContent: {
+      backgroundColor: 'white',
+      borderRadius: '1rem',
+      padding: '2rem',
+      textAlign: 'center',
+      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+      maxWidth: '400px',
+    },
+
+    errorTitle: {
+      fontSize: '1.25rem',
+      fontWeight: 'bold',
+      color: '#1F2937',
+      margin: '1rem 0 0.5rem',
+    },
+
+    errorText: {
+      color: '#6B7280',
+      marginBottom: '1.5rem',
+    },
+
+    retryButton: {
+      backgroundColor: '#EF4444',
+      color: 'white',
+      padding: '0.75rem 1.5rem',
+      borderRadius: '0.5rem',
+      border: 'none',
+      fontWeight: '500',
+      cursor: 'pointer',
+    },
     playerHeader: {
       display: 'flex',
       justifyContent: 'space-between',
@@ -388,6 +632,68 @@ const PlayerManagement = ({ user }) => {
     setSelectedPlayer(null);
   };
 
+  // OCR Functions
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadStatus('processing');
+    setOcrResult(null);
+
+    try {
+      console.log('🔍 Processing player image with OCR...');
+      const result = await realOCRService.processImage(file);
+      
+      setOcrResult(result);
+      setUploadStatus('success');
+      setShowOCRModal(true);
+      
+      console.log('✅ OCR completed:', result);
+    } catch (error) {
+      console.error('❌ OCR failed:', error);
+      setUploadStatus('error');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleAddPlayerFromOCR = () => {
+    if (!ocrResult) return;
+
+    // Converte i dati OCR in formato giocatore
+    const newPlayer = {
+      id: Date.now(),
+      name: ocrResult.playerName || 'Giocatore Sconosciuto',
+      position: ocrResult.position || 'Unknown',
+      rating: ocrResult.rating || 0,
+      age: ocrResult.age || 25,
+      nationality: ocrResult.nationality || 'Unknown',
+      team: ocrResult.team || 'Unknown',
+      stats: ocrResult.stats || {},
+      abilities: ocrResult.abilities || [],
+      aiPlayStyles: ocrResult.aiPlayStyles || [],
+      build: ocrResult.build || 'Standard',
+      buildDescription: ocrResult.buildDescription || '',
+      buildEfficiency: ocrResult.buildEfficiency || 0,
+      boosters: ocrResult.boosters || [],
+      physical: ocrResult.physical || {},
+      form: ocrResult.form || 'B',
+      preferredFoot: ocrResult.preferredFoot || 'Right',
+      weakFootFrequency: ocrResult.weakFootFrequency || 'Occasionally',
+      weakFootAccuracy: ocrResult.weakFootAccuracy || 'High',
+      injuryResistance: ocrResult.injuryResistance || 'Medium',
+      alternativePositions: ocrResult.alternativePositions || []
+    };
+
+    setPlayers(prev => [...prev, newPlayer]);
+    setShowOCRModal(false);
+    setOcrResult(null);
+    setUploadStatus(null);
+    
+    console.log('✅ Player added from OCR:', newPlayer);
+  };
+
   return (
     <div style={styles.container}>
       {/* Header */}
@@ -430,11 +736,36 @@ const PlayerManagement = ({ user }) => {
           <option value="name">Nome</option>
         </select>
         
+        <div style={styles.uploadSection}>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ display: 'none' }}
+            id="player-image-upload"
+          />
+          <label
+            htmlFor="player-image-upload"
+            style={{
+              ...styles.addButton,
+              backgroundColor: '#10B981',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              cursor: isUploading ? 'not-allowed' : 'pointer',
+              opacity: isUploading ? 0.7 : 1
+            }}
+          >
+            <Camera size={20} />
+            {isUploading ? '⏳ Analizzando...' : '📸 Carica Screenshot Giocatore'}
+          </label>
+        </div>
+        
         <button
           style={styles.addButton}
           onClick={handleAddPlayer}
         >
-          ➕ Aggiungi Giocatore
+          ➕ Aggiungi Giocatore Manuale
         </button>
         
         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -622,6 +953,120 @@ const PlayerManagement = ({ user }) => {
           onSave={handleSavePlayer}
           onCancel={handleCancelEdit}
         />
+      )}
+
+      {/* OCR Results Modal */}
+      {showOCRModal && ocrResult && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <div style={styles.modalHeader}>
+              <h2 style={styles.modalTitle}>🔍 Risultato OCR Giocatore</h2>
+              <button
+                onClick={() => setShowOCRModal(false)}
+                style={styles.closeButton}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div style={styles.ocrResults}>
+              <div style={styles.ocrSection}>
+                <h3 style={styles.ocrSectionTitle}>📊 Dati Estratti:</h3>
+                <div style={styles.ocrData}>
+                  <div style={styles.ocrItem}>
+                    <strong>Nome:</strong> {ocrResult.playerName || 'N/A'}
+                  </div>
+                  <div style={styles.ocrItem}>
+                    <strong>Rating:</strong> {ocrResult.rating || 'N/A'}
+                  </div>
+                  <div style={styles.ocrItem}>
+                    <strong>Posizione:</strong> {ocrResult.position || 'N/A'}
+                  </div>
+                  <div style={styles.ocrItem}>
+                    <strong>Età:</strong> {ocrResult.age || 'N/A'}
+                  </div>
+                  <div style={styles.ocrItem}>
+                    <strong>Nazionalità:</strong> {ocrResult.nationality || 'N/A'}
+                  </div>
+                  <div style={styles.ocrItem}>
+                    <strong>Squadra:</strong> {ocrResult.team || 'N/A'}
+                  </div>
+                </div>
+              </div>
+
+              {ocrResult.stats && Object.keys(ocrResult.stats).length > 0 && (
+                <div style={styles.ocrSection}>
+                  <h3 style={styles.ocrSectionTitle}>⚽ Statistiche:</h3>
+                  <div style={styles.statsGrid}>
+                    {Object.entries(ocrResult.stats).map(([key, value]) => (
+                      <div key={key} style={styles.statItem}>
+                        <span style={styles.statLabel}>{key}:</span>
+                        <span style={styles.statValue}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {ocrResult.abilities && ocrResult.abilities.length > 0 && (
+                <div style={styles.ocrSection}>
+                  <h3 style={styles.ocrSectionTitle}>🎯 Abilità:</h3>
+                  <div style={styles.abilitiesList}>
+                    {ocrResult.abilities.map((ability, index) => (
+                      <span key={index} style={styles.abilityTag}>
+                        {ability}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div style={styles.modalActions}>
+              <button
+                onClick={() => setShowOCRModal(false)}
+                style={styles.cancelButton}
+              >
+                Annulla
+              </button>
+              <button
+                onClick={handleAddPlayerFromOCR}
+                style={styles.confirmButton}
+              >
+                <CheckCircle size={20} />
+                Aggiungi Giocatore
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Status */}
+      {uploadStatus === 'processing' && (
+        <div style={styles.statusOverlay}>
+          <div style={styles.statusContent}>
+            <div style={styles.loadingSpinner}></div>
+            <p style={styles.statusText}>🔍 Analizzando screenshot giocatore...</p>
+          </div>
+        </div>
+      )}
+
+      {uploadStatus === 'error' && (
+        <div style={styles.errorOverlay}>
+          <div style={styles.errorContent}>
+            <AlertCircle size={48} style={{ color: '#EF4444' }} />
+            <h3 style={styles.errorTitle}>Errore OCR</h3>
+            <p style={styles.errorText}>
+              Non è stato possibile analizzare l'immagine. Riprova con un'immagine più chiara.
+            </p>
+            <button
+              onClick={() => setUploadStatus(null)}
+              style={styles.retryButton}
+            >
+              Riprova
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
