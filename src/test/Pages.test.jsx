@@ -50,7 +50,7 @@ describe('Pages', () => {
 
   it('renders MatchOCR page', () => {
     render(<MatchOCR user={mockUser} />);
-    expect(screen.getByText(/carica screenshot/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/carica statistica/i)[0]).toBeInTheDocument();
   });
 
   it('renders Statistiche page', () => {

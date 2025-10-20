@@ -42,10 +42,10 @@ describe('Advanced OCR Integration', () => {
     render(<MatchOCR user={mockUser} />);
 
     expect(
-      screen.getByText('📸 Carica Screenshot Tabellino')
+      screen.getByText('📸 Carica Statistica Partita')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('✍️ Inserimento Manuale Statistiche Partita')
+      screen.getAllByText('Modalità Manuale: OFF')[0]
     ).toBeInTheDocument();
   });
 
@@ -53,10 +53,10 @@ describe('Advanced OCR Integration', () => {
     render(<MatchOCR user={mockUser} />);
 
     expect(
-      screen.getByText('📸 Carica Screenshot Tabellino')
+      screen.getByText('📸 Carica Statistica Partita')
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Seleziona un'immagine (JPG, PNG)")
+      screen.getByText('📸 Carica Statistica Partita')
     ).toBeInTheDocument();
   });
 });

@@ -1,18 +1,7 @@
 import { useState, useEffect } from 'react';
-import {
-  uploadMatchImage,
-  listenToOCRResults,
-  saveMatchStats,
-  listenToMatchHistory,
-} from '../services/firebaseClient';
-import { getFirestore, collection, addDoc, doc, setDoc } from 'firebase/firestore';
+import { listenToMatchHistory } from '../services/firebaseClient';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import PlayerCard from '../components/PlayerCard';
-import MatchStats from '../components/MatchStats';
-import Formation2D from '../components/Formation2D';
-import PlayerStatsAdvanced from '../components/PlayerStatsAdvanced';
-import TeamAnalysis from '../components/TeamAnalysis';
-import OCRDebug from '../components/OCRDebug';
 
 const MatchOCR = ({ user }) => {
   // === SEZIONE A: STATISTICA PARTITA ===
@@ -68,9 +57,6 @@ const MatchOCR = ({ user }) => {
 
   // === STATI COMUNI ===
   const [history, setHistory] = useState([]);
-  const [ocrStatus, setOcrStatus] = useState(null);
-  const [ocrText, setOcrText] = useState('');
-  const [ocrError, setOcrError] = useState(null);
 
   // === FUNZIONI SEZIONE A: STATISTICA PARTITA ===
   const updateStatisticaStat = (statKey, side, value) => {
@@ -86,7 +72,7 @@ const MatchOCR = ({ user }) => {
     }));
   };
 
-  const handleStatisticaFileChange = (e) => {
+  const handleStatisticaFileChange = e => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setStatisticaFile(selectedFile);
@@ -98,18 +84,21 @@ const MatchOCR = ({ user }) => {
 
   const handleStatisticaUpload = async () => {
     if (!statisticaFile || !user?.uid) return;
-    
+
     setStatisticaUploading(true);
     try {
       const db = getFirestore();
       const storage = getStorage();
       const timestamp = Date.now();
-      
+
       // Upload immagine
-      const imageRef = ref(storage, `matches/${user.uid}/statisticaPartita/${timestamp}.png`);
+      const imageRef = ref(
+        storage,
+        `matches/${user.uid}/statisticaPartita/${timestamp}.png`
+      );
       await uploadBytes(imageRef, statisticaFile);
       const downloadURL = await getDownloadURL(imageRef);
-      
+
       // Salva metadati su Firestore
       await addDoc(collection(db, `matches/${user.uid}/statisticaPartita`), {
         imageURL: downloadURL,
@@ -118,7 +107,7 @@ const MatchOCR = ({ user }) => {
         status: 'uploaded',
         createdAt: new Date(),
       });
-      
+
       console.log('✅ Statistica partita salvata');
     } catch (error) {
       console.error('❌ Errore upload statistica:', error);
@@ -127,14 +116,14 @@ const MatchOCR = ({ user }) => {
     }
   };
 
-  const handleStatisticaManualSubmit = async (e) => {
+  const handleStatisticaManualSubmit = async e => {
     e.preventDefault();
     if (!user?.uid) return;
-    
+
     try {
       const db = getFirestore();
       const timestamp = Date.now();
-      
+
       await addDoc(collection(db, `matches/${user.uid}/statisticaPartita`), {
         ...statisticaData,
         timestamp,
@@ -142,7 +131,7 @@ const MatchOCR = ({ user }) => {
         status: 'manual',
         createdAt: new Date(),
       });
-      
+
       console.log('✅ Statistica partita manuale salvata');
     } catch (error) {
       console.error('❌ Errore salvataggio statistica:', error);
@@ -155,16 +144,16 @@ const MatchOCR = ({ user }) => {
   };
 
   const updateVotoGiocatore = (index, field, value) => {
-    setVotiData(prev => prev.map((voto, i) => 
-      i === index ? { ...voto, [field]: value } : voto
-    ));
+    setVotiData(prev =>
+      prev.map((voto, i) => (i === index ? { ...voto, [field]: value } : voto))
+    );
   };
 
-  const removeVotoGiocatore = (index) => {
+  const removeVotoGiocatore = index => {
     setVotiData(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleVotiFileChange = (e) => {
+  const handleVotiFileChange = e => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setVotiFile(selectedFile);
@@ -176,18 +165,21 @@ const MatchOCR = ({ user }) => {
 
   const handleVotiUpload = async () => {
     if (!votiFile || !user?.uid) return;
-    
+
     setVotiUploading(true);
     try {
       const db = getFirestore();
       const storage = getStorage();
       const timestamp = Date.now();
-      
+
       // Upload immagine
-      const imageRef = ref(storage, `matches/${user.uid}/votiGiocatori/${timestamp}.png`);
+      const imageRef = ref(
+        storage,
+        `matches/${user.uid}/votiGiocatori/${timestamp}.png`
+      );
       await uploadBytes(imageRef, votiFile);
       const downloadURL = await getDownloadURL(imageRef);
-      
+
       // Salva metadati su Firestore
       await addDoc(collection(db, `matches/${user.uid}/votiGiocatori`), {
         imageURL: downloadURL,
@@ -196,7 +188,7 @@ const MatchOCR = ({ user }) => {
         status: 'uploaded',
         createdAt: new Date(),
       });
-      
+
       console.log('✅ Voti giocatori salvati');
     } catch (error) {
       console.error('❌ Errore upload voti:', error);
@@ -205,14 +197,14 @@ const MatchOCR = ({ user }) => {
     }
   };
 
-  const handleVotiManualSubmit = async (e) => {
+  const handleVotiManualSubmit = async e => {
     e.preventDefault();
     if (!user?.uid) return;
-    
+
     try {
       const db = getFirestore();
       const timestamp = Date.now();
-      
+
       await addDoc(collection(db, `matches/${user.uid}/votiGiocatori`), {
         voti: votiData,
         timestamp,
@@ -220,7 +212,7 @@ const MatchOCR = ({ user }) => {
         status: 'manual',
         createdAt: new Date(),
       });
-      
+
       console.log('✅ Voti giocatori manuali salvati');
     } catch (error) {
       console.error('❌ Errore salvataggio voti:', error);
@@ -231,13 +223,13 @@ const MatchOCR = ({ user }) => {
   const updateHeatmapZone = (index, percentage) => {
     setHeatmapData(prev => ({
       ...prev,
-      zones: prev.zones.map((zone, i) => 
+      zones: prev.zones.map((zone, i) =>
         i === index ? { ...zone, percentage: Number(percentage) } : zone
       ),
     }));
   };
 
-  const handleHeatmapFileChange = (e) => {
+  const handleHeatmapFileChange = e => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setHeatmapFile(selectedFile);
@@ -249,18 +241,21 @@ const MatchOCR = ({ user }) => {
 
   const handleHeatmapUpload = async () => {
     if (!heatmapFile || !user?.uid) return;
-    
+
     setHeatmapUploading(true);
     try {
       const db = getFirestore();
       const storage = getStorage();
       const timestamp = Date.now();
-      
+
       // Upload immagine
-      const imageRef = ref(storage, `matches/${user.uid}/heatmap/${timestamp}.png`);
+      const imageRef = ref(
+        storage,
+        `matches/${user.uid}/heatmap/${timestamp}.png`
+      );
       await uploadBytes(imageRef, heatmapFile);
       const downloadURL = await getDownloadURL(imageRef);
-      
+
       // Salva metadati su Firestore
       await addDoc(collection(db, `matches/${user.uid}/heatmap`), {
         imageURL: downloadURL,
@@ -269,7 +264,7 @@ const MatchOCR = ({ user }) => {
         status: 'uploaded',
         createdAt: new Date(),
       });
-      
+
       console.log('✅ Heatmap salvata');
     } catch (error) {
       console.error('❌ Errore upload heatmap:', error);
@@ -278,14 +273,14 @@ const MatchOCR = ({ user }) => {
     }
   };
 
-  const handleHeatmapManualSubmit = async (e) => {
+  const handleHeatmapManualSubmit = async e => {
     e.preventDefault();
     if (!user?.uid) return;
-    
+
     try {
       const db = getFirestore();
       const timestamp = Date.now();
-      
+
       await addDoc(collection(db, `matches/${user.uid}/heatmap`), {
         ...heatmapData,
         timestamp,
@@ -293,7 +288,7 @@ const MatchOCR = ({ user }) => {
         status: 'manual',
         createdAt: new Date(),
       });
-      
+
       console.log('✅ Heatmap manuale salvata');
     } catch (error) {
       console.error('❌ Errore salvataggio heatmap:', error);
@@ -306,10 +301,13 @@ const MatchOCR = ({ user }) => {
       { name: 'Centrale', percentage: Math.floor(Math.random() * 30) + 20 },
       { name: 'Sinistra', percentage: Math.floor(Math.random() * 20) + 10 },
       { name: 'Destra', percentage: Math.floor(Math.random() * 20) + 10 },
-      { name: 'Area di rigore', percentage: Math.floor(Math.random() * 15) + 5 },
+      {
+        name: 'Area di rigore',
+        percentage: Math.floor(Math.random() * 15) + 5,
+      },
       { name: 'Centrocampo', percentage: Math.floor(Math.random() * 25) + 15 },
     ];
-    
+
     setHeatmapData(prev => ({
       ...prev,
       zones: autoZones,
@@ -320,12 +318,13 @@ const MatchOCR = ({ user }) => {
   // === USEEFFECT ===
   useEffect(() => {
     if (!user?.uid) return;
-    const unsubscribe = listenToMatchHistory(user.uid, items => setHistory(items));
+    const unsubscribe = listenToMatchHistory(user.uid, items =>
+      setHistory(items)
+    );
     return () => {
       if (typeof unsubscribe === 'function') unsubscribe();
     };
   }, [user]);
-
 
   if (!user) {
     return (
@@ -347,7 +346,9 @@ const MatchOCR = ({ user }) => {
         <div className="p-6">
           {/* Upload OCR */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Carica Statistica Partita</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Carica Statistica Partita
+            </h3>
             <input
               type="file"
               accept="image/*"
@@ -357,7 +358,8 @@ const MatchOCR = ({ user }) => {
             {statisticaFile && (
               <div className="mb-4">
                 <p className="text-sm text-gray-400 mb-2">
-                  📁 {statisticaFile.name} ({(statisticaFile.size / 1024 / 1024).toFixed(2)} MB)
+                  📁 {statisticaFile.name} (
+                  {(statisticaFile.size / 1024 / 1024).toFixed(2)} MB)
                 </p>
                 {statisticaPreview && (
                   <div className="max-w-xs max-h-48 border border-gray-600 rounded-lg overflow-hidden">
@@ -375,7 +377,9 @@ const MatchOCR = ({ user }) => {
               disabled={!statisticaFile || statisticaUploading}
               className="btn btn-primary"
             >
-              {statisticaUploading ? '⏳ Caricamento...' : '📸 Carica Statistica Partita'}
+              {statisticaUploading
+                ? '⏳ Caricamento...'
+                : '📸 Carica Statistica Partita'}
             </button>
           </div>
 
@@ -388,24 +392,39 @@ const MatchOCR = ({ user }) => {
                   statisticaManualMode ? 'bg-green-600' : 'bg-gray-600'
                 } text-white`}
               >
-                {statisticaManualMode ? 'Modalità Manuale: ON' : 'Modalità Manuale: OFF'}
+                {statisticaManualMode
+                  ? 'Modalità Manuale: ON'
+                  : 'Modalità Manuale: OFF'}
               </button>
             </div>
 
             {statisticaManualMode && (
-              <form onSubmit={handleStatisticaManualSubmit} className="space-y-4">
+              <form
+                onSubmit={handleStatisticaManualSubmit}
+                className="space-y-4"
+              >
                 <div className="grid grid-cols-2 gap-4">
                   <input
                     className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
                     placeholder="Squadra Casa"
                     value={statisticaData.homeTeam}
-                    onChange={e => setStatisticaData(prev => ({ ...prev, homeTeam: e.target.value }))}
+                    onChange={e =>
+                      setStatisticaData(prev => ({
+                        ...prev,
+                        homeTeam: e.target.value,
+                      }))
+                    }
                   />
                   <input
                     className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
                     placeholder="Squadra Trasferta"
                     value={statisticaData.awayTeam}
-                    onChange={e => setStatisticaData(prev => ({ ...prev, awayTeam: e.target.value }))}
+                    onChange={e =>
+                      setStatisticaData(prev => ({
+                        ...prev,
+                        awayTeam: e.target.value,
+                      }))
+                    }
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
@@ -414,30 +433,58 @@ const MatchOCR = ({ user }) => {
                     className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
                     placeholder="Gol Casa"
                     value={statisticaData.homeScore}
-                    onChange={e => setStatisticaData(prev => ({ ...prev, homeScore: Number(e.target.value) }))}
+                    onChange={e =>
+                      setStatisticaData(prev => ({
+                        ...prev,
+                        homeScore: Number(e.target.value),
+                      }))
+                    }
                   />
                   <input
                     type="number"
                     className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
                     placeholder="Gol Trasferta"
                     value={statisticaData.awayScore}
-                    onChange={e => setStatisticaData(prev => ({ ...prev, awayScore: Number(e.target.value) }))}
+                    onChange={e =>
+                      setStatisticaData(prev => ({
+                        ...prev,
+                        awayScore: Number(e.target.value),
+                      }))
+                    }
                   />
                   <input
                     type="date"
                     className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
                     value={statisticaData.date}
-                    onChange={e => setStatisticaData(prev => ({ ...prev, date: e.target.value }))}
+                    onChange={e =>
+                      setStatisticaData(prev => ({
+                        ...prev,
+                        date: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
                 {/* Statistiche */}
                 {[
-                  'possession', 'totalShots', 'shotsOnTarget', 'fouls', 'offsides', 
-                  'corners', 'freeKicks', 'passes', 'successfulPasses', 'crosses', 
-                  'interceptedPasses', 'tackles', 'saves'
+                  'possession',
+                  'totalShots',
+                  'shotsOnTarget',
+                  'fouls',
+                  'offsides',
+                  'corners',
+                  'freeKicks',
+                  'passes',
+                  'successfulPasses',
+                  'crosses',
+                  'interceptedPasses',
+                  'tackles',
+                  'saves',
                 ].map(key => (
-                  <div key={key} className="grid grid-cols-3 gap-4 items-center">
+                  <div
+                    key={key}
+                    className="grid grid-cols-3 gap-4 items-center"
+                  >
                     <div className="text-gray-300 text-sm font-medium">
                       {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
                     </div>
@@ -446,14 +493,18 @@ const MatchOCR = ({ user }) => {
                       className="w-full p-2 bg-gray-800 text-white border border-gray-600 rounded-lg text-sm"
                       placeholder={`${key} casa`}
                       value={statisticaData.teamStats[key].home}
-                      onChange={e => updateStatisticaStat(key, 'home', e.target.value)}
+                      onChange={e =>
+                        updateStatisticaStat(key, 'home', e.target.value)
+                      }
                     />
                     <input
                       type="number"
                       className="w-full p-2 bg-gray-800 text-white border border-gray-600 rounded-lg text-sm"
                       placeholder={`${key} trasf.`}
                       value={statisticaData.teamStats[key].away}
-                      onChange={e => updateStatisticaStat(key, 'away', e.target.value)}
+                      onChange={e =>
+                        updateStatisticaStat(key, 'away', e.target.value)
+                      }
                     />
                   </div>
                 ))}
@@ -464,25 +515,30 @@ const MatchOCR = ({ user }) => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setStatisticaData({
-                      homeTeam: '', awayTeam: '', homeScore: 0, awayScore: 0,
-                      date: new Date().toISOString().split('T')[0],
-                      teamStats: {
-                        possession: { home: 50, away: 50 },
-                        totalShots: { home: 0, away: 0 },
-                        shotsOnTarget: { home: 0, away: 0 },
-                        fouls: { home: 0, away: 0 },
-                        offsides: { home: 0, away: 0 },
-                        corners: { home: 0, away: 0 },
-                        freeKicks: { home: 0, away: 0 },
-                        passes: { home: 0, away: 0 },
-                        successfulPasses: { home: 0, away: 0 },
-                        crosses: { home: 0, away: 0 },
-                        interceptedPasses: { home: 0, away: 0 },
-                        tackles: { home: 0, away: 0 },
-                        saves: { home: 0, away: 0 },
-                      },
-                    })}
+                    onClick={() =>
+                      setStatisticaData({
+                        homeTeam: '',
+                        awayTeam: '',
+                        homeScore: 0,
+                        awayScore: 0,
+                        date: new Date().toISOString().split('T')[0],
+                        teamStats: {
+                          possession: { home: 50, away: 50 },
+                          totalShots: { home: 0, away: 0 },
+                          shotsOnTarget: { home: 0, away: 0 },
+                          fouls: { home: 0, away: 0 },
+                          offsides: { home: 0, away: 0 },
+                          corners: { home: 0, away: 0 },
+                          freeKicks: { home: 0, away: 0 },
+                          passes: { home: 0, away: 0 },
+                          successfulPasses: { home: 0, away: 0 },
+                          crosses: { home: 0, away: 0 },
+                          interceptedPasses: { home: 0, away: 0 },
+                          tackles: { home: 0, away: 0 },
+                          saves: { home: 0, away: 0 },
+                        },
+                      })
+                    }
                     className="btn btn-secondary flex-1"
                   >
                     ♻️ Resetta
@@ -502,7 +558,9 @@ const MatchOCR = ({ user }) => {
         <div className="p-6">
           {/* Upload OCR */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Carica Voti Partita</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Carica Voti Partita
+            </h3>
             <input
               type="file"
               accept="image/*"
@@ -512,7 +570,8 @@ const MatchOCR = ({ user }) => {
             {votiFile && (
               <div className="mb-4">
                 <p className="text-sm text-gray-400 mb-2">
-                  📁 {votiFile.name} ({(votiFile.size / 1024 / 1024).toFixed(2)} MB)
+                  📁 {votiFile.name} ({(votiFile.size / 1024 / 1024).toFixed(2)}{' '}
+                  MB)
                 </p>
                 {votiPreview && (
                   <div className="max-w-xs max-h-48 border border-gray-600 rounded-lg overflow-hidden">
@@ -543,7 +602,9 @@ const MatchOCR = ({ user }) => {
                   votiManualMode ? 'bg-green-600' : 'bg-gray-600'
                 } text-white`}
               >
-                {votiManualMode ? 'Modalità Manuale: ON' : 'Modalità Manuale: OFF'}
+                {votiManualMode
+                  ? 'Modalità Manuale: ON'
+                  : 'Modalità Manuale: OFF'}
               </button>
             </div>
 
@@ -561,18 +622,25 @@ const MatchOCR = ({ user }) => {
                 </div>
 
                 {votiData.map((voto, index) => (
-                  <div key={index} className="grid grid-cols-4 gap-4 items-center p-3 bg-gray-800 rounded-lg">
+                  <div
+                    key={index}
+                    className="grid grid-cols-4 gap-4 items-center p-3 bg-gray-800 rounded-lg"
+                  >
                     <input
                       className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-lg text-sm"
                       placeholder="Nome Giocatore"
                       value={voto.name}
-                      onChange={e => updateVotoGiocatore(index, 'name', e.target.value)}
+                      onChange={e =>
+                        updateVotoGiocatore(index, 'name', e.target.value)
+                      }
                     />
                     <input
                       className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-lg text-sm"
                       placeholder="Ruolo"
                       value={voto.role}
-                      onChange={e => updateVotoGiocatore(index, 'role', e.target.value)}
+                      onChange={e =>
+                        updateVotoGiocatore(index, 'role', e.target.value)
+                      }
                     />
                     <input
                       type="number"
@@ -582,7 +650,13 @@ const MatchOCR = ({ user }) => {
                       className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-lg text-sm"
                       placeholder="Voto"
                       value={voto.rating}
-                      onChange={e => updateVotoGiocatore(index, 'rating', Number(e.target.value))}
+                      onChange={e =>
+                        updateVotoGiocatore(
+                          index,
+                          'rating',
+                          Number(e.target.value)
+                        )
+                      }
                     />
                     <button
                       type="button"
@@ -620,7 +694,9 @@ const MatchOCR = ({ user }) => {
         <div className="p-6">
           {/* Upload OCR */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Carica Mappa di Calore (Opzionale)</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Carica Mappa di Calore (Opzionale)
+            </h3>
             <input
               type="file"
               accept="image/*"
@@ -630,7 +706,8 @@ const MatchOCR = ({ user }) => {
             {heatmapFile && (
               <div className="mb-4">
                 <p className="text-sm text-gray-400 mb-2">
-                  📁 {heatmapFile.name} ({(heatmapFile.size / 1024 / 1024).toFixed(2)} MB)
+                  📁 {heatmapFile.name} (
+                  {(heatmapFile.size / 1024 / 1024).toFixed(2)} MB)
                 </p>
                 {heatmapPreview && (
                   <div className="max-w-xs max-h-48 border border-gray-600 rounded-lg overflow-hidden">
@@ -648,7 +725,9 @@ const MatchOCR = ({ user }) => {
               disabled={!heatmapFile || heatmapUploading}
               className="btn btn-primary"
             >
-              {heatmapUploading ? '⏳ Caricamento...' : '📸 Carica Mappa di Calore'}
+              {heatmapUploading
+                ? '⏳ Caricamento...'
+                : '📸 Carica Mappa di Calore'}
             </button>
           </div>
 
@@ -661,7 +740,9 @@ const MatchOCR = ({ user }) => {
                   heatmapManualMode ? 'bg-green-600' : 'bg-gray-600'
                 } text-white`}
               >
-                {heatmapManualMode ? 'Modalità Manuale: ON' : 'Modalità Manuale: OFF'}
+                {heatmapManualMode
+                  ? 'Modalità Manuale: ON'
+                  : 'Modalità Manuale: OFF'}
               </button>
             </div>
 
@@ -669,7 +750,10 @@ const MatchOCR = ({ user }) => {
               <form onSubmit={handleHeatmapManualSubmit} className="space-y-4">
                 <div className="space-y-3">
                   {heatmapData.zones.map((zone, index) => (
-                    <div key={index} className="grid grid-cols-2 gap-4 items-center p-3 bg-gray-800 rounded-lg">
+                    <div
+                      key={index}
+                      className="grid grid-cols-2 gap-4 items-center p-3 bg-gray-800 rounded-lg"
+                    >
                       <div className="text-white font-medium">{zone.name}</div>
                       <div className="flex items-center gap-2">
                         <input
@@ -679,7 +763,9 @@ const MatchOCR = ({ user }) => {
                           className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-lg text-sm"
                           placeholder="Percentuale"
                           value={zone.percentage}
-                          onChange={e => updateHeatmapZone(index, e.target.value)}
+                          onChange={e =>
+                            updateHeatmapZone(index, e.target.value)
+                          }
                         />
                         <span className="text-gray-400 text-sm">%</span>
                       </div>
@@ -700,11 +786,16 @@ const MatchOCR = ({ user }) => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setHeatmapData(prev => ({
-                      ...prev,
-                      zones: prev.zones.map(zone => ({ ...zone, percentage: 0 })),
-                      autoGenerated: false,
-                    }))}
+                    onClick={() =>
+                      setHeatmapData(prev => ({
+                        ...prev,
+                        zones: prev.zones.map(zone => ({
+                          ...zone,
+                          percentage: 0,
+                        })),
+                        autoGenerated: false,
+                      }))
+                    }
                     className="btn btn-secondary flex-1"
                   >
                     ♻️ Resetta
@@ -728,15 +819,20 @@ const MatchOCR = ({ user }) => {
             <div className="space-y-4">
               <ul className="divide-y divide-gray-700">
                 {history.map(h => (
-                  <li key={h.id} className="py-3 flex items-center justify-between">
+                  <li
+                    key={h.id}
+                    className="py-3 flex items-center justify-between"
+                  >
                     <div className="text-white">
-                      <span className="font-semibold">{h.homeTeam || 'Home'}</span>{' '}
+                      <span className="font-semibold">
+                        {h.homeTeam || 'Home'}
+                      </span>{' '}
                       {h.homeScore || '-'} - {h.awayScore || '-'}{' '}
-                      <span className="font-semibold">{h.awayTeam || 'Away'}</span>
+                      <span className="font-semibold">
+                        {h.awayTeam || 'Away'}
+                      </span>
                     </div>
-                    <button className="btn btn-primary text-sm">
-                      Apri
-                    </button>
+                    <button className="btn btn-primary text-sm">Apri</button>
                   </li>
                 ))}
               </ul>
@@ -746,9 +842,6 @@ const MatchOCR = ({ user }) => {
       </div>
     </div>
   );
-
-
-
 };
 
 export default MatchOCR;

@@ -29,10 +29,10 @@ describe('MatchOCR', () => {
     render(<MatchOCR user={mockUser} />);
 
     expect(
-      screen.getByText('📸 Carica Screenshot Tabellino')
+      screen.getByText('📸 Carica Statistica Partita')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('✍️ Inserimento Manuale Statistiche Partita')
+      screen.getAllByText('Modalità Manuale: OFF')[0]
     ).toBeInTheDocument();
   });
 
@@ -40,7 +40,7 @@ describe('MatchOCR', () => {
     render(<MatchOCR user={mockUser} />);
 
     expect(
-      screen.getByText('✍️ Inserimento Manuale Statistiche Partita')
+      screen.getAllByText('Modalità Manuale: OFF')[0]
     ).toBeInTheDocument();
   });
 });
