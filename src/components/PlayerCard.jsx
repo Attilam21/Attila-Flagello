@@ -107,18 +107,18 @@ const PlayerCard = ({ player, showDetails = false }) => {
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Altezza:</span>
             <span className="text-white">
-              {player.physical?.height || player.height} cm
+              {player.physical?.height || 180} cm
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Peso:</span>
             <span className="text-white">
-              {player.physical?.weight || player.weight} kg
+              {player.physical?.weight || 75} kg
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Età:</span>
-            <span className="text-white">{player.age}</span>
+            <span className="text-white">{player.age || 25}</span>
           </div>
 
           {/* Abilità */}
