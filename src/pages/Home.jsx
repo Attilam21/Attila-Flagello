@@ -224,9 +224,7 @@ const Home = ({ user, onPageChange }) => {
             <h3 className="card-title">⚠️ Warning/Trend</h3>
           </div>
           <div style={{ padding: '16px' }}>
-            <p style={{ color: '#9CA3AF' }}>
-              {heroData.warning || 'Tutto ok'}
-            </p>
+            <p style={{ color: '#9CA3AF' }}>{heroData.warning || 'Tutto ok'}</p>
           </div>
         </div>
       </div>
