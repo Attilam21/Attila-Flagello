@@ -10,6 +10,7 @@ import PlayerProfile from '../components/PlayerProfile';
 import FormationBuilder from '../components/FormationBuilder';
 import PlayerEditForm from '../components/PlayerEditForm';
 import AdvancedPlayerSearch from '../components/AdvancedPlayerSearch';
+import CompletePlayerEditor from '../components/CompletePlayerEditor';
 import { realOCRService } from '../services/realOCRService';
 import { Camera, Upload, CheckCircle, AlertCircle, Database, Plus } from 'lucide-react';
 
@@ -32,6 +33,10 @@ const PlayerManagement = ({ user }) => {
 
   // Database States
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  
+  // Editor States
+  const [showCompleteEditor, setShowCompleteEditor] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState(null);
 
   // Live players from Firestore
   useEffect(() => {
@@ -799,6 +804,30 @@ const PlayerManagement = ({ user }) => {
     }
   };
 
+  // Editor functions
+  const handleEditPlayer = (player) => {
+    setEditingPlayer(player);
+    setShowCompleteEditor(true);
+  };
+
+  const handleSaveEditedPlayer = async (editedPlayer) => {
+    if (!user) return;
+
+    try {
+      await updatePlayer(user.uid, editedPlayer.id, editedPlayer);
+      setShowCompleteEditor(false);
+      setEditingPlayer(null);
+      console.log('✅ Giocatore modificato:', editedPlayer.name);
+    } catch (error) {
+      console.error('❌ Errore modifica giocatore:', error);
+    }
+  };
+
+  const handleCloseEditor = () => {
+    setShowCompleteEditor(false);
+    setEditingPlayer(null);
+  };
+
   return (
     <div style={styles.container}>
       {/* Header */}
@@ -1078,6 +1107,42 @@ const PlayerManagement = ({ user }) => {
                     </div>
                   ))}
               </div>
+
+              {/* Edit Button */}
+              <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditPlayer(player);
+                  }}
+                  style={{
+                    ...styles.button,
+                    backgroundColor: '#3B82F6',
+                    color: '#fff',
+                    fontSize: '0.75rem',
+                    padding: '0.5rem 1rem',
+                    flex: 1
+                  }}
+                >
+                  ✏️ Modifica
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeletePlayer(player.id);
+                  }}
+                  style={{
+                    ...styles.button,
+                    backgroundColor: '#EF4444',
+                    color: '#fff',
+                    fontSize: '0.75rem',
+                    padding: '0.5rem 1rem',
+                    flex: 1
+                  }}
+                >
+                  🗑️ Elimina
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -1348,6 +1413,16 @@ const PlayerManagement = ({ user }) => {
           isOpen={showAdvancedSearch}
           onPlayerSelect={handleAdvancedPlayerSelect}
           onClose={() => setShowAdvancedSearch(false)}
+        />
+      )}
+
+      {/* Complete Player Editor Modal */}
+      {showCompleteEditor && (
+        <CompletePlayerEditor
+          player={editingPlayer}
+          onSave={handleSaveEditedPlayer}
+          onClose={handleCloseEditor}
+          isOpen={showCompleteEditor}
         />
       )}
     </div>
