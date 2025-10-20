@@ -6,9 +6,7 @@ import {
   saveMatchStats,
   listenToMatchHistory,
 } from '../services/firebaseClient';
-import { ocrService } from '../services/ocrService';
-import { advancedOCRService } from '../services/advancedOCRService';
-import { realOCRService } from '../services/realOCRService';
+// OCR now handled by Google Vision via Cloud Function triggered on Storage upload
 import PlayerCard from '../components/PlayerCard';
 import MatchStats from '../components/MatchStats';
 import Formation2D from '../components/Formation2D';
@@ -205,39 +203,38 @@ const MatchOCR = ({ user }) => {
   };
 
   const handleAnalyzeImage = async () => {
-    if (!file) return;
-
-    setOcrStatus('processing');
-    setOcrError(null);
-
+    if (!file || !user?.uid) return;
+    // New flow: upload to Storage, Cloud Function runs Vision OCR, we listen via Firestore
     try {
-      console.log('🔍 Starting OCR analysis...');
+      setOcrStatus('processing');
+      setOcrError(null);
+      setOcrText('Invio immagine al server OCR...');
 
-      // In test, usa il servizio OCR avanzato mockato per evitare Tesseract e I/O
-      const isTestEnv =
-        import.meta?.env?.MODE === 'test' ||
-        (typeof process !== 'undefined' &&
-          (process.env?.VITEST || process.env?.NODE_ENV === 'test'));
-      let result;
-      if (isTestEnv) {
-        console.log('🧪 Test mode detected - using advancedOCRService mock');
-        result = await advancedOCRService.processImageWithTesseract(file);
-      } else {
-        // Analizza l'immagine con il servizio OCR REALE
-        console.log('🔍 Using REAL OCR service...');
-        result = await realOCRService.processImage(file);
-      }
-      setAnalyzedData(result);
+      await uploadMatchImage(file, user.uid);
 
-      // Determina il tipo di immagine
-      const detectedType = result && result.type ? result.type : 'unknown';
-      setImageType(detectedType);
+      // Attach a one-off listener to capture the latest Vision OCR result
+      const unsub = listenToOCRResults(user.uid, result => {
+        if (!result) return;
+        setOcrStatus(result.status || 'processing');
+        setOcrText(result.text || '');
+        setOcrError(result.error || null);
 
-      setOcrStatus('done');
-      console.log('✅ OCR analysis completed:', result);
+        // Basic type detection from text for now
+        const detectedType = (result.text || '')
+          .toLowerCase()
+          .includes('possesso')
+          ? 'match_stats'
+          : 'unknown';
+        setImageType(detectedType);
+
+        // Provide a minimal structured payload to the UI when we only have text
+        setAnalyzedData({ type: detectedType, rawText: result.text || '' });
+
+        if (typeof unsub === 'function') unsub();
+      });
     } catch (error) {
-      console.error('❌ OCR analysis failed:', error);
-      setOcrError(error.message);
+      console.error('❌ OCR dispatch failed:', error);
+      setOcrError(error.message || "Errore durante l'invio al servizio OCR");
       setOcrStatus('error');
     }
   };
@@ -280,32 +277,15 @@ const MatchOCR = ({ user }) => {
       const downloadURL = await Promise.race([uploadPromise, uploadTimeout]);
       console.log('✅ Image uploaded to Firebase:', downloadURL);
 
-      // Poi processa con OCR avanzato con timeout ridotto
-      const ocrPromise = advancedOCRService.processImageWithTesseract(file);
-      const ocrTimeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('OCR timeout')), 10000)
-      );
-
-      const ocrResult = await Promise.race([ocrPromise, ocrTimeout]);
-      setAnalyzedData(ocrResult);
-
-      const detectedType = ocrResult.type || 'unknown';
-      setImageType(detectedType);
+      // Dopo upload, lascia che la Cloud Function Vision faccia OCR e ascolta Firestore
+      // Qui non blocchiamo: lo stream arriverà via listenToOCRResults
 
       const uploadTime = Date.now() - startTime;
       console.log(`✅ Upload and OCR completed in ${uploadTime}ms`);
 
       clearTimeout(timeoutId);
-      setOcrStatus('done');
-      setOcrText('Analisi completata con successo!');
-
-      if ((ocrResult.type || detectedType) === 'match_stats' && user?.uid) {
-        try {
-          await saveMatchStats(user.uid, ocrResult);
-        } catch (e) {
-          console.warn('saveMatchStats failed', e);
-        }
-      }
+      setOcrStatus('processing');
+      setOcrText('Immagine caricata. Analisi Vision in corso...');
 
       // Log telemetria success
       console.log('📊 OCR upload success:', {
