@@ -12,6 +12,11 @@ const mockPlayers = [
     age: 24,
     height: 178,
     weight: 73,
+    physical: {
+      height: 178,
+      weight: 73,
+      preferredFoot: 'Right'
+    },
     weakFoot: 4,
     form: 'A',
     injuryResistance: 2,
@@ -59,6 +64,11 @@ const mockPlayers = [
     age: 36,
     height: 170,
     weight: 72,
+    physical: {
+      height: 170,
+      weight: 72,
+      preferredFoot: 'Left'
+    },
     weakFoot: 4,
     form: 'A',
     injuryResistance: 1,
@@ -106,6 +116,11 @@ const mockPlayers = [
     age: 23,
     height: 194,
     weight: 88,
+    physical: {
+      height: 194,
+      weight: 88,
+      preferredFoot: 'Right'
+    },
     weakFoot: 3,
     form: 'A',
     injuryResistance: 2,
@@ -257,6 +272,11 @@ export const convertDatabasePlayer = dbPlayer => {
     age: dbPlayer.age || 25,
     height: dbPlayer.height || 180,
     weight: dbPlayer.weight || 70,
+    physical: {
+      height: dbPlayer.height || 180,
+      weight: dbPlayer.weight || 70,
+      preferredFoot: dbPlayer.preferredFoot || 'Right'
+    },
     weakFoot: dbPlayer.weakFoot || 2,
     form: dbPlayer.form || 'B',
     injuryResistance: dbPlayer.injuryResistance || 1,
