@@ -57,6 +57,15 @@ function App() {
   }, []);
 
   const handleLogin = useCallback(() => {
+    // Optimistic: set user immediately if already available
+    try {
+      const current = auth.currentUser;
+      if (current) {
+        setUser(current);
+      }
+    } catch (e) {
+      console.warn('Auth currentUser not available yet');
+    }
     setCurrentPage('home');
   }, []);
 
