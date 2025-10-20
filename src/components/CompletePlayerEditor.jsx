@@ -144,6 +144,23 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
     }
   };
 
+  const handleAddSkill = (type) => {
+    const skillName = prompt(`Inserisci il nome dell'abilità ${type === 'skills' ? 'giocatore' : 'comunicazione'}:`);
+    if (skillName && skillName.trim()) {
+      setEditedPlayer(prev => ({
+        ...prev,
+        [type]: [...prev[type], skillName.trim()]
+      }));
+    }
+  };
+
+  const handleRemoveSkill = (type, index) => {
+    setEditedPlayer(prev => ({
+      ...prev,
+      [type]: prev[type].filter((_, i) => i !== index)
+    }));
+  };
+
   const getStatColor = value => {
     if (value >= 90) return '#10B981'; // Verde
     if (value >= 80) return '#3B82F6'; // Blu
@@ -663,24 +680,102 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
                 Abilità e Competenze
               </h3>
               <div>
-                <h4 style={{ color: '#ccc', marginBottom: '0.5rem' }}>
-                  Abilità Giocatore
-                </h4>
-                {editedPlayer.skills.map((skill, index) => (
-                  <span key={index} style={styles.skillTag}>
-                    {skill}
-                  </span>
-                ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <h4 style={{ color: '#ccc', margin: 0 }}>
+                    Abilità Giocatore
+                  </h4>
+                  <button 
+                    onClick={() => handleAddSkill('skills')}
+                    style={{
+                      backgroundColor: '#3B82F6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '0.25rem 0.5rem',
+                      fontSize: '0.75rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    + Aggiungi
+                  </button>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {editedPlayer.skills.map((skill, index) => (
+                    <span key={index} style={{...styles.skillTag, position: 'relative'}}>
+                      {skill}
+                      <button
+                        onClick={() => handleRemoveSkill('skills', index)}
+                        style={{
+                          position: 'absolute',
+                          top: '-5px',
+                          right: '-5px',
+                          backgroundColor: '#EF4444',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '16px',
+                          height: '16px',
+                          fontSize: '10px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
               </div>
               <div style={{ marginTop: '1rem' }}>
-                <h4 style={{ color: '#ccc', marginBottom: '0.5rem' }}>
-                  Abilità di Comunicazione
-                </h4>
-                {editedPlayer.communicationSkills.map((skill, index) => (
-                  <span key={index} style={styles.skillTag}>
-                    {skill}
-                  </span>
-                ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <h4 style={{ color: '#ccc', margin: 0 }}>
+                    Abilità di Comunicazione
+                  </h4>
+                  <button 
+                    onClick={() => handleAddSkill('communicationSkills')}
+                    style={{
+                      backgroundColor: '#3B82F6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '0.25rem 0.5rem',
+                      fontSize: '0.75rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    + Aggiungi
+                  </button>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {editedPlayer.communicationSkills.map((skill, index) => (
+                    <span key={index} style={{...styles.skillTag, position: 'relative'}}>
+                      {skill}
+                      <button
+                        onClick={() => handleRemoveSkill('communicationSkills', index)}
+                        style={{
+                          position: 'absolute',
+                          top: '-5px',
+                          right: '-5px',
+                          backgroundColor: '#EF4444',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '16px',
+                          height: '16px',
+                          fontSize: '10px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

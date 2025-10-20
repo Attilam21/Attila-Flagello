@@ -424,11 +424,23 @@ const PlayerManagement = ({ user }) => {
   const handleSaveEditedPlayer = async editedPlayer => {
     if (!user) return;
     try {
-      await updatePlayer(user.uid, editedPlayer.id, editedPlayer);
+      console.log('🎯 Saving player:', editedPlayer);
+      
+      if (editedPlayer.id) {
+        // Giocatore esistente - aggiorna
+        console.log('🔄 Updating existing player:', editedPlayer.id);
+        await updatePlayer(user.uid, editedPlayer.id, editedPlayer);
+      } else {
+        // Nuovo giocatore - aggiungi
+        console.log('➕ Adding new player');
+        await addPlayer(user.uid, editedPlayer);
+      }
+      
       setShowCompleteEditor(false);
       setEditingPlayer(null);
+      console.log('✅ Player saved successfully');
     } catch (error) {
-      console.error('❌ Error updating player:', error);
+      console.error('❌ Error saving player:', error);
     }
   };
 
