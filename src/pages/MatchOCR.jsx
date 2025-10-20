@@ -569,163 +569,314 @@ const MatchOCR = ({ user }) => {
             </div>
 
             {statisticaManualMode && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                <form onSubmit={handleStatisticaManualSubmit} className="space-y-6">
-                  {/* Informazioni Partita */}
-                  <div className="border-b border-gray-200 pb-4">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Informazioni Partita</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Squadra Casa</label>
-                        <input
-                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.statistica?.homeTeam 
-                              ? 'border-red-300 bg-red-50' 
-                              : 'border-gray-300 bg-white'
-                          }`}
-                          placeholder="Es. Real Madrid"
-                          value={statisticaData.homeTeam}
-                          onChange={e =>
-                            setStatisticaData(prev => ({
-                              ...prev,
-                              homeTeam: e.target.value,
-                            }))
-                          }
-                        />
-                        {errors.statistica?.homeTeam && (
-                          <p className="text-red-600 text-sm mt-1">{errors.statistica.homeTeam}</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Squadra Trasferta</label>
-                        <input
-                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.statistica?.awayTeam 
-                              ? 'border-red-300 bg-red-50' 
-                              : 'border-gray-300 bg-white'
-                          }`}
-                          placeholder="Es. Barcelona"
-                          value={statisticaData.awayTeam}
-                          onChange={e =>
-                            setStatisticaData(prev => ({
-                              ...prev,
-                              awayTeam: e.target.value,
-                            }))
-                          }
-                        />
-                        {errors.statistica?.awayTeam && (
-                          <p className="text-red-600 text-sm mt-1">{errors.statistica.awayTeam}</p>
-                        )}
-                      </div>
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 p-8 shadow-xl">
+                <form onSubmit={handleStatisticaManualSubmit} className="space-y-8">
+                  {/* Header Section */}
+                  <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                      <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                      </svg>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Gol Casa</label>
-                        <input
-                          type="number"
-                          min="0"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                          placeholder="0"
-                          value={statisticaData.homeScore}
-                          onChange={e =>
-                            setStatisticaData(prev => ({
-                              ...prev,
-                              homeScore: Number(e.target.value),
-                            }))
-                          }
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Gol Trasferta</label>
-                        <input
-                          type="number"
-                          min="0"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                          placeholder="0"
-                          value={statisticaData.awayScore}
-                          onChange={e =>
-                            setStatisticaData(prev => ({
-                              ...prev,
-                              awayScore: Number(e.target.value),
-                            }))
-                          }
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Data Partita</label>
-                        <input
-                          type="date"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                          value={statisticaData.date}
-                          onChange={e =>
-                            setStatisticaData(prev => ({
-                              ...prev,
-                              date: e.target.value,
-                            }))
-                          }
-                        />
-                      </div>
-                    </div>
+                    <h3 className="text-2xl font-bold text-slate-800 mb-2">Informazioni Partita</h3>
+                    <p className="text-slate-600">Inserisci i dettagli della partita e le statistiche</p>
                   </div>
-                  {/* Statistiche Partita */}
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Statistiche Partita</h4>
-                    <div className="space-y-4">
-                      {[
-                        { key: 'possession', label: 'Possesso Palla', suffix: '%' },
-                        { key: 'totalShots', label: 'Tiri Totali' },
-                        { key: 'shotsOnTarget', label: 'Tiri in Porta' },
-                        { key: 'fouls', label: 'Falli' },
-                        { key: 'offsides', label: 'Fuorigioco' },
-                        { key: 'corners', label: 'Calci d\'Angolo' },
-                        { key: 'freeKicks', label: 'Calci di Punizione' },
-                        { key: 'passes', label: 'Passaggi' },
-                        { key: 'successfulPasses', label: 'Passaggi Riusciti' },
-                        { key: 'crosses', label: 'Cross' },
-                        { key: 'interceptedPasses', label: 'Intercetti' },
-                        { key: 'tackles', label: 'Tackle' },
-                        { key: 'saves', label: 'Parate' },
-                      ].map(stat => (
-                        <div key={stat.key} className="grid grid-cols-3 gap-4 items-center">
-                          <div className="text-sm font-medium text-gray-700">
-                            {stat.label}
+
+                  {/* Match Info Card */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                    <h4 className="text-lg font-semibold text-slate-800 mb-6 flex items-center">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      Dettagli Partita
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Squadra Casa</label>
+                          <div className="relative">
+                            <input
+                              className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-100 ${
+                                errors.statistica?.homeTeam 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-100' 
+                                  : 'border-slate-200 bg-white focus:border-blue-400'
+                              }`}
+                              placeholder="Es. Real Madrid"
+                              value={statisticaData.homeTeam}
+                              onChange={e =>
+                                setStatisticaData(prev => ({
+                                  ...prev,
+                                  homeTeam: e.target.value,
+                                }))
+                              }
+                            />
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                              </svg>
+                            </div>
                           </div>
+                          {errors.statistica?.homeTeam && (
+                            <p className="text-red-600 text-sm mt-2 flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
+                              </svg>
+                              {errors.statistica.homeTeam}
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Squadra Trasferta</label>
+                          <div className="relative">
+                            <input
+                              className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-100 ${
+                                errors.statistica?.awayTeam 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-100' 
+                                  : 'border-slate-200 bg-white focus:border-blue-400'
+                              }`}
+                              placeholder="Es. Barcelona"
+                              value={statisticaData.awayTeam}
+                              onChange={e =>
+                                setStatisticaData(prev => ({
+                                  ...prev,
+                                  awayTeam: e.target.value,
+                                }))
+                              }
+                            />
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                              </svg>
+                            </div>
+                          </div>
+                          {errors.statistica?.awayTeam && (
+                            <p className="text-red-600 text-sm mt-2 flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
+                              </svg>
+                              {errors.statistica.awayTeam}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
                           <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">Gol Casa</label>
                             <input
                               type="number"
                               min="0"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+                              className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 bg-white transition-all duration-200"
                               placeholder="0"
-                              value={statisticaData.teamStats[stat.key].home}
+                              value={statisticaData.homeScore}
                               onChange={e =>
-                                updateStatisticaStat(stat.key, 'home', e.target.value)
+                                setStatisticaData(prev => ({
+                                  ...prev,
+                                  homeScore: Number(e.target.value),
+                                }))
                               }
                             />
                           </div>
                           <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">Gol Trasferta</label>
                             <input
                               type="number"
                               min="0"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+                              className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 bg-white transition-all duration-200"
                               placeholder="0"
-                              value={statisticaData.teamStats[stat.key].away}
+                              value={statisticaData.awayScore}
                               onChange={e =>
-                                updateStatisticaStat(stat.key, 'away', e.target.value)
+                                setStatisticaData(prev => ({
+                                  ...prev,
+                                  awayScore: Number(e.target.value),
+                                }))
                               }
                             />
                           </div>
                         </div>
-                      ))}
+                        
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Data Partita</label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 bg-white transition-all duration-200"
+                              value={statisticaData.date}
+                              onChange={e =>
+                                setStatisticaData(prev => ({
+                                  ...prev,
+                                  date: e.target.value,
+                                }))
+                              }
+                            />
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Statistics Card */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                    <h4 className="text-lg font-semibold text-slate-800 mb-6 flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      Statistiche Partita
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Home Team Stats */}
+                      <div className="space-y-4">
+                        <div className="flex items-center mb-4">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                          <h5 className="font-semibold text-slate-700">Squadra Casa</h5>
+                        </div>
+                        <div className="space-y-3">
+                          {[
+                            { key: 'possession', label: 'Possesso Palla', suffix: '%', icon: '⚽' },
+                            { key: 'totalShots', label: 'Tiri Totali', icon: '🎯' },
+                            { key: 'shotsOnTarget', label: 'Tiri in Porta', icon: '🥅' },
+                            { key: 'fouls', label: 'Falli', icon: '⚠️' },
+                            { key: 'offsides', label: 'Fuorigioco', icon: '🚫' },
+                            { key: 'corners', label: 'Calci d\'Angolo', icon: '📐' },
+                            { key: 'freeKicks', label: 'Calci di Punizione', icon: '⚡' },
+                          ].map(stat => (
+                            <div key={stat.key} className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <span className="text-lg mr-2">{stat.icon}</span>
+                                <span className="text-sm font-medium text-slate-600">{stat.label}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max={stat.key === 'possession' ? 100 : undefined}
+                                  className="w-20 px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 bg-white text-center transition-all duration-200"
+                                  placeholder="0"
+                                  value={statisticaData.teamStats[stat.key].home}
+                                  onChange={e =>
+                                    updateStatisticaStat(stat.key, 'home', e.target.value)
+                                  }
+                                />
+                                {stat.suffix && <span className="text-xs text-slate-500 ml-1">{stat.suffix}</span>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Away Team Stats */}
+                      <div className="space-y-4">
+                        <div className="flex items-center mb-4">
+                          <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                          <h5 className="font-semibold text-slate-700">Squadra Trasferta</h5>
+                        </div>
+                        <div className="space-y-3">
+                          {[
+                            { key: 'possession', label: 'Possesso Palla', suffix: '%', icon: '⚽' },
+                            { key: 'totalShots', label: 'Tiri Totali', icon: '🎯' },
+                            { key: 'shotsOnTarget', label: 'Tiri in Porta', icon: '🥅' },
+                            { key: 'fouls', label: 'Falli', icon: '⚠️' },
+                            { key: 'offsides', label: 'Fuorigioco', icon: '🚫' },
+                            { key: 'corners', label: 'Calci d\'Angolo', icon: '📐' },
+                            { key: 'freeKicks', label: 'Calci di Punizione', icon: '⚡' },
+                          ].map(stat => (
+                            <div key={stat.key} className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <span className="text-lg mr-2">{stat.icon}</span>
+                                <span className="text-sm font-medium text-slate-600">{stat.label}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max={stat.key === 'possession' ? 100 : undefined}
+                                  className="w-20 px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-400 bg-white text-center transition-all duration-200"
+                                  placeholder="0"
+                                  value={statisticaData.teamStats[stat.key].away}
+                                  onChange={e =>
+                                    updateStatisticaStat(stat.key, 'away', e.target.value)
+                                  }
+                                />
+                                {stat.suffix && <span className="text-xs text-slate-500 ml-1">{stat.suffix}</span>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Additional Stats */}
+                    <div className="mt-6 pt-6 border-t border-slate-200">
+                      <h5 className="font-semibold text-slate-700 mb-4 flex items-center">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                        Statistiche Avanzate
+                      </h5>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                          { key: 'passes', label: 'Passaggi', icon: '🔄' },
+                          { key: 'successfulPasses', label: 'Passaggi Riusciti', icon: '✅' },
+                          { key: 'crosses', label: 'Cross', icon: '↗️' },
+                          { key: 'interceptedPasses', label: 'Intercetti', icon: '🛡️' },
+                          { key: 'tackles', label: 'Tackle', icon: '⚔️' },
+                          { key: 'saves', label: 'Parate', icon: '🧤' },
+                        ].map(stat => (
+                          <div key={stat.key} className="bg-slate-50 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center">
+                                <span className="text-lg mr-2">{stat.icon}</span>
+                                <span className="text-sm font-medium text-slate-600">{stat.label}</span>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-slate-500 mb-1">Casa</label>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 bg-white text-sm transition-all duration-200"
+                                  placeholder="0"
+                                  value={statisticaData.teamStats[stat.key].home}
+                                  onChange={e =>
+                                    updateStatisticaStat(stat.key, 'home', e.target.value)
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs text-slate-500 mb-1">Trasferta</label>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-400 bg-white text-sm transition-all duration-200"
+                                  placeholder="0"
+                                  value={statisticaData.teamStats[stat.key].away}
+                                  onChange={e =>
+                                    updateStatisticaStat(stat.key, 'away', e.target.value)
+                                  }
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Bottoni Azione */}
-                  <div className="flex gap-3 pt-4 border-t border-gray-200">
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 pt-6">
                     <button 
                       type="submit" 
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-100 transform hover:scale-105"
                     >
-                      💾 Salva Statistiche
+                      <div className="flex items-center justify-center">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Salva Statistiche
+                      </div>
                     </button>
                     <button
                       type="button"
@@ -753,9 +904,14 @@ const MatchOCR = ({ user }) => {
                           },
                         })
                       }
-                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      className="flex-1 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-slate-100 transform hover:scale-105"
                     >
-                      🔄 Resetta
+                      <div className="flex items-center justify-center">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Resetta Form
+                      </div>
                     </button>
                   </div>
                 </form>
