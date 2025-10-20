@@ -142,7 +142,7 @@ function App() {
     switch (currentPage) {
       case 'home':
         console.log('🏠 Rendering Home page');
-        return <Home user={user} />;
+        return <Home user={user} onPageChange={handlePageChange} />;
       case 'dashboard':
         console.log('📊 Rendering Advanced Dashboard page');
         return (
@@ -165,7 +165,7 @@ function App() {
         return <OpponentAnalysis user={user} />;
       default:
         console.log('🏠 Rendering default Home page');
-        return <Home user={user} />;
+        return <Home user={user} onPageChange={handlePageChange} />;
     }
   };
 

@@ -12,7 +12,7 @@ import {
   Zap,
 } from 'lucide-react';
 
-const Home = ({ user }) => {
+const Home = ({ user, onPageChange }) => {
   console.log('🏠 Home component rendering with user:', user?.email);
 
   const [summary, setSummary] = useState(null);
@@ -82,6 +82,24 @@ const Home = ({ user }) => {
   const stopRoutine = useCallback(() => {
     setRoutineState({ running: false, remainingSec: 0 });
   }, []);
+
+  const handleNavigateToRosa = () => {
+    if (onPageChange) {
+      onPageChange('rosa');
+    }
+  };
+
+  const handleNavigateToAnalisi = () => {
+    if (onPageChange) {
+      onPageChange('matchocr');
+    }
+  };
+
+  const handleNavigateToStatistiche = () => {
+    if (onPageChange) {
+      onPageChange('statistiche');
+    }
+  };
 
   if (!summary) {
     return (
@@ -230,9 +248,9 @@ const Home = ({ user }) => {
             personalizzati.
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary">🎯 Analizza Partita</button>
-            <button className="btn btn-secondary">📊 Statistiche IA</button>
-            <button className="btn btn-secondary">💡 Consigli Tattici</button>
+            <button onClick={handleNavigateToAnalisi} className="btn btn-primary">🎯 Analizza Partita</button>
+            <button onClick={handleNavigateToStatistiche} className="btn btn-secondary">📊 Statistiche IA</button>
+            <button onClick={handleNavigateToStatistiche} className="btn btn-secondary">💡 Consigli Tattici</button>
           </div>
         </div>
       </div>
@@ -248,11 +266,11 @@ const Home = ({ user }) => {
             precompilati.
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary">➕ Aggiungi Giocatore</button>
-            <button className="btn btn-secondary">
+            <button onClick={handleNavigateToRosa} className="btn btn-primary">➕ Aggiungi Giocatore</button>
+            <button onClick={handleNavigateToRosa} className="btn btn-secondary">
               📸 Carica da Screenshot
             </button>
-            <button className="btn btn-secondary">⚙️ Editor Formazione</button>
+            <button onClick={handleNavigateToRosa} className="btn btn-secondary">⚙️ Editor Formazione</button>
           </div>
         </div>
       </div>
