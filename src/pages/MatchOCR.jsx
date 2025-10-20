@@ -560,16 +560,17 @@ const MatchOCR = ({ user }) => {
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           <button
             onClick={handleAnalyzeImage}
             disabled={!file || ocrStatus === 'processing'}
-            className="flex-1 px-4 py-2 rounded-lg text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-full text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
             style={{
               background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
               boxShadow:
                 '0 8px 16px rgba(5, 150, 105, 0.24), inset 0 1px 0 rgba(255,255,255,0.08)',
               transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              minWidth: '190px',
             }}
           >
             {ocrStatus === 'processing'
@@ -580,12 +581,13 @@ const MatchOCR = ({ user }) => {
           <button
             onClick={handleUpload}
             disabled={!file || uploading || ocrStatus === 'processing'}
-            className="flex-1 px-4 py-2 rounded-lg text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-full text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
             style={{
               background: 'linear-gradient(180deg, #3B82F6 0%, #2563EB 100%)',
               boxShadow:
                 '0 8px 16px rgba(37, 99, 235, 0.28), inset 0 1px 0 rgba(255,255,255,0.08)',
               transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              minWidth: '190px',
             }}
           >
             {uploading ? '⏳ Caricamento...' : '🚀 Carica su Firebase'}
@@ -617,7 +619,7 @@ const MatchOCR = ({ user }) => {
               setOcrStatus('done');
               setOcrText('Dati di emergenza caricati (OCR bypassato)');
             }}
-            className="w-full px-4 py-2 text-white rounded-lg text-sm"
+            className="w-full px-4 py-2 text-white rounded-full text-sm"
             style={{
               background: 'linear-gradient(180deg, #F59E0B 0%, #D97706 100%)',
               boxShadow:
