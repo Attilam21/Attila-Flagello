@@ -828,6 +828,16 @@ const PlayerManagement = ({ user }) => {
     setEditingPlayer(null);
   };
 
+  const handleDeletePlayer = async (playerId) => {
+    if (!user) return;
+    try {
+      await deletePlayerById(user.uid, playerId);
+      console.log('✅ Player deleted:', playerId);
+    } catch (error) {
+      console.error('❌ Error deleting player:', error);
+    }
+  };
+
   return (
     <div style={styles.container}>
       {/* Header */}
