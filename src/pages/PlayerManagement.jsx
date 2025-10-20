@@ -1,4 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import {
+  addPlayer,
+  updatePlayer,
+  deletePlayerById,
+  listenToPlayers,
+  uploadPlayerImage,
+} from '../services/firebaseClient';
 import PlayerProfile from '../components/PlayerProfile';
 import FormationBuilder from '../components/FormationBuilder';
 import PlayerEditForm from '../components/PlayerEditForm';
@@ -22,166 +29,14 @@ const PlayerManagement = ({ user }) => {
   const [playerImages, setPlayerImages] = useState([]);
   const [currentImageType, setCurrentImageType] = useState('profile');
 
-  // Carica giocatori esistenti
+  // Live players from Firestore
   useEffect(() => {
-    loadPlayers();
-  }, []);
-
-  const loadPlayers = async () => {
-    // Simula caricamento giocatori
-    const mockPlayers = [
-      {
-        id: 1,
-        name: 'Gianluigi Donnarumma',
-        position: 'GK',
-        rating: 95,
-        age: 25,
-        nationality: 'Italia',
-        team: 'PSG',
-        stats: {
-          pace: 45,
-          shooting: 25,
-          passing: 88,
-          dribbling: 35,
-          defending: 95,
-          physical: 92,
-        },
-        abilities: [
-          'Parata',
-          'Riflessi',
-          'Uscite',
-          'Distribuzione',
-          'Leader',
-          'Spirito combattivo',
-        ],
-        aiPlayStyles: ['Portiere difensivo', 'Portiere offensivo'],
-        build: 'Portiere Difensivo',
-        buildDescription: 'Specializzato in parate e uscite sicure',
-        buildEfficiency: 95,
-        boosters: [
-          {
-            name: 'Difesa',
-            effect: '+2',
-            description:
-              '+2 alle Statistiche giocatore Comportamento difensivo, Contrasto, Accelerazione e Salto.',
-            condition: 'Questo Booster è sempre attivo.',
-          },
-        ],
-        level: 29,
-        maxLevel: 29,
-        alternativePositions: [
-          { position: 'CB', rating: 75 },
-          { position: 'CDM', rating: 60 },
-        ],
-        formationSuitability: [
-          {
-            name: '4-3-3',
-            description: 'Formazione offensiva',
-            effectiveness: 95,
-          },
-          {
-            name: '4-4-2',
-            description: 'Formazione classica',
-            effectiveness: 90,
-          },
-          {
-            name: '3-5-2',
-            description: 'Formazione con 3 difensori',
-            effectiveness: 85,
-          },
-        ],
-        physical: {
-          height: 196,
-          weight: 92,
-          preferredFoot: 'Right',
-        },
-        contract: {
-          salary: 12000000,
-          expiry: '2026-06-30',
-          releaseClause: 50000000,
-        },
-        form: 'Excellent',
-        condition: 95,
-        lastUpdate: new Date(),
-      },
-      {
-        id: 2,
-        name: 'Rafael Leão',
-        position: 'LW',
-        rating: 91,
-        age: 24,
-        nationality: 'Portogallo',
-        team: 'AC Milan',
-        stats: {
-          pace: 95,
-          shooting: 85,
-          passing: 82,
-          dribbling: 92,
-          defending: 35,
-          physical: 78,
-        },
-        abilities: [
-          'Dribbling Avanzato',
-          'Tiro a Giro',
-          'Passaggio Filtrante',
-          'Elastico',
-          'Sombrero',
-          'Spirito combattivo',
-        ],
-        aiPlayStyles: ['Incursore', 'Ala Prolifica'],
-        build: 'Ala Prolifica',
-        buildDescription: 'Specializzato in dribbling e cross precisi',
-        buildEfficiency: 90,
-        boosters: [
-          {
-            name: 'Velocità',
-            effect: '+3',
-            description: '+3 alle Statistiche di Velocità e Accelerazione.',
-            condition: 'Attivo quando il giocatore è in forma.',
-          },
-        ],
-        level: 34,
-        maxLevel: 34,
-        alternativePositions: [
-          { position: 'RW', rating: 95 },
-          { position: 'ST', rating: 80 },
-          { position: 'CAM', rating: 75 },
-        ],
-        formationSuitability: [
-          {
-            name: '4-3-3',
-            description: 'Formazione offensiva',
-            effectiveness: 95,
-          },
-          {
-            name: '4-4-2',
-            description: 'Formazione classica',
-            effectiveness: 85,
-          },
-          {
-            name: '3-5-2',
-            description: 'Formazione con 3 difensori',
-            effectiveness: 80,
-          },
-        ],
-        physical: {
-          height: 188,
-          weight: 81,
-          preferredFoot: 'Right',
-        },
-        contract: {
-          salary: 8000000,
-          expiry: '2028-06-30',
-          releaseClause: 175000000,
-        },
-        form: 'Good',
-        condition: 88,
-        lastUpdate: new Date(),
-      },
-    ];
-
-    setPlayers(mockPlayers);
-  };
+    if (!user) return;
+    const unsub = listenToPlayers(user.uid, items => setPlayers(items));
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
+  }, [user]);
 
   const positions = [
     { value: 'all', label: 'Tutte le posizioni' },
@@ -732,28 +587,14 @@ const PlayerManagement = ({ user }) => {
     setViewMode('profile');
   };
 
-  const handleSavePlayer = playerData => {
-    console.log('Saving player:', playerData);
-
+  const handleSavePlayer = async playerData => {
+    if (!user) return;
     try {
-      if (selectedPlayer) {
-        // Modifica giocatore esistente
-        setPlayers(prev =>
-          prev.map(p =>
-            p.id === selectedPlayer.id
-              ? { ...p, ...playerData, id: selectedPlayer.id }
-              : p
-          )
-        );
+      if (selectedPlayer && selectedPlayer.id) {
+        await updatePlayer(user.uid, selectedPlayer.id, playerData);
       } else {
-        // Aggiungi nuovo giocatore
-        const newPlayer = {
+        await addPlayer(user.uid, {
           ...playerData,
-          id: Date.now(), // ID temporaneo
-          matchesPlayed: 0,
-          goals: 0,
-          assists: 0,
-          // Assicurati che tutti i campi necessari siano presenti
           stats: playerData.attackingStats || playerData.stats || {},
           physical: playerData.physical || {
             height: 180,
@@ -770,16 +611,12 @@ const PlayerManagement = ({ user }) => {
           weakFootAccuracy: playerData.advanced?.weakFootAccuracy || 'High',
           injuryResistance: playerData.advanced?.injuryResistance || 'Medium',
           alternativePositions: playerData.alternativePositions || [],
-        };
-        setPlayers(prev => [...prev, newPlayer]);
+        });
       }
-
       setIsEditing(false);
       setSelectedPlayer(null);
-      console.log('✅ Player saved successfully');
     } catch (error) {
       console.error('❌ Error saving player:', error);
-      // Non chiudere il form in caso di errore
     }
   };
 
@@ -840,6 +677,18 @@ const PlayerManagement = ({ user }) => {
       setOcrResult({ error: errorMessage });
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handlePlayerImageUpload = async (e, kind) => {
+    const file = e.target.files[0];
+    if (!file || !user || !selectedPlayer?.id) return;
+    try {
+      await uploadPlayerImage(user.uid, selectedPlayer.id, file, kind);
+    } catch (err) {
+      console.warn('uploadPlayerImage failed', err);
+    } finally {
+      e.target.value = '';
     }
   };
 

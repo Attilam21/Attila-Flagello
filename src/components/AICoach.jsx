@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { googleAIService } from '../services/googleAIService';
+import {
+  saveChatMessage,
+  listenToChatMessages,
+} from '../services/firebaseClient';
 
 const AICoach = ({ user, teamContext = {} }) => {
   const [messages, setMessages] = useState([]);
@@ -9,16 +13,22 @@ const AICoach = ({ user, teamContext = {} }) => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    // Messaggio di benvenuto
-    setMessages([
-      {
-        id: 1,
-        type: 'coach',
-        text: '🏆 Ciao! Sono il tuo Coach Virtuale eFootball!\n\nPosso aiutarti con:\n• Analisi formazioni\n• Consigli tattici\n• Strategie di gioco\n• Analisi giocatori\n\nCosa vorresti sapere?',
-        timestamp: new Date(),
-      },
-    ]);
-  }, []);
+    if (!user?.uid) return;
+    const sessionId = 'session_001';
+    const unsub = listenToChatMessages(user.uid, sessionId, items => {
+      setMessages(
+        items.map(m => ({
+          id: m.id,
+          type: m.role === 'assistant' ? 'coach' : 'user',
+          text: m.text,
+          timestamp: m.createdAt?.toDate?.() || new Date(),
+        }))
+      );
+    });
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
+  }, [user]);
 
   useEffect(() => {
     scrollToBottom();
@@ -31,14 +41,11 @@ const AICoach = ({ user, teamContext = {} }) => {
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
-    const userMessage = {
-      id: Date.now(),
-      type: 'user',
+    const sessionId = 'session_001';
+    await saveChatMessage(user.uid, sessionId, {
+      role: 'user',
       text: inputMessage,
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
+    });
     setInputMessage('');
     setIsLoading(true);
     setIsTyping(true);
@@ -52,25 +59,17 @@ const AICoach = ({ user, teamContext = {} }) => {
         teamContext
       );
 
-      const coachMessage = {
-        id: Date.now() + 1,
-        type: 'coach',
+      await saveChatMessage(user.uid, sessionId, {
+        role: 'assistant',
         text: response,
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, coachMessage]);
+      });
     } catch (error) {
       console.error('❌ Chat error:', error);
 
-      const errorMessage = {
-        id: Date.now() + 1,
-        type: 'coach',
+      await saveChatMessage(user.uid, sessionId, {
+        role: 'assistant',
         text: '❌ Scusa, ho avuto un problema. Riprova tra un momento!',
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, errorMessage]);
+      });
     } finally {
       setIsLoading(false);
       setIsTyping(false);
