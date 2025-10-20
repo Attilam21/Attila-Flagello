@@ -1,19 +1,20 @@
 import { useState } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  fetchSignInMethodsForEmail,
-} from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebaseClient';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Card from '../components/ui/Card';
+import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -21,116 +22,129 @@ const Login = ({ onLogin }) => {
     try {
       if (isSignUp) {
         await createUserWithEmailAndPassword(auth, email, password);
-        console.log('✅ Utente registrato:', email);
+        console.log('✅ User created successfully');
       } else {
-        // Prova prima il login normale
-        try {
-          await signInWithEmailAndPassword(auth, email, password);
-          console.log('✅ Utente loggato:', email);
-        } catch (loginError) {
-          // Se fallisce, verifica se l'email esiste
-          if (loginError.code === 'auth/user-not-found') {
-            // Auto-crea l'account se non esiste
-            await createUserWithEmailAndPassword(auth, email, password);
-            console.log('✅ Utente creato (auto) e loggato:', email);
-          } else {
-            throw loginError; // Rilancia altri errori
-          }
-        }
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log('✅ User signed in successfully');
       }
-
-      onLogin();
-    } catch (err) {
-      console.error('❌ Errore auth:', err);
-      const code = err?.code || '';
-      if (
-        code === 'auth/wrong-password' ||
-        code === 'auth/invalid-credential'
-      ) {
-        setError(
-          'Password errata. Riprova o usa "Registrati" se è il primo accesso.'
-        );
-      } else if (code === 'auth/email-already-in-use') {
-        setError('Email già in uso. Prova ad accedere invece di registrarti.');
-      } else if (code === 'auth/too-many-requests') {
-        setError('Troppi tentativi. Attendi qualche minuto e riprova.');
-      } else if (code === 'auth/network-request-failed') {
-        setError('Problema di rete. Verifica la connessione e riprova.');
-      } else if (code === 'auth/weak-password') {
-        setError('La password deve avere almeno 6 caratteri.');
-      } else if (code === 'auth/invalid-email') {
-        setError('Email non valida. Controlla il formato.');
-      } else {
-        setError(`Errore: ${err.message || 'Errore di autenticazione'}`);
+      
+      if (onLogin) {
+        onLogin();
       }
+    } catch (error) {
+      console.error('❌ Auth error:', error);
+      setError(getErrorMessage(error.code));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getErrorMessage = (errorCode) => {
+    switch (errorCode) {
+      case 'auth/user-not-found':
+        return 'Utente non trovato. Verifica l\'email.';
+      case 'auth/wrong-password':
+        return 'Password errata.';
+      case 'auth/email-already-in-use':
+        return 'Email già in uso.';
+      case 'auth/weak-password':
+        return 'Password troppo debole.';
+      case 'auth/invalid-email':
+        return 'Email non valida.';
+      case 'auth/too-many-requests':
+        return 'Troppi tentativi. Riprova più tardi.';
+      default:
+        return 'Errore di autenticazione. Riprova.';
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1 className="login-title">🏆 eFootballLab</h1>
-        <h2 className="login-subtitle">
-          {isSignUp ? 'Crea Account' : 'Accedi'}
-        </h2>
-
-        <form className="login-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="form-input"
-              placeholder="inserisci@email.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
+        <div className="login-header">
+          <div className="login-logo">
+            <div className="logo-icon">🏆</div>
+            <h1 className="logo-title">eFootballLab</h1>
           </div>
+          <p className="login-subtitle">
+            {isSignUp ? 'Crea il tuo account' : 'Accedi al tuo account'}
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="form-input"
-              placeholder="••••••••"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-            />
+            <label className="form-label">Email</label>
+            <div className="input-container">
+              <Mail className="input-icon" size={20} />
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="inserisci@email.com"
+                required
+                className="form-input"
+              />
+            </div>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <div className="input-container">
+              <Lock className="input-icon" size={20} />
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Inserisci password"
+                required
+                className="form-input"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="password-toggle"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          </div>
 
-          <button type="submit" disabled={loading} className="login-button">
+          {error && (
+            <div className="error-message">
+              <span className="error-icon">⚠️</span>
+              {error}
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            disabled={loading}
+            className="login-button"
+          >
             {loading ? (
-              <>
-                <div className="loading-spinner"></div>
-                Caricamento...
-              </>
-            ) : isSignUp ? (
-              '🚀 Crea Account'
+              <div className="loading-spinner-small" />
             ) : (
-              '🔑 Accedi'
+              <>
+                {isSignUp ? <UserPlus size={20} /> : <LogIn size={20} />}
+                {isSignUp ? 'Crea Account' : 'Accedi'}
+              </>
             )}
-          </button>
+          </Button>
         </form>
 
-        <div className="toggle-link">
-          {isSignUp ? 'Hai già un account?' : 'Non hai un account?'}
+        <div className="login-footer">
+          <p className="switch-mode-text">
+            {isSignUp ? 'Hai già un account?' : 'Non hai un account?'}
+          </p>
           <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="toggle-button"
+            type="button"
+            onClick={() => {
+              setIsSignUp(!isSignUp);
+              setError('');
+            }}
+            className="switch-mode-button"
           >
-            {isSignUp ? ' Accedi' : ' Registrati'}
+            {isSignUp ? 'Accedi' : 'Registrati'}
           </button>
         </div>
       </div>

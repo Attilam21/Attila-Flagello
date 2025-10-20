@@ -1,18 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './services/firebaseClient';
 import SideNav from './components/layout/SideNav';
 import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
-import AdvancedDashboard from './pages/AdvancedDashboard';
-import Rosa from './pages/Rosa';
-import PlayerManagement from './pages/PlayerManagement';
-import Match from './pages/Match';
-import MatchOCR from './pages/MatchOCR';
-import Statistiche from './pages/Statistiche';
-import AdvancedStats from './pages/AdvancedStats';
-import Avversario from './pages/Avversario';
-import OpponentAnalysis from './pages/OpponentAnalysis';
 import Login from './pages/Login';
 
 function App() {
@@ -23,17 +13,13 @@ function App() {
   useEffect(() => {
     console.log('🚀 App starting, setting up auth listener...');
 
-    // Timeout di sicurezza per evitare loading infinito
     const timeoutId = setTimeout(() => {
       console.log('⏰ Auth timeout, setting loading to false');
       setLoading(false);
     }, 5000);
 
     const unsubscribe = onAuthStateChanged(auth, user => {
-      console.log(
-        '🔐 Auth state changed:',
-        user ? `Logged in as ${user.email}` : 'Logged out'
-      );
+      console.log('🔐 Auth state changed:', user ? `Logged in as ${user.email}` : 'Logged out');
       clearTimeout(timeoutId);
       setUser(user);
       setLoading(false);
@@ -46,7 +32,7 @@ function App() {
     };
   }, []);
 
-  const handleLogout = useCallback(async () => {
+  const handleLogout = async () => {
     try {
       await signOut(auth);
       console.log('✅ Logout successful');
@@ -54,11 +40,10 @@ function App() {
     } catch (error) {
       console.error('❌ Logout error:', error);
     }
-  }, []);
+  };
 
-  const handleLogin = useCallback(() => {
+  const handleLogin = () => {
     console.log('🔑 Login callback triggered');
-    // Force re-check of auth state
     const current = auth.currentUser;
     if (current) {
       console.log('✅ Found current user:', current.email);
@@ -67,13 +52,13 @@ function App() {
     } else {
       console.log('❌ No current user found');
     }
-  }, []);
+  };
 
-  const handlePageChange = useCallback(page => {
+  const handlePageChange = (page) => {
     console.log('📄 Page change requested:', page);
     setCurrentPage(page);
     console.log('✅ Page changed to:', page);
-  }, []);
+  };
 
   console.log('🎯 App render state:', {
     loading,
@@ -143,26 +128,6 @@ function App() {
       case 'home':
         console.log('🏠 Rendering Home page');
         return <Home user={user} onPageChange={handlePageChange} />;
-      case 'dashboard':
-        console.log('📊 Rendering Advanced Dashboard page');
-        return (
-          <AdvancedDashboard user={user} onPageChange={handlePageChange} />
-        );
-      case 'rosa':
-        console.log('👥 Rendering Player Management page');
-        return <PlayerManagement user={user} />;
-      case 'match':
-        console.log('⚽ Rendering Match page');
-        return <Match />;
-      case 'matchocr':
-        console.log('📸 Rendering MatchOCR page');
-        return <MatchOCR user={user} />;
-      case 'statistiche':
-        console.log('📈 Rendering Advanced Stats page');
-        return <AdvancedStats user={user} />;
-      case 'avversario':
-        console.log('🎯 Rendering Opponent Analysis page');
-        return <OpponentAnalysis user={user} />;
       default:
         console.log('🏠 Rendering default Home page');
         return <Home user={user} onPageChange={handlePageChange} />;
