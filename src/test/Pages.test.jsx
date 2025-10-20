@@ -20,7 +20,7 @@ vi.mock('../services/ocrService', () => ({
   ocrService: {
     processImage: vi.fn(),
     detectImageType: vi.fn(),
-  }
+  },
 }));
 
 describe('Pages', () => {

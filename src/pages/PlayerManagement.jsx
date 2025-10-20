@@ -13,7 +13,7 @@ const PlayerManagement = ({ user }) => {
   const [filterPosition, setFilterPosition] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
   const [viewMode, setViewMode] = useState('list'); // 'list', 'profile', 'formation'
-  
+
   // OCR States
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
@@ -44,10 +44,15 @@ const PlayerManagement = ({ user }) => {
           passing: 88,
           dribbling: 35,
           defending: 95,
-          physical: 92
+          physical: 92,
         },
         abilities: [
-          'Parata', 'Riflessi', 'Uscite', 'Distribuzione', 'Leader', 'Spirito combattivo'
+          'Parata',
+          'Riflessi',
+          'Uscite',
+          'Distribuzione',
+          'Leader',
+          'Spirito combattivo',
         ],
         aiPlayStyles: ['Portiere difensivo', 'Portiere offensivo'],
         build: 'Portiere Difensivo',
@@ -57,34 +62,47 @@ const PlayerManagement = ({ user }) => {
           {
             name: 'Difesa',
             effect: '+2',
-            description: '+2 alle Statistiche giocatore Comportamento difensivo, Contrasto, Accelerazione e Salto.',
-            condition: 'Questo Booster è sempre attivo.'
-          }
+            description:
+              '+2 alle Statistiche giocatore Comportamento difensivo, Contrasto, Accelerazione e Salto.',
+            condition: 'Questo Booster è sempre attivo.',
+          },
         ],
         level: 29,
         maxLevel: 29,
         alternativePositions: [
           { position: 'CB', rating: 75 },
-          { position: 'CDM', rating: 60 }
+          { position: 'CDM', rating: 60 },
         ],
         formationSuitability: [
-          { name: '4-3-3', description: 'Formazione offensiva', effectiveness: 95 },
-          { name: '4-4-2', description: 'Formazione classica', effectiveness: 90 },
-          { name: '3-5-2', description: 'Formazione con 3 difensori', effectiveness: 85 }
+          {
+            name: '4-3-3',
+            description: 'Formazione offensiva',
+            effectiveness: 95,
+          },
+          {
+            name: '4-4-2',
+            description: 'Formazione classica',
+            effectiveness: 90,
+          },
+          {
+            name: '3-5-2',
+            description: 'Formazione con 3 difensori',
+            effectiveness: 85,
+          },
         ],
         physical: {
           height: 196,
           weight: 92,
-          preferredFoot: 'Right'
+          preferredFoot: 'Right',
         },
         contract: {
           salary: 12000000,
           expiry: '2026-06-30',
-          releaseClause: 50000000
+          releaseClause: 50000000,
         },
         form: 'Excellent',
         condition: 95,
-        lastUpdate: new Date()
+        lastUpdate: new Date(),
       },
       {
         id: 2,
@@ -100,10 +118,15 @@ const PlayerManagement = ({ user }) => {
           passing: 82,
           dribbling: 92,
           defending: 35,
-          physical: 78
+          physical: 78,
         },
         abilities: [
-          'Dribbling Avanzato', 'Tiro a Giro', 'Passaggio Filtrante', 'Elastico', 'Sombrero', 'Spirito combattivo'
+          'Dribbling Avanzato',
+          'Tiro a Giro',
+          'Passaggio Filtrante',
+          'Elastico',
+          'Sombrero',
+          'Spirito combattivo',
         ],
         aiPlayStyles: ['Incursore', 'Ala Prolifica'],
         build: 'Ala Prolifica',
@@ -114,37 +137,49 @@ const PlayerManagement = ({ user }) => {
             name: 'Velocità',
             effect: '+3',
             description: '+3 alle Statistiche di Velocità e Accelerazione.',
-            condition: 'Attivo quando il giocatore è in forma.'
-          }
+            condition: 'Attivo quando il giocatore è in forma.',
+          },
         ],
         level: 34,
         maxLevel: 34,
         alternativePositions: [
           { position: 'RW', rating: 95 },
           { position: 'ST', rating: 80 },
-          { position: 'CAM', rating: 75 }
+          { position: 'CAM', rating: 75 },
         ],
         formationSuitability: [
-          { name: '4-3-3', description: 'Formazione offensiva', effectiveness: 95 },
-          { name: '4-4-2', description: 'Formazione classica', effectiveness: 85 },
-          { name: '3-5-2', description: 'Formazione con 3 difensori', effectiveness: 80 }
+          {
+            name: '4-3-3',
+            description: 'Formazione offensiva',
+            effectiveness: 95,
+          },
+          {
+            name: '4-4-2',
+            description: 'Formazione classica',
+            effectiveness: 85,
+          },
+          {
+            name: '3-5-2',
+            description: 'Formazione con 3 difensori',
+            effectiveness: 80,
+          },
         ],
         physical: {
           height: 188,
           weight: 81,
-          preferredFoot: 'Right'
+          preferredFoot: 'Right',
         },
         contract: {
           salary: 8000000,
           expiry: '2028-06-30',
-          releaseClause: 175000000
+          releaseClause: 175000000,
         },
         form: 'Good',
         condition: 88,
-        lastUpdate: new Date()
-      }
+        lastUpdate: new Date(),
+      },
     ];
-    
+
     setPlayers(mockPlayers);
   };
 
@@ -159,48 +194,57 @@ const PlayerManagement = ({ user }) => {
     { value: 'CAM', label: 'Trequartista' },
     { value: 'LW', label: 'Ala Sinistra' },
     { value: 'RW', label: 'Ala Destra' },
-    { value: 'ST', label: 'Attaccante' }
+    { value: 'ST', label: 'Attaccante' },
   ];
 
-  const filteredPlayers = players.filter(player => {
-    const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPosition = filterPosition === 'all' || player.position === filterPosition;
-    return matchesSearch && matchesPosition;
-  }).sort((a, b) => {
-    switch (sortBy) {
-      case 'rating': return b.rating - a.rating;
-      case 'age': return a.age - b.age;
-      case 'name': return a.name.localeCompare(b.name);
-      default: return 0;
-    }
-  });
+  const filteredPlayers = players
+    .filter(player => {
+      const matchesSearch = player.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesPosition =
+        filterPosition === 'all' || player.position === filterPosition;
+      return matchesSearch && matchesPosition;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'rating':
+          return b.rating - a.rating;
+        case 'age':
+          return a.age - b.age;
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
 
   const styles = {
     container: {
       backgroundColor: '#1F2937',
       minHeight: '100vh',
       padding: '2rem',
-      color: 'white'
+      color: 'white',
     },
     header: {
-      marginBottom: '2rem'
+      marginBottom: '2rem',
     },
     title: {
       fontSize: '2.5rem',
       fontWeight: 'bold',
       color: '#E5E7EB',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     subtitle: {
       fontSize: '1.125rem',
-      color: '#9CA3AF'
+      color: '#9CA3AF',
     },
     controls: {
       display: 'flex',
       gap: '1rem',
       marginBottom: '2rem',
       flexWrap: 'wrap',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     searchInput: {
       flex: 1,
@@ -210,7 +254,7 @@ const PlayerManagement = ({ user }) => {
       border: '1px solid #4B5563',
       borderRadius: '0.5rem',
       color: '#E5E7EB',
-      fontSize: '0.875rem'
+      fontSize: '0.875rem',
     },
     select: {
       padding: '0.75rem',
@@ -218,7 +262,7 @@ const PlayerManagement = ({ user }) => {
       border: '1px solid #4B5563',
       borderRadius: '0.5rem',
       color: '#E5E7EB',
-      fontSize: '0.875rem'
+      fontSize: '0.875rem',
     },
     addButton: {
       backgroundColor: '#10B981',
@@ -233,20 +277,22 @@ const PlayerManagement = ({ user }) => {
       alignItems: 'center',
       gap: '0.5rem',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      boxShadow:
+        '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
       textTransform: 'none',
       letterSpacing: '0.025em',
       ':hover': {
         backgroundColor: '#059669',
         transform: 'translateY(-1px)',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-      }
+        boxShadow:
+          '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      },
     },
     playersGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
       gap: '1rem',
-      marginBottom: '2rem'
+      marginBottom: '2rem',
     },
     playerCard: {
       backgroundColor: '#374151',
@@ -255,12 +301,12 @@ const PlayerManagement = ({ user }) => {
       border: '1px solid #4B5563',
       cursor: 'pointer',
       transition: 'all 0.2s',
-      position: 'relative'
+      position: 'relative',
     },
     playerCardHover: {
       backgroundColor: '#4B5563',
       transform: 'translateY(-2px)',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
     },
 
     // OCR Styles
@@ -547,54 +593,54 @@ const PlayerManagement = ({ user }) => {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     playerName: {
       fontSize: '1.25rem',
       fontWeight: 'bold',
-      color: '#E5E7EB'
+      color: '#E5E7EB',
     },
     playerRating: {
       fontSize: '2rem',
       fontWeight: 'bold',
-      color: '#10B981'
+      color: '#10B981',
     },
     playerInfo: {
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
       gap: '0.5rem',
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     infoItem: {
       fontSize: '0.875rem',
-      color: '#9CA3AF'
+      color: '#9CA3AF',
     },
     infoValue: {
       color: '#E5E7EB',
-      fontWeight: '500'
+      fontWeight: '500',
     },
     statsGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(2, 1fr)',
       gap: '0.5rem',
-      marginTop: '1rem'
+      marginTop: '1rem',
     },
     statItem: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '0.25rem 0'
+      padding: '0.25rem 0',
     },
     statName: {
       fontSize: '0.75rem',
       color: '#9CA3AF',
       textTransform: 'uppercase',
-      letterSpacing: '0.05em'
+      letterSpacing: '0.05em',
     },
     statValue: {
       fontSize: '0.875rem',
       fontWeight: 'bold',
-      color: '#E5E7EB'
+      color: '#E5E7EB',
     },
     statBar: {
       width: '100%',
@@ -602,12 +648,12 @@ const PlayerManagement = ({ user }) => {
       backgroundColor: '#1F2937',
       borderRadius: '2px',
       marginTop: '0.25rem',
-      overflow: 'hidden'
+      overflow: 'hidden',
     },
     statBarFill: {
       height: '100%',
       borderRadius: '2px',
-      transition: 'width 0.3s ease'
+      transition: 'width 0.3s ease',
     },
     formBadge: {
       position: 'absolute',
@@ -617,25 +663,30 @@ const PlayerManagement = ({ user }) => {
       borderRadius: '0.25rem',
       fontSize: '0.75rem',
       fontWeight: '600',
-      textTransform: 'uppercase'
+      textTransform: 'uppercase',
     },
     excellent: { backgroundColor: '#10B981', color: 'white' },
     good: { backgroundColor: '#3B82F6', color: 'white' },
     average: { backgroundColor: '#F59E0B', color: 'white' },
-    poor: { backgroundColor: '#EF4444', color: 'white' }
+    poor: { backgroundColor: '#EF4444', color: 'white' },
   };
 
-  const getFormColor = (form) => {
+  const getFormColor = form => {
     switch (form) {
-      case 'Excellent': return styles.excellent;
-      case 'Good': return styles.good;
-      case 'Average': return styles.average;
-      case 'Poor': return styles.poor;
-      default: return styles.average;
+      case 'Excellent':
+        return styles.excellent;
+      case 'Good':
+        return styles.good;
+      case 'Average':
+        return styles.average;
+      case 'Poor':
+        return styles.poor;
+      default:
+        return styles.average;
     }
   };
 
-  const getStatColor = (value) => {
+  const getStatColor = value => {
     if (value >= 90) return '#10B981';
     if (value >= 80) return '#3B82F6';
     if (value >= 70) return '#F59E0B';
@@ -649,25 +700,29 @@ const PlayerManagement = ({ user }) => {
     setIsEditing(true);
   };
 
-  const handleEditPlayer = (player) => {
+  const handleEditPlayer = player => {
     setSelectedPlayer(player);
     setIsEditing(true);
   };
 
-  const handleViewPlayer = (player) => {
+  const handleViewPlayer = player => {
     setSelectedPlayer(player);
     setViewMode('profile');
   };
 
-  const handleSavePlayer = (playerData) => {
+  const handleSavePlayer = playerData => {
     console.log('Saving player:', playerData);
-    
+
     try {
       if (selectedPlayer) {
         // Modifica giocatore esistente
-        setPlayers(prev => prev.map(p => 
-          p.id === selectedPlayer.id ? { ...p, ...playerData, id: selectedPlayer.id } : p
-        ));
+        setPlayers(prev =>
+          prev.map(p =>
+            p.id === selectedPlayer.id
+              ? { ...p, ...playerData, id: selectedPlayer.id }
+              : p
+          )
+        );
       } else {
         // Aggiungi nuovo giocatore
         const newPlayer = {
@@ -678,20 +733,25 @@ const PlayerManagement = ({ user }) => {
           assists: 0,
           // Assicurati che tutti i campi necessari siano presenti
           stats: playerData.attackingStats || playerData.stats || {},
-          physical: playerData.physical || { height: 180, weight: 70, preferredFoot: 'Right' },
+          physical: playerData.physical || {
+            height: 180,
+            weight: 70,
+            preferredFoot: 'Right',
+          },
           abilities: playerData.abilities || [],
           aiPlayStyles: playerData.aiPlayStyles || [],
           boosters: playerData.boosters || [],
           form: playerData.advanced?.form || 'B',
           preferredFoot: playerData.physical?.preferredFoot || 'Right',
-          weakFootFrequency: playerData.advanced?.weakFootFrequency || 'Occasionally',
+          weakFootFrequency:
+            playerData.advanced?.weakFootFrequency || 'Occasionally',
           weakFootAccuracy: playerData.advanced?.weakFootAccuracy || 'High',
           injuryResistance: playerData.advanced?.injuryResistance || 'Medium',
-          alternativePositions: playerData.alternativePositions || []
+          alternativePositions: playerData.alternativePositions || [],
         };
         setPlayers(prev => [...prev, newPlayer]);
       }
-      
+
       setIsEditing(false);
       setSelectedPlayer(null);
       console.log('✅ Player saved successfully');
@@ -707,7 +767,7 @@ const PlayerManagement = ({ user }) => {
   };
 
   // OCR Functions
-  const handleImageUpload = async (event) => {
+  const handleImageUpload = async event => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -720,35 +780,40 @@ const PlayerManagement = ({ user }) => {
 
     try {
       console.log('🔍 Processing player image with OCR...');
-      
+
       // Timeout di sicurezza per evitare caricamento infinito
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('OCR timeout - immagine troppo complessa')), 20000)
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error('OCR timeout - immagine troppo complessa')),
+          20000
+        )
       );
-      
+
       const ocrPromise = realOCRService.processImage(file);
       const result = await Promise.race([ocrPromise, timeoutPromise]);
-      
+
       setOcrResult(result);
       setUploadStatus('success');
       setShowOCRModal(true);
-      
+
       console.log('✅ OCR completed:', result);
     } catch (error) {
       console.error('❌ OCR failed:', error);
-      
+
       // Gestione errori più specifica
       let errorMessage = 'Errore sconosciuto';
       if (error.message.includes('timeout')) {
-        errorMessage = 'L\'immagine è troppo complessa. Prova con una foto più chiara e semplice.';
+        errorMessage =
+          "L'immagine è troppo complessa. Prova con una foto più chiara e semplice.";
       } else if (error.message.includes('network')) {
         errorMessage = 'Errore di connessione. Riprova più tardi.';
       } else if (error.message.includes('format')) {
         errorMessage = 'Formato immagine non supportato. Usa JPG o PNG.';
       } else {
-        errorMessage = 'Non è stato possibile analizzare l\'immagine. Prova con una foto più chiara.';
+        errorMessage =
+          "Non è stato possibile analizzare l'immagine. Prova con una foto più chiara.";
       }
-      
+
       setUploadStatus('error');
       setOcrResult({ error: errorMessage });
     } finally {
@@ -781,14 +846,14 @@ const PlayerManagement = ({ user }) => {
       weakFootFrequency: ocrResult.weakFootFrequency || 'Occasionally',
       weakFootAccuracy: ocrResult.weakFootAccuracy || 'High',
       injuryResistance: ocrResult.injuryResistance || 'Medium',
-      alternativePositions: ocrResult.alternativePositions || []
+      alternativePositions: ocrResult.alternativePositions || [],
     };
 
     setPlayers(prev => [...prev, newPlayer]);
     setShowOCRModal(false);
     setOcrResult(null);
     setUploadStatus(null);
-    
+
     console.log('✅ Player added from OCR:', newPlayer);
   };
 
@@ -809,13 +874,13 @@ const PlayerManagement = ({ user }) => {
           type="text"
           placeholder="Cerca giocatore..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
         />
-        
+
         <select
           style={styles.select}
           value={filterPosition}
-          onChange={(e) => setFilterPosition(e.target.value)}
+          onChange={e => setFilterPosition(e.target.value)}
         >
           {positions.map(pos => (
             <option key={pos.value} value={pos.value}>
@@ -823,17 +888,17 @@ const PlayerManagement = ({ user }) => {
             </option>
           ))}
         </select>
-        
+
         <select
           style={styles.select}
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
+          onChange={e => setSortBy(e.target.value)}
         >
           <option value="rating">Rating</option>
           <option value="age">Età</option>
           <option value="name">Nome</option>
         </select>
-        
+
         <div style={styles.uploadSection}>
           <div style={styles.uploadButtons}>
             <input
@@ -854,7 +919,7 @@ const PlayerManagement = ({ user }) => {
                 cursor: isUploading ? 'not-allowed' : 'pointer',
                 opacity: isUploading ? 0.7 : 1,
                 fontSize: '0.875rem',
-                padding: '0.5rem 1rem'
+                padding: '0.5rem 1rem',
               }}
             >
               <Camera size={16} />
@@ -879,7 +944,7 @@ const PlayerManagement = ({ user }) => {
                 cursor: isUploading ? 'not-allowed' : 'pointer',
                 opacity: isUploading ? 0.7 : 1,
                 fontSize: '0.875rem',
-                padding: '0.5rem 1rem'
+                padding: '0.5rem 1rem',
               }}
             >
               <Camera size={16} />
@@ -904,7 +969,7 @@ const PlayerManagement = ({ user }) => {
                 cursor: isUploading ? 'not-allowed' : 'pointer',
                 opacity: isUploading ? 0.7 : 1,
                 fontSize: '0.875rem',
-                padding: '0.5rem 1rem'
+                padding: '0.5rem 1rem',
               }}
             >
               <Camera size={16} />
@@ -912,22 +977,22 @@ const PlayerManagement = ({ user }) => {
             </label>
           </div>
         </div>
-        
-        <button
-          style={styles.addButton}
-          onClick={handleAddPlayer}
-        >
+
+        <button style={styles.addButton} onClick={handleAddPlayer}>
           ➕ Aggiungi Giocatore Manuale
         </button>
-        
+
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button
             style={{
               ...styles.button,
               backgroundColor: viewMode === 'list' ? '#3B82F6' : '#6B7280',
-              boxShadow: viewMode === 'list' ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)' : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+              boxShadow:
+                viewMode === 'list'
+                  ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)'
+                  : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
               transform: viewMode === 'list' ? 'translateY(-1px)' : 'none',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
             }}
             onClick={() => setViewMode('list')}
           >
@@ -937,9 +1002,12 @@ const PlayerManagement = ({ user }) => {
             style={{
               ...styles.button,
               backgroundColor: viewMode === 'profile' ? '#3B82F6' : '#6B7280',
-              boxShadow: viewMode === 'profile' ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)' : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+              boxShadow:
+                viewMode === 'profile'
+                  ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)'
+                  : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
               transform: viewMode === 'profile' ? 'translateY(-1px)' : 'none',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
             }}
             onClick={() => setViewMode('profile')}
           >
@@ -949,9 +1017,12 @@ const PlayerManagement = ({ user }) => {
             style={{
               ...styles.button,
               backgroundColor: viewMode === 'formation' ? '#3B82F6' : '#6B7280',
-              boxShadow: viewMode === 'formation' ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)' : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+              boxShadow:
+                viewMode === 'formation'
+                  ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)'
+                  : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
               transform: viewMode === 'formation' ? 'translateY(-1px)' : 'none',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
             }}
             onClick={() => setViewMode('formation')}
           >
@@ -963,108 +1034,119 @@ const PlayerManagement = ({ user }) => {
       {/* Render different views */}
       {viewMode === 'list' && (
         <div style={styles.playersGrid}>
-          {filteredPlayers.map((player) => (
-          <div
-            key={player.id}
-            style={styles.playerCard}
-            onClick={() => handleViewPlayer(player)}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#4B5563';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#374151';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            {/* Form Badge */}
-            <div style={{
-              ...styles.formBadge,
-              ...getFormColor(player.form)
-            }}>
-              {player.form}
-            </div>
+          {filteredPlayers.map(player => (
+            <div
+              key={player.id}
+              style={styles.playerCard}
+              onClick={() => handleViewPlayer(player)}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = '#4B5563';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow =
+                  '0 4px 12px rgba(0, 0, 0, 0.3)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = '#374151';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              {/* Form Badge */}
+              <div
+                style={{
+                  ...styles.formBadge,
+                  ...getFormColor(player.form),
+                }}
+              >
+                {player.form}
+              </div>
 
-            {/* Player Header */}
-            <div style={styles.playerHeader}>
-              <div>
-                <div style={styles.playerName}>{player.name}</div>
-                <div style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>
-                  {player.position} • {player.age} anni
-                </div>
-              </div>
-              <div style={styles.playerRating}>{player.rating}</div>
-            </div>
-
-            {/* Player Info */}
-            <div style={styles.playerInfo}>
-              <div style={styles.infoItem}>
-                <div>Nazionalità:</div>
-                <div style={styles.infoValue}>{player.nationality}</div>
-              </div>
-              <div style={styles.infoItem}>
-                <div>Squadra:</div>
-                <div style={styles.infoValue}>{player.team}</div>
-              </div>
-              <div style={styles.infoItem}>
-                <div>Altezza:</div>
-                <div style={styles.infoValue}>{player.physical.height} cm</div>
-              </div>
-              <div style={styles.infoItem}>
-                <div>Peso:</div>
-                <div style={styles.infoValue}>{player.physical.weight} kg</div>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div style={styles.statsGrid}>
-              {Object.entries(player.stats).slice(0, 4).map(([stat, value]) => (
-                <div key={stat} style={styles.statItem}>
-                  <div style={styles.statName}>{stat}</div>
-                  <div style={styles.statValue}>{value}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Stat Bars */}
-            <div style={{ marginTop: '1rem' }}>
-              {Object.entries(player.stats).slice(0, 3).map(([stat, value]) => (
-                <div key={stat} style={{ marginBottom: '0.5rem' }}>
-                  <div style={styles.statItem}>
-                    <div style={styles.statName}>{stat}</div>
-                    <div style={styles.statValue}>{value}</div>
-                  </div>
-                  <div style={styles.statBar}>
-                    <div
-                      style={{
-                        ...styles.statBarFill,
-                        width: `${value}%`,
-                        backgroundColor: getStatColor(value)
-                      }}
-                    />
+              {/* Player Header */}
+              <div style={styles.playerHeader}>
+                <div>
+                  <div style={styles.playerName}>{player.name}</div>
+                  <div style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>
+                    {player.position} • {player.age} anni
                   </div>
                 </div>
-              ))}
+                <div style={styles.playerRating}>{player.rating}</div>
+              </div>
+
+              {/* Player Info */}
+              <div style={styles.playerInfo}>
+                <div style={styles.infoItem}>
+                  <div>Nazionalità:</div>
+                  <div style={styles.infoValue}>{player.nationality}</div>
+                </div>
+                <div style={styles.infoItem}>
+                  <div>Squadra:</div>
+                  <div style={styles.infoValue}>{player.team}</div>
+                </div>
+                <div style={styles.infoItem}>
+                  <div>Altezza:</div>
+                  <div style={styles.infoValue}>
+                    {player.physical.height} cm
+                  </div>
+                </div>
+                <div style={styles.infoItem}>
+                  <div>Peso:</div>
+                  <div style={styles.infoValue}>
+                    {player.physical.weight} kg
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div style={styles.statsGrid}>
+                {Object.entries(player.stats)
+                  .slice(0, 4)
+                  .map(([stat, value]) => (
+                    <div key={stat} style={styles.statItem}>
+                      <div style={styles.statName}>{stat}</div>
+                      <div style={styles.statValue}>{value}</div>
+                    </div>
+                  ))}
+              </div>
+
+              {/* Stat Bars */}
+              <div style={{ marginTop: '1rem' }}>
+                {Object.entries(player.stats)
+                  .slice(0, 3)
+                  .map(([stat, value]) => (
+                    <div key={stat} style={{ marginBottom: '0.5rem' }}>
+                      <div style={styles.statItem}>
+                        <div style={styles.statName}>{stat}</div>
+                        <div style={styles.statValue}>{value}</div>
+                      </div>
+                      <div style={styles.statBar}>
+                        <div
+                          style={{
+                            ...styles.statBarFill,
+                            width: `${value}%`,
+                            backgroundColor: getStatColor(value),
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         </div>
       )}
 
       {viewMode === 'profile' && selectedPlayer && (
-        <PlayerProfile 
-          player={selectedPlayer} 
+        <PlayerProfile
+          player={selectedPlayer}
           onEdit={() => setIsEditing(true)}
           showEditButton={true}
         />
       )}
 
       {viewMode === 'formation' && (
-        <FormationBuilder 
+        <FormationBuilder
           players={filteredPlayers}
-          onSave={(formationData) => {
+          onSave={formationData => {
             console.log('Formation saved:', formationData);
             // Implement save logic
           }}
@@ -1076,30 +1158,53 @@ const PlayerManagement = ({ user }) => {
       )}
 
       {/* Summary */}
-      <div style={{
-        backgroundColor: '#374151',
-        borderRadius: '0.75rem',
-        padding: '1.5rem',
-        border: '1px solid #4B5563'
-      }}>
-        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+      <div
+        style={{
+          backgroundColor: '#374151',
+          borderRadius: '0.75rem',
+          padding: '1.5rem',
+          border: '1px solid #4B5563',
+        }}
+      >
+        <h3
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            marginBottom: '1rem',
+            color: '#E5E7EB',
+          }}
+        >
           📊 Riepilogo Squadra
         </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '1rem',
+          }}
+        >
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10B981' }}>
+            <div
+              style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10B981' }}
+            >
               {players.length}
             </div>
             <div style={{ color: '#9CA3AF' }}>Giocatori</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3B82F6' }}>
-              {Math.round(players.reduce((sum, p) => sum + p.rating, 0) / players.length)}
+            <div
+              style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3B82F6' }}
+            >
+              {Math.round(
+                players.reduce((sum, p) => sum + p.rating, 0) / players.length
+              )}
             </div>
             <div style={{ color: '#9CA3AF' }}>Rating Medio</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#F59E0B' }}>
+            <div
+              style={{ fontSize: '2rem', fontWeight: 'bold', color: '#F59E0B' }}
+            >
               {players.filter(p => p.form === 'Excellent').length}
             </div>
             <div style={{ color: '#9CA3AF' }}>In Forma</div>
@@ -1122,7 +1227,9 @@ const PlayerManagement = ({ user }) => {
           <div style={styles.modalContent}>
             <div style={styles.modalHeader}>
               <h2 style={styles.modalTitle}>
-                {ocrResult.error ? '❌ Errore OCR' : '🔍 Risultato OCR Giocatore'}
+                {ocrResult.error
+                  ? '❌ Errore OCR'
+                  : '🔍 Risultato OCR Giocatore'}
               </h2>
               <button
                 onClick={() => setShowOCRModal(false)}
@@ -1131,11 +1238,13 @@ const PlayerManagement = ({ user }) => {
                 ✕
               </button>
             </div>
-            
+
             {ocrResult.error ? (
               <div style={styles.errorSection}>
                 <div style={styles.errorIcon}>⚠️</div>
-                <h3 style={styles.errorTitle}>Errore nell'analisi dell'immagine</h3>
+                <h3 style={styles.errorTitle}>
+                  Errore nell'analisi dell'immagine
+                </h3>
                 <p style={styles.errorMessage}>{ocrResult.error}</p>
                 <div style={styles.errorTips}>
                   <h4 style={styles.tipsTitle}>💡 Suggerimenti:</h4>
@@ -1166,7 +1275,8 @@ const PlayerManagement = ({ user }) => {
                       <strong>Età:</strong> {ocrResult.age || 'N/A'}
                     </div>
                     <div style={styles.ocrItem}>
-                      <strong>Nazionalità:</strong> {ocrResult.nationality || 'N/A'}
+                      <strong>Nazionalità:</strong>{' '}
+                      {ocrResult.nationality || 'N/A'}
                     </div>
                     <div style={styles.ocrItem}>
                       <strong>Squadra:</strong> {ocrResult.team || 'N/A'}
@@ -1229,7 +1339,9 @@ const PlayerManagement = ({ user }) => {
         <div style={styles.statusOverlay}>
           <div style={styles.statusContent}>
             <div style={styles.loadingSpinner}></div>
-            <p style={styles.statusText}>🔍 Analizzando screenshot giocatore...</p>
+            <p style={styles.statusText}>
+              🔍 Analizzando screenshot giocatore...
+            </p>
           </div>
         </div>
       )}
@@ -1240,7 +1352,8 @@ const PlayerManagement = ({ user }) => {
             <AlertCircle size={48} style={{ color: '#EF4444' }} />
             <h3 style={styles.errorTitle}>Errore OCR</h3>
             <p style={styles.errorText}>
-              Non è stato possibile analizzare l'immagine. Riprova con un'immagine più chiara.
+              Non è stato possibile analizzare l'immagine. Riprova con
+              un'immagine più chiara.
             </p>
             <button
               onClick={() => setUploadStatus(null)}

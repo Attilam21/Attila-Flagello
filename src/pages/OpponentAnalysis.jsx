@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Users, TrendingUp, AlertTriangle, CheckCircle, Brain } from 'lucide-react';
+import {
+  Target,
+  Users,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Brain,
+} from 'lucide-react';
 import OpponentFormationViewer from '../components/OpponentFormationViewer';
 
 const OpponentAnalysis = ({ user }) => {
@@ -32,30 +39,183 @@ const OpponentAnalysis = ({ user }) => {
           passes: 320,
           passAccuracy: 82,
           tackles: 12,
-          interceptions: 8
+          interceptions: 8,
         },
         heatmap: {
           attack: { left: 30, center: 50, right: 20 },
-          defense: { left: 25, center: 45, right: 30 }
+          defense: { left: 25, center: 45, right: 30 },
         },
         players: [
-          { name: 'Gianluigi Buffon', position: 'GK', rating: 105, stats: { pace: 45, shooting: 25, passing: 88, dribbling: 35, defending: 95, physical: 92 }, physical: { height: 192, weight: 92, preferredFoot: 'Right' } },
-          { name: 'Javier Zanetti', position: 'LB', rating: 103, stats: { pace: 85, shooting: 70, passing: 88, dribbling: 82, defending: 95, physical: 88 }, physical: { height: 178, weight: 75, preferredFoot: 'Right' } },
-          { name: 'Paolo Maldini', position: 'CB', rating: 102, stats: { pace: 75, shooting: 60, passing: 85, dribbling: 70, defending: 98, physical: 85 }, physical: { height: 186, weight: 85, preferredFoot: 'Right' } },
-          { name: 'Frank Rijkaard', position: 'CB', rating: 105, stats: { pace: 70, shooting: 65, passing: 90, dribbling: 75, defending: 96, physical: 90 }, physical: { height: 190, weight: 88, preferredFoot: 'Right' } },
-          { name: 'Fabio Cannavaro', position: 'RB', rating: 105, stats: { pace: 80, shooting: 55, passing: 82, dribbling: 75, defending: 97, physical: 85 }, physical: { height: 175, weight: 75, preferredFoot: 'Right' } },
-          { name: 'Patrick Vieira', position: 'CDM', rating: 104, stats: { pace: 75, shooting: 70, passing: 88, dribbling: 80, defending: 95, physical: 92 }, physical: { height: 191, weight: 88, preferredFoot: 'Right' } },
-          { name: 'Edgar Davids', position: 'CDM', rating: 102, stats: { pace: 85, shooting: 75, passing: 85, dribbling: 88, defending: 90, physical: 88 }, physical: { height: 169, weight: 68, preferredFoot: 'Left' } },
-          { name: 'Wesley Sneijder', position: 'CAM', rating: 104, stats: { pace: 80, shooting: 90, passing: 95, dribbling: 88, defending: 70, physical: 75 }, physical: { height: 170, weight: 72, preferredFoot: 'Right' } },
-          { name: 'Vinícius Júnior', position: 'LW', rating: 105, stats: { pace: 95, shooting: 85, passing: 82, dribbling: 95, defending: 35, physical: 78 }, physical: { height: 176, weight: 73, preferredFoot: 'Right' } },
-          { name: 'Samuel Eto\'o', position: 'ST', rating: 104, stats: { pace: 90, shooting: 95, passing: 80, dribbling: 88, defending: 40, physical: 85 }, physical: { height: 180, weight: 80, preferredFoot: 'Right' } },
-          { name: 'Ruud Gullit', position: 'RW', rating: 104, stats: { pace: 85, shooting: 90, passing: 92, dribbling: 90, defending: 75, physical: 88 }, physical: { height: 191, weight: 85, preferredFoot: 'Right' } }
+          {
+            name: 'Gianluigi Buffon',
+            position: 'GK',
+            rating: 105,
+            stats: {
+              pace: 45,
+              shooting: 25,
+              passing: 88,
+              dribbling: 35,
+              defending: 95,
+              physical: 92,
+            },
+            physical: { height: 192, weight: 92, preferredFoot: 'Right' },
+          },
+          {
+            name: 'Javier Zanetti',
+            position: 'LB',
+            rating: 103,
+            stats: {
+              pace: 85,
+              shooting: 70,
+              passing: 88,
+              dribbling: 82,
+              defending: 95,
+              physical: 88,
+            },
+            physical: { height: 178, weight: 75, preferredFoot: 'Right' },
+          },
+          {
+            name: 'Paolo Maldini',
+            position: 'CB',
+            rating: 102,
+            stats: {
+              pace: 75,
+              shooting: 60,
+              passing: 85,
+              dribbling: 70,
+              defending: 98,
+              physical: 85,
+            },
+            physical: { height: 186, weight: 85, preferredFoot: 'Right' },
+          },
+          {
+            name: 'Frank Rijkaard',
+            position: 'CB',
+            rating: 105,
+            stats: {
+              pace: 70,
+              shooting: 65,
+              passing: 90,
+              dribbling: 75,
+              defending: 96,
+              physical: 90,
+            },
+            physical: { height: 190, weight: 88, preferredFoot: 'Right' },
+          },
+          {
+            name: 'Fabio Cannavaro',
+            position: 'RB',
+            rating: 105,
+            stats: {
+              pace: 80,
+              shooting: 55,
+              passing: 82,
+              dribbling: 75,
+              defending: 97,
+              physical: 85,
+            },
+            physical: { height: 175, weight: 75, preferredFoot: 'Right' },
+          },
+          {
+            name: 'Patrick Vieira',
+            position: 'CDM',
+            rating: 104,
+            stats: {
+              pace: 75,
+              shooting: 70,
+              passing: 88,
+              dribbling: 80,
+              defending: 95,
+              physical: 92,
+            },
+            physical: { height: 191, weight: 88, preferredFoot: 'Right' },
+          },
+          {
+            name: 'Edgar Davids',
+            position: 'CDM',
+            rating: 102,
+            stats: {
+              pace: 85,
+              shooting: 75,
+              passing: 85,
+              dribbling: 88,
+              defending: 90,
+              physical: 88,
+            },
+            physical: { height: 169, weight: 68, preferredFoot: 'Left' },
+          },
+          {
+            name: 'Wesley Sneijder',
+            position: 'CAM',
+            rating: 104,
+            stats: {
+              pace: 80,
+              shooting: 90,
+              passing: 95,
+              dribbling: 88,
+              defending: 70,
+              physical: 75,
+            },
+            physical: { height: 170, weight: 72, preferredFoot: 'Right' },
+          },
+          {
+            name: 'Vinícius Júnior',
+            position: 'LW',
+            rating: 105,
+            stats: {
+              pace: 95,
+              shooting: 85,
+              passing: 82,
+              dribbling: 95,
+              defending: 35,
+              physical: 78,
+            },
+            physical: { height: 176, weight: 73, preferredFoot: 'Right' },
+          },
+          {
+            name: "Samuel Eto'o",
+            position: 'ST',
+            rating: 104,
+            stats: {
+              pace: 90,
+              shooting: 95,
+              passing: 80,
+              dribbling: 88,
+              defending: 40,
+              physical: 85,
+            },
+            physical: { height: 180, weight: 80, preferredFoot: 'Right' },
+          },
+          {
+            name: 'Ruud Gullit',
+            position: 'RW',
+            rating: 104,
+            stats: {
+              pace: 85,
+              shooting: 90,
+              passing: 92,
+              dribbling: 90,
+              defending: 75,
+              physical: 88,
+            },
+            physical: { height: 191, weight: 85, preferredFoot: 'Right' },
+          },
         ],
         keyPlayers: [
-          { name: 'Samuel Eto\'o', position: 'ST', rating: 104, threat: 'high' },
-          { name: 'Wesley Sneijder', position: 'CAM', rating: 104, threat: 'high' },
-          { name: 'Vinícius Júnior', position: 'LW', rating: 105, threat: 'high' }
-        ]
+          { name: "Samuel Eto'o", position: 'ST', rating: 104, threat: 'high' },
+          {
+            name: 'Wesley Sneijder',
+            position: 'CAM',
+            rating: 104,
+            threat: 'high',
+          },
+          {
+            name: 'Vinícius Júnior',
+            position: 'LW',
+            rating: 105,
+            threat: 'high',
+          },
+        ],
       },
       {
         id: 2,
@@ -74,46 +234,50 @@ const OpponentAnalysis = ({ user }) => {
           passes: 580,
           passAccuracy: 91,
           tackles: 8,
-          interceptions: 15
+          interceptions: 15,
         },
         heatmap: {
           attack: { left: 20, center: 60, right: 20 },
-          defense: { left: 30, center: 40, right: 30 }
+          defense: { left: 30, center: 40, right: 30 },
         },
         keyPlayers: [
           { name: 'Lewandowski', position: 'ST', rating: 92, threat: 'high' },
           { name: 'Pedri', position: 'CM', rating: 88, threat: 'medium' },
-          { name: 'Gavi', position: 'CM', rating: 85, threat: 'medium' }
-        ]
-      }
+          { name: 'Gavi', position: 'CM', rating: 85, threat: 'medium' },
+        ],
+      },
     ];
-    
+
     setOpponents(mockOpponents);
   };
 
-  const analyzeOpponent = async (opponent) => {
+  const analyzeOpponent = async opponent => {
     setIsAnalyzing(true);
     setSelectedOpponent(opponent);
-    
+
     // Simula analisi AI
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     const aiAnalysis = {
-      threatLevel: opponent.keyPlayers.filter(p => p.threat === 'high').length > 1 ? 'high' : 'medium',
+      threatLevel:
+        opponent.keyPlayers.filter(p => p.threat === 'high').length > 1
+          ? 'high'
+          : 'medium',
       recommendedFormation: opponent.formation === '4-3-3' ? '4-4-2' : '4-3-3',
       counterMeasures: [
         `Contrasta ${opponent.strengths[0]} con pressing alto`,
         `Sfrutta ${opponent.weaknesses[0]} con gioco aereo`,
-        `Marca stretto ${opponent.keyPlayers[0].name}`
+        `Marca stretto ${opponent.keyPlayers[0].name}`,
       ],
       tacticalAdvice: [
         'Gioca sui contropiedi',
         'Sfrutta le corse laterali',
-        'Mantieni il possesso palla'
+        'Mantieni il possesso palla',
       ],
-      predictedOutcome: opponent.analysis.possession > 60 ? 'Difficile' : 'Favorevole'
+      predictedOutcome:
+        opponent.analysis.possession > 60 ? 'Difficile' : 'Favorevole',
     };
-    
+
     setAnalysis(aiAnalysis);
     setIsAnalyzing(false);
   };
@@ -123,26 +287,26 @@ const OpponentAnalysis = ({ user }) => {
       backgroundColor: '#1F2937',
       minHeight: '100vh',
       padding: '2rem',
-      color: 'white'
+      color: 'white',
     },
     header: {
-      marginBottom: '2rem'
+      marginBottom: '2rem',
     },
     title: {
       fontSize: '2.5rem',
       fontWeight: 'bold',
       color: '#E5E7EB',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     subtitle: {
       fontSize: '1.125rem',
-      color: '#9CA3AF'
+      color: '#9CA3AF',
     },
     opponentsGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
       gap: '1.5rem',
-      marginBottom: '2rem'
+      marginBottom: '2rem',
     },
     opponentCard: {
       backgroundColor: '#374151',
@@ -150,29 +314,29 @@ const OpponentAnalysis = ({ user }) => {
       padding: '1.5rem',
       border: '1px solid #4B5563',
       cursor: 'pointer',
-      transition: 'all 0.2s'
+      transition: 'all 0.2s',
     },
     opponentCardHover: {
       backgroundColor: '#4B5563',
       transform: 'translateY(-2px)',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
     },
     opponentHeader: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     opponentName: {
       fontSize: '1.5rem',
       fontWeight: 'bold',
-      color: '#E5E7EB'
+      color: '#E5E7EB',
     },
     lastResult: {
       padding: '0.5rem 1rem',
       borderRadius: '0.5rem',
       fontSize: '0.875rem',
-      fontWeight: '600'
+      fontWeight: '600',
     },
     win: { backgroundColor: '#10B981', color: 'white' },
     loss: { backgroundColor: '#EF4444', color: 'white' },
@@ -181,24 +345,24 @@ const OpponentAnalysis = ({ user }) => {
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
       gap: '1rem',
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     infoItem: {
       fontSize: '0.875rem',
-      color: '#9CA3AF'
+      color: '#9CA3AF',
     },
     infoValue: {
       color: '#E5E7EB',
-      fontWeight: '500'
+      fontWeight: '500',
     },
     strengths: {
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     strengthsTitle: {
       fontSize: '0.875rem',
       fontWeight: '600',
       color: '#E5E7EB',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     strengthTag: {
       display: 'inline-block',
@@ -208,16 +372,16 @@ const OpponentAnalysis = ({ user }) => {
       borderRadius: '0.25rem',
       fontSize: '0.75rem',
       marginRight: '0.5rem',
-      marginBottom: '0.25rem'
+      marginBottom: '0.25rem',
     },
     weaknesses: {
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     weaknessesTitle: {
       fontSize: '0.875rem',
       fontWeight: '600',
       color: '#E5E7EB',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     weaknessTag: {
       display: 'inline-block',
@@ -227,16 +391,16 @@ const OpponentAnalysis = ({ user }) => {
       borderRadius: '0.25rem',
       fontSize: '0.75rem',
       marginRight: '0.5rem',
-      marginBottom: '0.25rem'
+      marginBottom: '0.25rem',
     },
     keyPlayers: {
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     keyPlayersTitle: {
       fontSize: '0.875rem',
       fontWeight: '600',
       color: '#E5E7EB',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     playerItem: {
       display: 'flex',
@@ -245,40 +409,40 @@ const OpponentAnalysis = ({ user }) => {
       padding: '0.5rem',
       backgroundColor: '#1F2937',
       borderRadius: '0.25rem',
-      marginBottom: '0.25rem'
+      marginBottom: '0.25rem',
     },
     playerName: {
       fontSize: '0.875rem',
-      color: '#E5E7EB'
+      color: '#E5E7EB',
     },
     playerRating: {
       fontSize: '0.875rem',
       fontWeight: 'bold',
-      color: '#10B981'
+      color: '#10B981',
     },
     analysisContainer: {
       backgroundColor: '#374151',
       borderRadius: '0.75rem',
       padding: '2rem',
       border: '1px solid #4B5563',
-      marginTop: '2rem'
+      marginTop: '2rem',
     },
     analysisTitle: {
       fontSize: '1.5rem',
       fontWeight: 'bold',
       color: '#E5E7EB',
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     analysisGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-      gap: '1.5rem'
+      gap: '1.5rem',
     },
     analysisCard: {
       backgroundColor: '#1F2937',
       padding: '1.5rem',
       borderRadius: '0.5rem',
-      border: '1px solid #4B5563'
+      border: '1px solid #4B5563',
     },
     analysisCardTitle: {
       fontSize: '1.125rem',
@@ -287,7 +451,7 @@ const OpponentAnalysis = ({ user }) => {
       marginBottom: '1rem',
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem'
+      gap: '0.5rem',
     },
     counterMeasure: {
       display: 'flex',
@@ -296,7 +460,7 @@ const OpponentAnalysis = ({ user }) => {
       padding: '0.5rem',
       backgroundColor: '#374151',
       borderRadius: '0.25rem',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     tacticalAdvice: {
       display: 'flex',
@@ -305,35 +469,43 @@ const OpponentAnalysis = ({ user }) => {
       padding: '0.5rem',
       backgroundColor: '#374151',
       borderRadius: '0.25rem',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     threatLevel: {
       padding: '0.5rem 1rem',
       borderRadius: '0.5rem',
       fontSize: '0.875rem',
       fontWeight: '600',
-      textAlign: 'center'
+      textAlign: 'center',
     },
     high: { backgroundColor: '#EF4444', color: 'white' },
     medium: { backgroundColor: '#F59E0B', color: 'white' },
-    low: { backgroundColor: '#10B981', color: 'white' }
+    low: { backgroundColor: '#10B981', color: 'white' },
   };
 
-  const getResultColor = (result) => {
+  const getResultColor = result => {
     switch (result) {
-      case 'W': return styles.win;
-      case 'L': return styles.loss;
-      case 'D': return styles.draw;
-      default: return styles.draw;
+      case 'W':
+        return styles.win;
+      case 'L':
+        return styles.loss;
+      case 'D':
+        return styles.draw;
+      default:
+        return styles.draw;
     }
   };
 
-  const getThreatColor = (level) => {
+  const getThreatColor = level => {
     switch (level) {
-      case 'high': return styles.high;
-      case 'medium': return styles.medium;
-      case 'low': return styles.low;
-      default: return styles.medium;
+      case 'high':
+        return styles.high;
+      case 'medium':
+        return styles.medium;
+      case 'low':
+        return styles.low;
+      default:
+        return styles.medium;
     }
   };
 
@@ -349,17 +521,17 @@ const OpponentAnalysis = ({ user }) => {
 
       {/* Opponents Grid */}
       <div style={styles.opponentsGrid}>
-        {opponents.map((opponent) => (
+        {opponents.map(opponent => (
           <div
             key={opponent.id}
             style={styles.opponentCard}
             onClick={() => analyzeOpponent(opponent)}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               e.currentTarget.style.backgroundColor = '#4B5563';
               e.currentTarget.style.transform = 'translateY(-2px)';
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               e.currentTarget.style.backgroundColor = '#374151';
               e.currentTarget.style.transform = 'translateY(0)';
               e.currentTarget.style.boxShadow = 'none';
@@ -368,7 +540,12 @@ const OpponentAnalysis = ({ user }) => {
             {/* Header */}
             <div style={styles.opponentHeader}>
               <div style={styles.opponentName}>{opponent.name}</div>
-              <div style={{ ...styles.lastResult, ...getResultColor(opponent.result) }}>
+              <div
+                style={{
+                  ...styles.lastResult,
+                  ...getResultColor(opponent.result),
+                }}
+              >
                 {opponent.result} {opponent.score}
               </div>
             </div>
@@ -385,7 +562,9 @@ const OpponentAnalysis = ({ user }) => {
               </div>
               <div style={styles.infoItem}>
                 <div>Possesso:</div>
-                <div style={styles.infoValue}>{opponent.analysis.possession}%</div>
+                <div style={styles.infoValue}>
+                  {opponent.analysis.possession}%
+                </div>
               </div>
               <div style={styles.infoItem}>
                 <div>Tiri:</div>
@@ -431,9 +610,9 @@ const OpponentAnalysis = ({ user }) => {
 
       {/* Formation Viewer */}
       {selectedOpponent && (
-        <OpponentFormationViewer 
+        <OpponentFormationViewer
           opponent={selectedOpponent}
-          onAnalyze={(aiAnalysis) => setAnalysis(aiAnalysis)}
+          onAnalyze={aiAnalysis => setAnalysis(aiAnalysis)}
         />
       )}
 
@@ -443,7 +622,7 @@ const OpponentAnalysis = ({ user }) => {
           <h2 style={styles.analysisTitle}>
             🧠 Analisi AI: {selectedOpponent.name}
           </h2>
-          
+
           <div style={styles.analysisGrid}>
             {/* Threat Level */}
             <div style={styles.analysisCard}>
@@ -451,10 +630,21 @@ const OpponentAnalysis = ({ user }) => {
                 <AlertTriangle size={20} />
                 Livello di Minaccia
               </div>
-              <div style={{ ...styles.threatLevel, ...getThreatColor(analysis.threatLevel) }}>
+              <div
+                style={{
+                  ...styles.threatLevel,
+                  ...getThreatColor(analysis.threatLevel),
+                }}
+              >
                 {analysis.threatLevel.toUpperCase()}
               </div>
-              <p style={{ color: '#9CA3AF', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+              <p
+                style={{
+                  color: '#9CA3AF',
+                  fontSize: '0.875rem',
+                  marginTop: '0.5rem',
+                }}
+              >
                 Basato su giocatori chiave e statistiche recenti
               </p>
             </div>
@@ -497,16 +687,24 @@ const OpponentAnalysis = ({ user }) => {
                 <Users size={20} />
                 Formazione Consigliata
               </div>
-              <div style={{ 
-                fontSize: '1.5rem', 
-                fontWeight: 'bold', 
-                color: '#10B981',
-                textAlign: 'center',
-                margin: '1rem 0'
-              }}>
+              <div
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 'bold',
+                  color: '#10B981',
+                  textAlign: 'center',
+                  margin: '1rem 0',
+                }}
+              >
                 {analysis.recommendedFormation}
               </div>
-              <p style={{ color: '#9CA3AF', fontSize: '0.875rem', textAlign: 'center' }}>
+              <p
+                style={{
+                  color: '#9CA3AF',
+                  fontSize: '0.875rem',
+                  textAlign: 'center',
+                }}
+              >
                 Ottimizzata per contrastare {selectedOpponent.formation}
               </p>
             </div>
@@ -516,37 +714,49 @@ const OpponentAnalysis = ({ user }) => {
 
       {/* Loading State */}
       {isAnalyzing && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: '#374151',
-            padding: '2rem',
-            borderRadius: '0.75rem',
-            textAlign: 'center'
-          }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              border: '4px solid #4B5563',
-              borderTop: '4px solid #10B981',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 1rem'
-            }}></div>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#374151',
+              padding: '2rem',
+              borderRadius: '0.75rem',
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                border: '4px solid #4B5563',
+                borderTop: '4px solid #10B981',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 1rem',
+              }}
+            ></div>
             <div style={{ color: '#E5E7EB', fontSize: '1.125rem' }}>
               🧠 Analisi AI in corso...
             </div>
-            <div style={{ color: '#9CA3AF', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+            <div
+              style={{
+                color: '#9CA3AF',
+                fontSize: '0.875rem',
+                marginTop: '0.5rem',
+              }}
+            >
               Analizzando {selectedOpponent?.name}...
             </div>
           </div>

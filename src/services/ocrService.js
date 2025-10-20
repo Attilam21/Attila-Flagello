@@ -1,5 +1,9 @@
 // Servizio OCR per analizzare le immagini di eFootball
-import { createPlayerModel, createMatchModel, createTeamModel } from '../types/gameData.js';
+import {
+  createPlayerModel,
+  createMatchModel,
+  createTeamModel,
+} from '../types/gameData.js';
 
 class OCRService {
   constructor() {
@@ -9,10 +13,10 @@ class OCRService {
 
   async initialize() {
     if (this.isInitialized) return;
-    
+
     try {
       console.log('🔍 Initializing Fast OCR Service...');
-      
+
       // Inizializza Tesseract.js con configurazione ottimizzata per velocità
       const { createWorker } = await import('tesseract.js');
       this.worker = await createWorker('eng', 1, {
@@ -23,10 +27,11 @@ class OCRService {
         },
         // Configurazione ottimizzata per velocità
         tessedit_pageseg_mode: '6', // Assume uniform block of text
-        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:()-/ ',
-        preserve_interword_spaces: '1'
+        tessedit_char_whitelist:
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:()-/ ',
+        preserve_interword_spaces: '1',
       });
-      
+
       this.isInitialized = true;
       console.log('✅ Fast OCR Service initialized');
     } catch (error) {
@@ -39,9 +44,9 @@ class OCRService {
   // Analizza un'immagine di profilo giocatore
   async analyzePlayerImage(imageFile) {
     await this.initialize();
-    
+
     console.log('👤 Analyzing player image...');
-    
+
     try {
       // Simula analisi OCR per ora
       const mockPlayerData = {
@@ -63,27 +68,27 @@ class OCRService {
           defensiveAwareness: 95,
           tackling: 92,
           speed: 85,
-          acceleration: 88
+          acceleration: 88,
         },
         abilities: ['Marcatore', 'Intercettazione', 'Leader'],
         matchesPlayed: 156,
         goals: 2,
-        assists: 5
+        assists: 5,
       };
 
       return createPlayerModel(mockPlayerData);
     } catch (error) {
       console.error('❌ Error analyzing player image:', error);
-      throw error;
+      return null;
     }
   }
 
   // Analizza un'immagine di statistiche partita
   async analyzeMatchImage(imageFile) {
     await this.initialize();
-    
+
     console.log('⚽ Analyzing match statistics...');
-    
+
     try {
       const mockMatchData = {
         homeTeam: 'Orange County SC',
@@ -95,35 +100,35 @@ class OCRService {
           totalShots: { home: 16, away: 8 },
           shotsOnTarget: { home: 10, away: 4 },
           passes: { home: 110, away: 137 },
-          successfulPasses: { home: 81, away: 100 }
+          successfulPasses: { home: 81, away: 100 },
         },
         playerRatings: {
           home: [
             { name: 'Petr Čech', rating: 6.5, position: 'PT' },
             { name: 'Paolo Maldini', rating: 6.0, position: 'DC' },
-            { name: 'Alessandro Del Piero', rating: 8.5, position: 'SP' }
+            { name: 'Alessandro Del Piero', rating: 8.5, position: 'SP' },
           ],
           away: [
             { name: 'Gianluigi Donnarumma', rating: 5.5, position: 'PT' },
             { name: 'Ronaldinho', rating: 5.0, position: 'AMF' },
-            { name: 'Neymar Jr', rating: 6.0, position: 'LWF' }
-          ]
-        }
+            { name: 'Neymar Jr', rating: 6.0, position: 'LWF' },
+          ],
+        },
       };
 
       return createMatchModel(mockMatchData);
     } catch (error) {
       console.error('❌ Error analyzing match image:', error);
-      throw error;
+      return null;
     }
   }
 
   // Analizza un'immagine di formazione squadra
   async analyzeTeamImage(imageFile) {
     await this.initialize();
-    
+
     console.log('🏆 Analyzing team formation...');
-    
+
     try {
       const mockTeamData = {
         name: 'Corinthians S.C. Paulista',
@@ -137,59 +142,54 @@ class OCRService {
             { name: 'Javier Zanetti', rating: 103, position: 'TS' },
             { name: 'Paolo Maldini', rating: 102, position: 'DC' },
             { name: 'Frank Rijkaard', rating: 105, position: 'DC' },
-            { name: 'Fabio Cannavaro', rating: 105, position: 'DC' }
+            { name: 'Fabio Cannavaro', rating: 105, position: 'DC' },
           ],
           midfielders: [
             { name: 'Wesley Sneijder', rating: 104, position: 'TRQ' },
             { name: 'Edgar Davids', rating: 102, position: 'CC' },
-            { name: 'Patrick Vieira', rating: 104, position: 'MED' }
+            { name: 'Patrick Vieira', rating: 104, position: 'MED' },
           ],
           forwards: [
             { name: 'Vinícius Júnior', rating: 105, position: 'P' },
-            { name: 'Samuel Eto\'o', rating: 104, position: 'SP' },
-            { name: 'Ruud Gullit', rating: 104, position: 'SP' }
-          ]
-        }
+            { name: "Samuel Eto'o", rating: 104, position: 'SP' },
+            { name: 'Ruud Gullit', rating: 104, position: 'SP' },
+          ],
+        },
       };
 
       return createTeamModel(mockTeamData);
     } catch (error) {
       console.error('❌ Error analyzing team image:', error);
-      throw error;
+      return null;
     }
   }
 
   // Analizza aree di attacco
   async analyzeAttackAreas(imageFile) {
     await this.initialize();
-    
+
     console.log('📊 Analyzing attack areas...');
-    
-    try {
-      return {
-        home: { left: 46, center: 45, right: 9 },
-        away: { left: 19, center: 64, right: 17 }
-      };
-    } catch (error) {
-      console.error('❌ Error analyzing attack areas:', error);
-      throw error;
-    }
+
+    return {
+      home: { left: 46, center: 45, right: 9 },
+      away: { left: 19, center: 64, right: 17 },
+    };
   }
 
   // Riconosce il tipo di immagine
   async detectImageType(imageFile) {
     await this.initialize();
-    
+
     console.log('🔍 Detecting image type...');
-    
+
     // Simula rilevamento del tipo di immagine
     const imageTypes = {
       PLAYER_PROFILE: 'player_profile',
-      MATCH_STATS: 'match_stats', 
+      MATCH_STATS: 'match_stats',
       TEAM_FORMATION: 'team_formation',
       ATTACK_AREAS: 'attack_areas',
       BALL_RECOVERY: 'ball_recovery',
-      UNKNOWN: 'unknown'
+      UNKNOWN: 'unknown',
     };
 
     // Per ora restituisce un tipo casuale per demo
@@ -200,12 +200,12 @@ class OCRService {
   // Processa qualsiasi immagine eFootball
   async processImage(imageFile) {
     await this.initialize();
-    
+
     console.log('🔄 Processing eFootball image...');
-    
+
     try {
       const imageType = await this.detectImageType(imageFile);
-      
+
       switch (imageType) {
         case 'player_profile':
           return await this.analyzePlayerImage(imageFile);
@@ -216,20 +216,21 @@ class OCRService {
         case 'attack_areas':
           return await this.analyzeAttackAreas(imageFile);
         default:
-          throw new Error('Tipo di immagine non riconosciuto');
+          console.warn('⚠️ Tipo di immagine non riconosciuto');
+          return null;
       }
     } catch (error) {
       console.error('❌ Error processing image:', error);
-      throw error;
+      return null;
     }
   }
 
   // OCR veloce con timeout ridotto
   async processImageWithTesseract(imageFile) {
     await this.initialize();
-    
+
     console.log('🔥 Processing image with Fast OCR...');
-    
+
     try {
       if (!this.worker) {
         console.log('⚠️ Tesseract not available, using immediate fallback');
@@ -238,29 +239,34 @@ class OCRService {
 
       // Converti file in URL per Tesseract
       const imageUrl = await this.fileToUrl(imageFile);
-      
+
       // OCR con timeout di 10 secondi
       const ocrPromise = this.worker.recognize(imageUrl);
-      const timeoutPromise = new Promise((_, reject) => 
+      const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('OCR timeout - too slow')), 10000)
       );
-      
+
       const result = await Promise.race([ocrPromise, timeoutPromise]);
       const text = result.data.text;
-      
-      console.log('📝 Fast OCR text extracted:', text.substring(0, 100) + '...');
-      
+
+      console.log(
+        '📝 Fast OCR text extracted:',
+        text.substring(0, 100) + '...'
+      );
+
       // Analizza il testo per determinare il tipo di immagine
       const imageType = this.analyzeTextForImageType(text);
       const structuredData = this.parseTextToStructuredData(text, imageType);
-      
-      console.log('✅ Fast OCR completed:', { imageType, textLength: text.length });
+
+      console.log('✅ Fast OCR completed:', {
+        imageType,
+        textLength: text.length,
+      });
       return structuredData;
-      
     } catch (error) {
       console.error('❌ Fast OCR failed:', error);
       console.log('🔄 Using immediate simulation fallback...');
-      
+
       // Fallback immediato alla simulazione
       return await this.processImageWithSimulation(imageFile);
     }
@@ -269,14 +275,14 @@ class OCRService {
   // Fallback con simulazione
   async processImageWithSimulation(imageFile) {
     console.log('🔄 Using OCR simulation fallback...');
-    
+
     try {
       // Simula elaborazione OCR
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       const imageType = await this.detectImageType(imageFile);
       let result;
-      
+
       switch (imageType) {
         case 'player_profile':
           result = await this.analyzePlayerImage(imageFile);
@@ -293,13 +299,12 @@ class OCRService {
         default:
           result = { type: 'unknown', data: 'Immagine non riconosciuta' };
       }
-      
+
       console.log('✅ Simulation OCR completed:', result);
       return result;
-      
     } catch (error) {
       console.error('❌ Simulation OCR failed:', error);
-      throw error;
+      return null;
     }
   }
 
@@ -316,20 +321,36 @@ class OCRService {
   // Analizza il testo per determinare il tipo di immagine
   analyzeTextForImageType(text) {
     const lowerText = text.toLowerCase();
-    
-    if (lowerText.includes('rating') || lowerText.includes('overall') || lowerText.includes('stats')) {
+
+    if (
+      lowerText.includes('rating') ||
+      lowerText.includes('overall') ||
+      lowerText.includes('stats')
+    ) {
       return 'player_profile';
     }
-    if (lowerText.includes('match') || lowerText.includes('score') || lowerText.includes('possession')) {
+    if (
+      lowerText.includes('match') ||
+      lowerText.includes('score') ||
+      lowerText.includes('possession')
+    ) {
       return 'match_stats';
     }
-    if (lowerText.includes('formation') || lowerText.includes('tactics') || lowerText.includes('coach')) {
+    if (
+      lowerText.includes('formation') ||
+      lowerText.includes('tactics') ||
+      lowerText.includes('coach')
+    ) {
       return 'team_formation';
     }
-    if (lowerText.includes('attack') || lowerText.includes('area') || lowerText.includes('zone')) {
+    if (
+      lowerText.includes('attack') ||
+      lowerText.includes('area') ||
+      lowerText.includes('zone')
+    ) {
       return 'attack_areas';
     }
-    
+
     return 'unknown';
   }
 
@@ -340,7 +361,7 @@ class OCRService {
       type: imageType,
       rawText: text,
       extractedData: this.extractStructuredData(text, imageType),
-      confidence: 0.85
+      confidence: 0.85,
     };
   }
 
@@ -348,11 +369,11 @@ class OCRService {
   extractStructuredData(text, imageType) {
     // Implementazione semplificata - espandibile
     const lines = text.split('\n').filter(line => line.trim());
-    
+
     return {
       lines: lines.slice(0, 10), // Prime 10 righe
       wordCount: text.split(' ').length,
-      imageType: imageType
+      imageType: imageType,
     };
   }
 }
@@ -360,4 +381,3 @@ class OCRService {
 // Esporta istanza singleton
 export const ocrService = new OCRService();
 export default ocrService;
-

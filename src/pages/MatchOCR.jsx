@@ -25,6 +25,27 @@ const MatchOCR = ({ user }) => {
   const [analyzedData, setAnalyzedData] = useState(null);
   const [imageType, setImageType] = useState(null);
 
+  // Listener per risultati OCR in tempo reale - DISABILITATO TEMPORANEAMENTE
+  useEffect(() => {
+    console.log('🔍 OCR listener disabled - using local processing');
+
+    // TODO: Riabilitare quando Cloud Functions saranno configurate
+    // const unsubscribe = listenToOCRResults(user.uid, result => {
+    //   console.log('🔍 OCR result received:', result);
+    //   if (result) {
+    //     setOcrStatus(result.status || 'processing');
+    //     setOcrText(result.text || '');
+    //     setOcrError(result.error || null);
+    //   }
+    // });
+
+    // return () => {
+    //   if (typeof unsubscribe === 'function') {
+    //     unsubscribe();
+    //   }
+    // };
+  }, [user]);
+
   if (!user) {
     return (
       <div
@@ -48,29 +69,6 @@ const MatchOCR = ({ user }) => {
       </div>
     );
   }
-
-  // Listener per risultati OCR in tempo reale - DISABILITATO TEMPORANEAMENTE
-  useEffect(() => {
-    if (!user) return;
-
-    console.log('🔍 OCR listener disabled - using local processing');
-    
-    // TODO: Riabilitare quando Cloud Functions saranno configurate
-    // const unsubscribe = listenToOCRResults(user.uid, result => {
-    //   console.log('🔍 OCR result received:', result);
-    //   if (result) {
-    //     setOcrStatus(result.status || 'processing');
-    //     setOcrText(result.text || '');
-    //     setOcrError(result.error || null);
-    //   }
-    // });
-
-    // return () => {
-    //   if (typeof unsubscribe === 'function') {
-    //     unsubscribe();
-    //   }
-    // };
-  }, [user.uid]);
 
   const handleFileChange = e => {
     const selectedFile = e.target.files[0];
@@ -101,25 +99,24 @@ const MatchOCR = ({ user }) => {
 
   const handleAnalyzeImage = async () => {
     if (!file) return;
-    
+
     setOcrStatus('processing');
     setOcrError(null);
-    
+
     try {
       console.log('🔍 Starting OCR analysis...');
-      
-          // Analizza l'immagine con il servizio OCR REALE
-          console.log('🔍 Using REAL OCR service...');
-          const result = await realOCRService.processImage(file);
-          setAnalyzedData(result);
 
-          // Determina il tipo di immagine
-          const detectedType = result.type || 'unknown';
-          setImageType(detectedType);
-      
+      // Analizza l'immagine con il servizio OCR REALE
+      console.log('🔍 Using REAL OCR service...');
+      const result = await realOCRService.processImage(file);
+      setAnalyzedData(result);
+
+      // Determina il tipo di immagine
+      const detectedType = result.type || 'unknown';
+      setImageType(detectedType);
+
       setOcrStatus('done');
       console.log('✅ OCR analysis completed:', result);
-      
     } catch (error) {
       console.error('❌ OCR analysis failed:', error);
       setOcrError(error.message);
@@ -144,7 +141,9 @@ const MatchOCR = ({ user }) => {
       console.log('⏰ OCR timeout - stopping processing');
       setUploading(false);
       setOcrStatus('error');
-      setOcrError('Timeout: L\'analisi OCR ha impiegato troppo tempo. Usando dati di esempio.');
+      setOcrError(
+        "Timeout: L'analisi OCR ha impiegato troppo tempo. Usando dati di esempio."
+      );
     }, 15000); // 15 secondi timeout ridotto
 
     try {
@@ -156,22 +155,22 @@ const MatchOCR = ({ user }) => {
 
       // Prima carica l'immagine su Firebase con timeout ridotto
       const uploadPromise = uploadMatchImage(file, user.uid);
-      const uploadTimeout = new Promise((_, reject) => 
+      const uploadTimeout = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Upload timeout')), 8000)
       );
-      
+
       const downloadURL = await Promise.race([uploadPromise, uploadTimeout]);
       console.log('✅ Image uploaded to Firebase:', downloadURL);
 
       // Poi processa con OCR avanzato con timeout ridotto
       const ocrPromise = advancedOCRService.processImageWithTesseract(file);
-      const ocrTimeout = new Promise((_, reject) => 
+      const ocrTimeout = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('OCR timeout')), 10000)
       );
-      
+
       const ocrResult = await Promise.race([ocrPromise, ocrTimeout]);
       setAnalyzedData(ocrResult);
-      
+
       const detectedType = ocrResult.type || 'unknown';
       setImageType(detectedType);
 
@@ -192,10 +191,10 @@ const MatchOCR = ({ user }) => {
     } catch (err) {
       clearTimeout(timeoutId);
       console.error('❌ Upload failed:', err);
-      
+
       let errorMessage = 'Errore sconosciuto';
       let useFallback = false;
-      
+
       if (err.message.includes('timeout')) {
         errorMessage = 'Timeout: Usando dati di esempio per la demo.';
         useFallback = true;
@@ -208,7 +207,7 @@ const MatchOCR = ({ user }) => {
       } else {
         errorMessage = `Errore: ${err.message}`;
       }
-      
+
       if (useFallback) {
         console.log('🔄 Using fallback data due to timeout/error');
         // Usa dati di esempio invece di mostrare errore
@@ -218,9 +217,9 @@ const MatchOCR = ({ user }) => {
           extractedData: {
             lines: ['Player Name: Demo Player', 'Rating: 95', 'Position: ST'],
             wordCount: 6,
-            imageType: 'player_profile'
+            imageType: 'player_profile',
           },
-          confidence: 0.5
+          confidence: 0.5,
         };
         setAnalyzedData(fallbackData);
         setImageType('player_profile');
@@ -237,7 +236,7 @@ const MatchOCR = ({ user }) => {
         bytes: file.size,
         mime: file.type,
         error: err.message,
-        useFallback
+        useFallback,
       });
     } finally {
       setUploading(false);
@@ -422,49 +421,56 @@ const MatchOCR = ({ user }) => {
           </div>
         )}
 
-            <div className="flex gap-2">
-              <button
-                onClick={handleAnalyzeImage}
-                disabled={!file || ocrStatus === 'processing'}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {ocrStatus === 'processing' ? '⏳ Analizzando...' : '🔍 Analizza Immagine'}
-              </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleAnalyzeImage}
+            disabled={!file || ocrStatus === 'processing'}
+            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {ocrStatus === 'processing'
+              ? '⏳ Analizzando...'
+              : '🔍 Analizza Immagine'}
+          </button>
 
-              <button
-                onClick={handleUpload}
-                disabled={!file || uploading || ocrStatus === 'processing'}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {uploading ? '⏳ Caricamento...' : '🚀 Carica su Firebase'}
-              </button>
-            </div>
+          <button
+            onClick={handleUpload}
+            disabled={!file || uploading || ocrStatus === 'processing'}
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {uploading ? '⏳ Caricamento...' : '🚀 Carica su Firebase'}
+          </button>
+        </div>
 
-            {/* Pulsante di emergenza per bypassare OCR */}
-            <div className="mt-4">
-              <button
-                onClick={() => {
-                  console.log('🚨 Emergency fallback activated');
-                  const fallbackData = {
-                    type: 'player_profile',
-                    rawText: 'Emergency fallback - OCR bypassed',
-                    extractedData: {
-                      lines: ['Player: Emergency Demo', 'Rating: 90', 'Position: CF', 'Team: Demo FC'],
-                      wordCount: 8,
-                      imageType: 'player_profile'
-                    },
-                    confidence: 0.8
-                  };
-                  setAnalyzedData(fallbackData);
-                  setImageType('player_profile');
-                  setOcrStatus('done');
-                  setOcrText('Dati di emergenza caricati (OCR bypassato)');
-                }}
-                className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
-              >
-                🚨 Usa Dati di Esempio (Bypass OCR)
-              </button>
-            </div>
+        {/* Pulsante di emergenza per bypassare OCR */}
+        <div className="mt-4">
+          <button
+            onClick={() => {
+              console.log('🚨 Emergency fallback activated');
+              const fallbackData = {
+                type: 'player_profile',
+                rawText: 'Emergency fallback - OCR bypassed',
+                extractedData: {
+                  lines: [
+                    'Player: Emergency Demo',
+                    'Rating: 90',
+                    'Position: CF',
+                    'Team: Demo FC',
+                  ],
+                  wordCount: 8,
+                  imageType: 'player_profile',
+                },
+                confidence: 0.8,
+              };
+              setAnalyzedData(fallbackData);
+              setImageType('player_profile');
+              setOcrStatus('done');
+              setOcrText('Dati di emergenza caricati (OCR bypassato)');
+            }}
+            className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
+          >
+            🚨 Usa Dati di Esempio (Bypass OCR)
+          </button>
+        </div>
 
         {uploadError && <div style={styles.error}>❌ {uploadError}</div>}
       </div>
@@ -519,8 +525,12 @@ const MatchOCR = ({ user }) => {
               <div className="flex items-center gap-3">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-600"></div>
                 <div>
-                  <div className="font-semibold">🔍 Analisi OCR in corso...</div>
-                  <div className="text-sm">Tesseract.js sta processando l'immagine</div>
+                  <div className="font-semibold">
+                    🔍 Analisi OCR in corso...
+                  </div>
+                  <div className="text-sm">
+                    Tesseract.js sta processando l'immagine
+                  </div>
                 </div>
               </div>
             </div>
@@ -529,71 +539,97 @@ const MatchOCR = ({ user }) => {
           {ocrStatus === 'done' && analyzedData && (
             <div className="space-y-6">
               <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                ✅ Analisi completata! Tipo rilevato: <strong>{imageType}</strong>
+                ✅ Analisi completata! Tipo rilevato:{' '}
+                <strong>{imageType}</strong>
               </div>
-              
-                  {/* Visualizza dati analizzati in base al tipo */}
-                  {imageType === 'formation_2d' && (
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Formazione 2D</h3>
-                      <Formation2D 
-                        formation={analyzedData.formation} 
-                        players={analyzedData.players} 
-                        showDetails={true} 
-                      />
-                      
-                      {/* Analisi AI della squadra */}
-                      <div className="mt-6">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">🧠 Analisi AI Squadra</h3>
-                        <TeamAnalysis 
-                          players={analyzedData.players} 
-                          formation={analyzedData.formation}
-                          showDetails={true} 
-                        />
-                      </div>
-                    </div>
-                  )}
 
-                  {imageType === 'player_stats' && (
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Statistiche Giocatore</h3>
-                      <PlayerStatsAdvanced 
-                        stats={analyzedData.stats} 
-                        showDetails={true} 
-                      />
-                    </div>
-                  )}
-
-                  {imageType === 'match_stats' && (
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Statistiche Partita</h3>
-                      <MatchStats match={analyzedData} showPlayerRatings={true} />
-                    </div>
-                  )}
-
-                  {imageType === 'player_profile' && (
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Profilo Giocatore</h3>
-                      <PlayerCard player={analyzedData} showDetails={true} />
-                    </div>
-                  )}
-              
-              {imageType === 'team_formation' && (
+              {/* Visualizza dati analizzati in base al tipo */}
+              {imageType === 'formation_2d' && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Formazione Squadra</h3>
-                  <div className="bg-gray-100 p-4 rounded-lg">
-                    <p><strong>Squadra:</strong> {analyzedData.name}</p>
-                    <p><strong>Allenatore:</strong> {analyzedData.coach}</p>
-                    <p><strong>Formazione:</strong> {analyzedData.formation}</p>
-                    <p><strong>Stile di gioco:</strong> {analyzedData.playStyle}</p>
-                    <p><strong>Forza complessiva:</strong> {analyzedData.overallStrength}</p>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Formazione 2D
+                  </h3>
+                  <Formation2D
+                    formation={analyzedData.formation}
+                    players={analyzedData.players}
+                    showDetails={true}
+                  />
+
+                  {/* Analisi AI della squadra */}
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                      🧠 Analisi AI Squadra
+                    </h3>
+                    <TeamAnalysis
+                      players={analyzedData.players}
+                      formation={analyzedData.formation}
+                      showDetails={true}
+                    />
                   </div>
                 </div>
               )}
-              
+
+              {imageType === 'player_stats' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Statistiche Giocatore
+                  </h3>
+                  <PlayerStatsAdvanced
+                    stats={analyzedData.stats}
+                    showDetails={true}
+                  />
+                </div>
+              )}
+
+              {imageType === 'match_stats' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Statistiche Partita
+                  </h3>
+                  <MatchStats match={analyzedData} showPlayerRatings={true} />
+                </div>
+              )}
+
+              {imageType === 'player_profile' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Profilo Giocatore
+                  </h3>
+                  <PlayerCard player={analyzedData} showDetails={true} />
+                </div>
+              )}
+
+              {imageType === 'team_formation' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Formazione Squadra
+                  </h3>
+                  <div className="bg-gray-100 p-4 rounded-lg">
+                    <p>
+                      <strong>Squadra:</strong> {analyzedData.name}
+                    </p>
+                    <p>
+                      <strong>Allenatore:</strong> {analyzedData.coach}
+                    </p>
+                    <p>
+                      <strong>Formazione:</strong> {analyzedData.formation}
+                    </p>
+                    <p>
+                      <strong>Stile di gioco:</strong> {analyzedData.playStyle}
+                    </p>
+                    <p>
+                      <strong>Forza complessiva:</strong>{' '}
+                      {analyzedData.overallStrength}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {imageType === 'attack_areas' && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Aree di Attacco</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Aree di Attacco
+                  </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-100 p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Squadra Casa</h4>
@@ -718,7 +754,7 @@ const MatchOCR = ({ user }) => {
 
       {/* Debug OCR */}
       {file && (
-        <OCRDebug 
+        <OCRDebug
           imageFile={file}
           ocrResult={analyzedData}
           onRetry={handleAnalyzeImage}

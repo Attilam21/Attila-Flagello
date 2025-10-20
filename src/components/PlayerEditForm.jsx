@@ -8,7 +8,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
     age: 18,
     nationality: '',
     team: '',
-    
+
     // Statistiche Attacco
     attackingStats: {
       offensiveAwareness: 50,
@@ -20,9 +20,9 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       finishing: 50,
       heading: 50,
       placeKicking: 50,
-      curl: 50
+      curl: 50,
     },
-    
+
     // Statistiche Difesa
     defendingStats: {
       defensiveAwareness: 50,
@@ -33,9 +33,9 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       gkCatching: 40,
       gkParrying: 40,
       gkReflexes: 40,
-      gkReach: 40
+      gkReach: 40,
     },
-    
+
     // Statistiche Atletismo
     athleticStats: {
       speed: 50,
@@ -44,35 +44,35 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       jumping: 50,
       physicalContact: 50,
       balance: 50,
-      stamina: 50
+      stamina: 50,
     },
-    
+
     // Caratteristiche Fisiche
     physical: {
       height: 180,
       weight: 70,
-      preferredFoot: 'Right'
+      preferredFoot: 'Right',
     },
-    
+
     // Caratteristiche Avanzate
     advanced: {
       weakFootFrequency: 2,
       weakFootAccuracy: 2,
       form: 2,
-      injuryResistance: 1
+      injuryResistance: 1,
     },
-    
+
     // Abilità Speciali
     abilities: [],
     aiPlayStyles: [],
     boosters: [],
-    
+
     // Contratto
     contract: {
       salary: 1000000,
       expiry: '2025-06-30',
-      releaseClause: 10000000
-    }
+      releaseClause: 10000000,
+    },
   });
 
   useEffect(() => {
@@ -84,16 +84,22 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
         age: player.age || 18,
         nationality: player.nationality || '',
         team: player.team || '',
-        
-        attackingStats: { ...formData.attackingStats, ...player.attackingStats },
-        defendingStats: { ...formData.defendingStats, ...player.defendingStats },
+
+        attackingStats: {
+          ...formData.attackingStats,
+          ...player.attackingStats,
+        },
+        defendingStats: {
+          ...formData.defendingStats,
+          ...player.defendingStats,
+        },
         athleticStats: { ...formData.athleticStats, ...player.athleticStats },
         physical: { ...formData.physical, ...player.physical },
         advanced: { ...formData.advanced, ...player.advanced },
         abilities: player.abilities || [],
         aiPlayStyles: player.aiPlayStyles || [],
         boosters: player.boosters || [],
-        contract: { ...formData.contract, ...player.contract }
+        contract: { ...formData.contract, ...player.contract },
       });
     }
   }, [player]);
@@ -105,13 +111,13 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
         ...prev,
         [parent]: {
           ...prev[parent],
-          [child]: value
-        }
+          [child]: value,
+        },
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        [field]: value
+        [field]: value,
       }));
     }
   };
@@ -120,16 +126,16 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
     setFormData(prev => {
       const currentArray = prev[field] || [];
       let newArray;
-      
+
       if (action === 'add') {
         newArray = [...currentArray, value];
       } else if (action === 'remove') {
         newArray = currentArray.filter(item => item !== value);
       }
-      
+
       return {
         ...prev,
-        [field]: newArray
+        [field]: newArray,
       };
     });
   };
@@ -140,12 +146,12 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       alert('Inserisci il nome del giocatore');
       return;
     }
-    
+
     if (!formData.position) {
       alert('Seleziona una posizione');
       return;
     }
-    
+
     try {
       // Converte i dati del form nel formato atteso
       const playerData = {
@@ -155,7 +161,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
         age: formData.age || 18,
         nationality: formData.nationality || 'Unknown',
         team: formData.team || 'Unknown',
-        
+
         // Statistiche nel formato compatibile
         stats: {
           pace: formData.athleticStats?.speed || 50,
@@ -163,42 +169,71 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
           passing: formData.attackingStats?.lowPass || 50,
           dribbling: formData.attackingStats?.dribbling || 50,
           defending: formData.defendingStats?.defensiveAwareness || 50,
-          physical: formData.athleticStats?.physicalContact || 50
+          physical: formData.athleticStats?.physicalContact || 50,
         },
-        
+
         // Statistiche dettagliate
         attackingStats: formData.attackingStats || {},
         defendingStats: formData.defendingStats || {},
         athleticStats: formData.athleticStats || {},
-        
+
         // Caratteristiche fisiche
-        physical: formData.physical || { height: 180, weight: 70, preferredFoot: 'Right' },
-        
+        physical: formData.physical || {
+          height: 180,
+          weight: 70,
+          preferredFoot: 'Right',
+        },
+
         // Caratteristiche avanzate
-        advanced: formData.advanced || { weakFootFrequency: 2, weakFootAccuracy: 2, form: 2, injuryResistance: 1 },
-        
+        advanced: formData.advanced || {
+          weakFootFrequency: 2,
+          weakFootAccuracy: 2,
+          form: 2,
+          injuryResistance: 1,
+        },
+
         // Abilità e stili
         abilities: formData.abilities || [],
         aiPlayStyles: formData.aiPlayStyles || [],
         boosters: formData.boosters || [],
-        
+
         // Campi legacy per compatibilità
-        form: formData.advanced?.form === 1 ? 'Poor' : 
-              formData.advanced?.form === 2 ? 'Average' : 
-              formData.advanced?.form === 3 ? 'Good' : 'Excellent',
+        form:
+          formData.advanced?.form === 1
+            ? 'Poor'
+            : formData.advanced?.form === 2
+              ? 'Average'
+              : formData.advanced?.form === 3
+                ? 'Good'
+                : 'Excellent',
         preferredFoot: formData.physical?.preferredFoot || 'Right',
-        weakFootFrequency: formData.advanced?.weakFootFrequency === 1 ? 'Low' :
-                          formData.advanced?.weakFootFrequency === 2 ? 'Medium' :
-                          formData.advanced?.weakFootFrequency === 3 ? 'High' : 'Very High',
-        weakFootAccuracy: formData.advanced?.weakFootAccuracy === 1 ? 'Low' :
-                         formData.advanced?.weakFootAccuracy === 2 ? 'Medium' :
-                         formData.advanced?.weakFootAccuracy === 3 ? 'High' : 'Very High',
-        injuryResistance: formData.advanced?.injuryResistance === 1 ? 'Low' :
-                         formData.advanced?.injuryResistance === 2 ? 'Medium' :
-                         formData.advanced?.injuryResistance === 3 ? 'High' : 'Very High',
-        alternativePositions: []
+        weakFootFrequency:
+          formData.advanced?.weakFootFrequency === 1
+            ? 'Low'
+            : formData.advanced?.weakFootFrequency === 2
+              ? 'Medium'
+              : formData.advanced?.weakFootFrequency === 3
+                ? 'High'
+                : 'Very High',
+        weakFootAccuracy:
+          formData.advanced?.weakFootAccuracy === 1
+            ? 'Low'
+            : formData.advanced?.weakFootAccuracy === 2
+              ? 'Medium'
+              : formData.advanced?.weakFootAccuracy === 3
+                ? 'High'
+                : 'Very High',
+        injuryResistance:
+          formData.advanced?.injuryResistance === 1
+            ? 'Low'
+            : formData.advanced?.injuryResistance === 2
+              ? 'Medium'
+              : formData.advanced?.injuryResistance === 3
+                ? 'High'
+                : 'Very High',
+        alternativePositions: [],
       };
-      
+
       console.log('Form data converted:', playerData);
       onSave(playerData);
     } catch (error) {
@@ -209,28 +244,73 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
 
   // Opzioni per i dropdown
   const positions = [
-    'GK', 'CB', 'LB', 'RB', 'CDM', 'CMF', 'AMF', 'LMF', 'RMF', 
-    'LW', 'RW', 'SS', 'CF'
+    'GK',
+    'CB',
+    'LB',
+    'RB',
+    'CDM',
+    'CMF',
+    'AMF',
+    'LMF',
+    'RMF',
+    'LW',
+    'RW',
+    'SS',
+    'CF',
   ];
 
   const abilities = [
-    'Elastico', 'Sombrero', 'Finta di forbici', 'Roulette', 'Step Over',
-    'Cross Calibrato', 'Passaggio Filtrante', 'Tiro a Giro', 'Colpo di Testa',
-    'Marcatore', 'Scivolata', 'Intercettazione', 'Parata', 'Uscite',
-    'Distribuzione', 'Riflessi', 'Leader', 'Spirito Combattivo'
+    'Elastico',
+    'Sombrero',
+    'Finta di forbici',
+    'Roulette',
+    'Step Over',
+    'Cross Calibrato',
+    'Passaggio Filtrante',
+    'Tiro a Giro',
+    'Colpo di Testa',
+    'Marcatore',
+    'Scivolata',
+    'Intercettazione',
+    'Parata',
+    'Uscite',
+    'Distribuzione',
+    'Riflessi',
+    'Leader',
+    'Spirito Combattivo',
   ];
 
   const aiPlayStyles = [
-    'Goal Poacher', 'Dummy Runner', 'Fox in the Box', 'Target Man',
-    'Creative Playmaker', 'Advanced Playmaker', 'Box-to-Box', 'Anchor Man',
-    'Destroyer', 'Orchestrator', 'Roaming Flank', 'Cross Specialist',
-    'Defensive Full-back', 'Offensive Full-back', 'Extra Frontman',
-    'Defensive Goalkeeper', 'Offensive Goalkeeper'
+    'Goal Poacher',
+    'Dummy Runner',
+    'Fox in the Box',
+    'Target Man',
+    'Creative Playmaker',
+    'Advanced Playmaker',
+    'Box-to-Box',
+    'Anchor Man',
+    'Destroyer',
+    'Orchestrator',
+    'Roaming Flank',
+    'Cross Specialist',
+    'Defensive Full-back',
+    'Offensive Full-back',
+    'Extra Frontman',
+    'Defensive Goalkeeper',
+    'Offensive Goalkeeper',
   ];
 
   const boosterTypes = [
-    'Attacco', 'Difesa', 'Fisico', 'Velocità', 'Passaggio', 'Tiro',
-    'Controllo', 'Resistenza', 'Salto', 'Equilibrio'
+    'Attacco',
+    'Difesa',
+    'Fisico',
+    'Velocità',
+    'Passaggio',
+    'Tiro',
+    'Controllo',
+    'Resistenza',
+    'Salto',
+    'Equilibrio',
   ];
 
   const styles = {
@@ -244,7 +324,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      zIndex: 1000
+      zIndex: 1000,
     },
     modal: {
       backgroundColor: '#1F2937',
@@ -254,7 +334,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       width: '95%',
       maxHeight: '90vh',
       overflowY: 'auto',
-      border: '1px solid #374151'
+      border: '1px solid #374151',
     },
     header: {
       display: 'flex',
@@ -262,12 +342,12 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       alignItems: 'center',
       marginBottom: '2rem',
       paddingBottom: '1rem',
-      borderBottom: '1px solid #374151'
+      borderBottom: '1px solid #374151',
     },
     title: {
       fontSize: '1.5rem',
       fontWeight: 'bold',
-      color: '#E5E7EB'
+      color: '#E5E7EB',
     },
     closeButton: {
       backgroundColor: '#EF4444',
@@ -276,38 +356,38 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       borderRadius: '0.375rem',
       padding: '0.5rem 1rem',
       cursor: 'pointer',
-      fontSize: '0.875rem'
+      fontSize: '0.875rem',
     },
     form: {
       display: 'grid',
-      gap: '1.5rem'
+      gap: '1.5rem',
     },
     section: {
       backgroundColor: '#374151',
       borderRadius: '0.5rem',
       padding: '1.5rem',
-      border: '1px solid #4B5563'
+      border: '1px solid #4B5563',
     },
     sectionTitle: {
       fontSize: '1.25rem',
       fontWeight: 'bold',
       color: '#E5E7EB',
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     grid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-      gap: '1rem'
+      gap: '1rem',
     },
     field: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '0.5rem'
+      gap: '0.5rem',
     },
     label: {
       fontSize: '0.875rem',
       fontWeight: '500',
-      color: '#E5E7EB'
+      color: '#E5E7EB',
     },
     input: {
       padding: '0.75rem',
@@ -315,7 +395,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       border: '1px solid #4B5563',
       backgroundColor: '#2D3748',
       color: '#E5E7EB',
-      fontSize: '0.875rem'
+      fontSize: '0.875rem',
     },
     select: {
       padding: '0.75rem',
@@ -323,7 +403,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       border: '1px solid #4B5563',
       backgroundColor: '#2D3748',
       color: '#E5E7EB',
-      fontSize: '0.875rem'
+      fontSize: '0.875rem',
     },
     range: {
       width: '100%',
@@ -331,14 +411,14 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       borderRadius: '3px',
       background: '#4B5563',
       outline: 'none',
-      appearance: 'none'
+      appearance: 'none',
     },
     rangeValue: {
       fontSize: '0.875rem',
       color: '#10B981',
       fontWeight: 'bold',
       textAlign: 'center',
-      marginTop: '0.25rem'
+      marginTop: '0.25rem',
     },
     chip: {
       display: 'inline-flex',
@@ -349,7 +429,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       padding: '0.25rem 0.75rem',
       borderRadius: '1rem',
       fontSize: '0.75rem',
-      margin: '0.25rem'
+      margin: '0.25rem',
     },
     chipRemove: {
       backgroundColor: 'transparent',
@@ -357,7 +437,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       color: 'white',
       cursor: 'pointer',
       fontSize: '0.875rem',
-      padding: '0'
+      padding: '0',
     },
     addButton: {
       backgroundColor: '#3B82F6',
@@ -367,7 +447,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       padding: '0.5rem 1rem',
       cursor: 'pointer',
       fontSize: '0.875rem',
-      marginTop: '0.5rem'
+      marginTop: '0.5rem',
     },
     actions: {
       display: 'flex',
@@ -375,7 +455,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       gap: '1rem',
       marginTop: '2rem',
       paddingTop: '1rem',
-      borderTop: '1px solid #374151'
+      borderTop: '1px solid #374151',
     },
     saveButton: {
       backgroundColor: '#10B981',
@@ -385,7 +465,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       padding: '0.75rem 1.5rem',
       cursor: 'pointer',
       fontSize: '1rem',
-      fontWeight: '600'
+      fontWeight: '600',
     },
     cancelButton: {
       backgroundColor: '#6B7280',
@@ -395,8 +475,8 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
       padding: '0.75rem 1.5rem',
       cursor: 'pointer',
       fontSize: '1rem',
-      fontWeight: '600'
-    }
+      fontWeight: '600',
+    },
   };
 
   const renderStatField = (label, field, value, min = 0, max = 100) => (
@@ -407,7 +487,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
         min={min}
         max={max}
         value={value}
-        onChange={(e) => handleInputChange(field, parseInt(e.target.value))}
+        onChange={e => handleInputChange(field, parseInt(e.target.value))}
         style={styles.range}
       />
       <div style={styles.rangeValue}>{value}</div>
@@ -431,7 +511,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
         ))}
       </div>
       <select
-        onChange={(e) => {
+        onChange={e => {
           if (e.target.value && !selectedItems.includes(e.target.value)) {
             handleArrayChange(field, e.target.value, 'add');
           }
@@ -471,7 +551,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={e => handleInputChange('name', e.target.value)}
                   style={styles.input}
                   placeholder="Nome del giocatore"
                 />
@@ -480,11 +560,13 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
                 <label style={styles.label}>Posizione</label>
                 <select
                   value={formData.position}
-                  onChange={(e) => handleInputChange('position', e.target.value)}
+                  onChange={e => handleInputChange('position', e.target.value)}
                   style={styles.select}
                 >
                   {positions.map(pos => (
-                    <option key={pos} value={pos}>{pos}</option>
+                    <option key={pos} value={pos}>
+                      {pos}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -495,7 +577,9 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
                   min="40"
                   max="100"
                   value={formData.rating}
-                  onChange={(e) => handleInputChange('rating', parseInt(e.target.value))}
+                  onChange={e =>
+                    handleInputChange('rating', parseInt(e.target.value))
+                  }
                   style={styles.input}
                 />
               </div>
@@ -506,7 +590,9 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
                   min="16"
                   max="45"
                   value={formData.age}
-                  onChange={(e) => handleInputChange('age', parseInt(e.target.value))}
+                  onChange={e =>
+                    handleInputChange('age', parseInt(e.target.value))
+                  }
                   style={styles.input}
                 />
               </div>
@@ -515,7 +601,9 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
                 <input
                   type="text"
                   value={formData.nationality}
-                  onChange={(e) => handleInputChange('nationality', e.target.value)}
+                  onChange={e =>
+                    handleInputChange('nationality', e.target.value)
+                  }
                   style={styles.input}
                   placeholder="Es. Italia"
                 />
@@ -525,7 +613,7 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
                 <input
                   type="text"
                   value={formData.team}
-                  onChange={(e) => handleInputChange('team', e.target.value)}
+                  onChange={e => handleInputChange('team', e.target.value)}
                   style={styles.input}
                   placeholder="Es. Juventus"
                 />
@@ -544,7 +632,12 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
                   min="150"
                   max="220"
                   value={formData.physical.height}
-                  onChange={(e) => handleInputChange('physical.height', parseInt(e.target.value))}
+                  onChange={e =>
+                    handleInputChange(
+                      'physical.height',
+                      parseInt(e.target.value)
+                    )
+                  }
                   style={styles.input}
                 />
               </div>
@@ -555,7 +648,12 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
                   min="50"
                   max="120"
                   value={formData.physical.weight}
-                  onChange={(e) => handleInputChange('physical.weight', parseInt(e.target.value))}
+                  onChange={e =>
+                    handleInputChange(
+                      'physical.weight',
+                      parseInt(e.target.value)
+                    )
+                  }
                   style={styles.input}
                 />
               </div>
@@ -563,7 +661,9 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
                 <label style={styles.label}>Piede Preferito</label>
                 <select
                   value={formData.physical.preferredFoot}
-                  onChange={(e) => handleInputChange('physical.preferredFoot', e.target.value)}
+                  onChange={e =>
+                    handleInputChange('physical.preferredFoot', e.target.value)
+                  }
                   style={styles.select}
                 >
                   <option value="Right">Destro</option>
@@ -577,16 +677,56 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>⚽ Statistiche Attacco</h3>
             <div style={styles.grid}>
-              {renderStatField('Consapevolezza Offensiva', 'attackingStats.offensiveAwareness', formData.attackingStats.offensiveAwareness)}
-              {renderStatField('Controllo Palla', 'attackingStats.ballControl', formData.attackingStats.ballControl)}
-              {renderStatField('Dribbling', 'attackingStats.dribbling', formData.attackingStats.dribbling)}
-              {renderStatField('Possesso Stretto', 'attackingStats.tightPossession', formData.attackingStats.tightPossession)}
-              {renderStatField('Passaggio Basso', 'attackingStats.lowPass', formData.attackingStats.lowPass)}
-              {renderStatField('Passaggio Alto', 'attackingStats.loftedPass', formData.attackingStats.loftedPass)}
-              {renderStatField('Finalizzazione', 'attackingStats.finishing', formData.attackingStats.finishing)}
-              {renderStatField('Colpo di Testa', 'attackingStats.heading', formData.attackingStats.heading)}
-              {renderStatField('Calci Piazzati', 'attackingStats.placeKicking', formData.attackingStats.placeKicking)}
-              {renderStatField('Curva', 'attackingStats.curl', formData.attackingStats.curl)}
+              {renderStatField(
+                'Consapevolezza Offensiva',
+                'attackingStats.offensiveAwareness',
+                formData.attackingStats.offensiveAwareness
+              )}
+              {renderStatField(
+                'Controllo Palla',
+                'attackingStats.ballControl',
+                formData.attackingStats.ballControl
+              )}
+              {renderStatField(
+                'Dribbling',
+                'attackingStats.dribbling',
+                formData.attackingStats.dribbling
+              )}
+              {renderStatField(
+                'Possesso Stretto',
+                'attackingStats.tightPossession',
+                formData.attackingStats.tightPossession
+              )}
+              {renderStatField(
+                'Passaggio Basso',
+                'attackingStats.lowPass',
+                formData.attackingStats.lowPass
+              )}
+              {renderStatField(
+                'Passaggio Alto',
+                'attackingStats.loftedPass',
+                formData.attackingStats.loftedPass
+              )}
+              {renderStatField(
+                'Finalizzazione',
+                'attackingStats.finishing',
+                formData.attackingStats.finishing
+              )}
+              {renderStatField(
+                'Colpo di Testa',
+                'attackingStats.heading',
+                formData.attackingStats.heading
+              )}
+              {renderStatField(
+                'Calci Piazzati',
+                'attackingStats.placeKicking',
+                formData.attackingStats.placeKicking
+              )}
+              {renderStatField(
+                'Curva',
+                'attackingStats.curl',
+                formData.attackingStats.curl
+              )}
             </div>
           </div>
 
@@ -594,15 +734,51 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>🛡️ Statistiche Difesa</h3>
             <div style={styles.grid}>
-              {renderStatField('Consapevolezza Difensiva', 'defendingStats.defensiveAwareness', formData.defendingStats.defensiveAwareness)}
-              {renderStatField('Impegno Difensivo', 'defendingStats.defensiveEngagement', formData.defendingStats.defensiveEngagement)}
-              {renderStatField('Contrasto', 'defendingStats.tackling', formData.defendingStats.tackling)}
-              {renderStatField('Aggressione', 'defendingStats.aggression', formData.defendingStats.aggression)}
-              {renderStatField('Portiere', 'defendingStats.goalkeeping', formData.defendingStats.goalkeeping)}
-              {renderStatField('Cattura GK', 'defendingStats.gkCatching', formData.defendingStats.gkCatching)}
-              {renderStatField('Parata GK', 'defendingStats.gkParrying', formData.defendingStats.gkParrying)}
-              {renderStatField('Riflessi GK', 'defendingStats.gkReflexes', formData.defendingStats.gkReflexes)}
-              {renderStatField('Raggiungimento GK', 'defendingStats.gkReach', formData.defendingStats.gkReach)}
+              {renderStatField(
+                'Consapevolezza Difensiva',
+                'defendingStats.defensiveAwareness',
+                formData.defendingStats.defensiveAwareness
+              )}
+              {renderStatField(
+                'Impegno Difensivo',
+                'defendingStats.defensiveEngagement',
+                formData.defendingStats.defensiveEngagement
+              )}
+              {renderStatField(
+                'Contrasto',
+                'defendingStats.tackling',
+                formData.defendingStats.tackling
+              )}
+              {renderStatField(
+                'Aggressione',
+                'defendingStats.aggression',
+                formData.defendingStats.aggression
+              )}
+              {renderStatField(
+                'Portiere',
+                'defendingStats.goalkeeping',
+                formData.defendingStats.goalkeeping
+              )}
+              {renderStatField(
+                'Cattura GK',
+                'defendingStats.gkCatching',
+                formData.defendingStats.gkCatching
+              )}
+              {renderStatField(
+                'Parata GK',
+                'defendingStats.gkParrying',
+                formData.defendingStats.gkParrying
+              )}
+              {renderStatField(
+                'Riflessi GK',
+                'defendingStats.gkReflexes',
+                formData.defendingStats.gkReflexes
+              )}
+              {renderStatField(
+                'Raggiungimento GK',
+                'defendingStats.gkReach',
+                formData.defendingStats.gkReach
+              )}
             </div>
           </div>
 
@@ -610,13 +786,41 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>💪 Statistiche Atletismo</h3>
             <div style={styles.grid}>
-              {renderStatField('Velocità', 'athleticStats.speed', formData.athleticStats.speed)}
-              {renderStatField('Accelerazione', 'athleticStats.acceleration', formData.athleticStats.acceleration)}
-              {renderStatField('Potenza di Calcio', 'athleticStats.kickingPower', formData.athleticStats.kickingPower)}
-              {renderStatField('Salto', 'athleticStats.jumping', formData.athleticStats.jumping)}
-              {renderStatField('Contatto Fisico', 'athleticStats.physicalContact', formData.athleticStats.physicalContact)}
-              {renderStatField('Equilibrio', 'athleticStats.balance', formData.athleticStats.balance)}
-              {renderStatField('Resistenza', 'athleticStats.stamina', formData.athleticStats.stamina)}
+              {renderStatField(
+                'Velocità',
+                'athleticStats.speed',
+                formData.athleticStats.speed
+              )}
+              {renderStatField(
+                'Accelerazione',
+                'athleticStats.acceleration',
+                formData.athleticStats.acceleration
+              )}
+              {renderStatField(
+                'Potenza di Calcio',
+                'athleticStats.kickingPower',
+                formData.athleticStats.kickingPower
+              )}
+              {renderStatField(
+                'Salto',
+                'athleticStats.jumping',
+                formData.athleticStats.jumping
+              )}
+              {renderStatField(
+                'Contatto Fisico',
+                'athleticStats.physicalContact',
+                formData.athleticStats.physicalContact
+              )}
+              {renderStatField(
+                'Equilibrio',
+                'athleticStats.balance',
+                formData.athleticStats.balance
+              )}
+              {renderStatField(
+                'Resistenza',
+                'athleticStats.stamina',
+                formData.athleticStats.stamina
+              )}
             </div>
           </div>
 
@@ -624,10 +828,34 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>🎯 Caratteristiche Avanzate</h3>
             <div style={styles.grid}>
-              {renderStatField('Uso Piede Debole', 'advanced.weakFootFrequency', formData.advanced.weakFootFrequency, 1, 4)}
-              {renderStatField('Precisione Piede Debole', 'advanced.weakFootAccuracy', formData.advanced.weakFootAccuracy, 1, 4)}
-              {renderStatField('Forma', 'advanced.form', formData.advanced.form, 1, 4)}
-              {renderStatField('Resistenza Infortuni', 'advanced.injuryResistance', formData.advanced.injuryResistance, 1, 4)}
+              {renderStatField(
+                'Uso Piede Debole',
+                'advanced.weakFootFrequency',
+                formData.advanced.weakFootFrequency,
+                1,
+                4
+              )}
+              {renderStatField(
+                'Precisione Piede Debole',
+                'advanced.weakFootAccuracy',
+                formData.advanced.weakFootAccuracy,
+                1,
+                4
+              )}
+              {renderStatField(
+                'Forma',
+                'advanced.form',
+                formData.advanced.form,
+                1,
+                4
+              )}
+              {renderStatField(
+                'Resistenza Infortuni',
+                'advanced.injuryResistance',
+                formData.advanced.injuryResistance,
+                1,
+                4
+              )}
             </div>
           </div>
 
@@ -635,8 +863,18 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>⭐ Abilità e Stili di Gioco</h3>
             <div style={styles.grid}>
-              {renderArrayField('Abilità Speciali', 'abilities', abilities, formData.abilities)}
-              {renderArrayField('Stili di Gioco IA', 'aiPlayStyles', aiPlayStyles, formData.aiPlayStyles)}
+              {renderArrayField(
+                'Abilità Speciali',
+                'abilities',
+                abilities,
+                formData.abilities
+              )}
+              {renderArrayField(
+                'Stili di Gioco IA',
+                'aiPlayStyles',
+                aiPlayStyles,
+                formData.aiPlayStyles
+              )}
             </div>
           </div>
 

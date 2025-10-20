@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, ArrowRight, Users, Target, BarChart3, Brain, Camera, Settings } from 'lucide-react';
+import {
+  CheckCircle,
+  ArrowRight,
+  Users,
+  Target,
+  BarChart3,
+  Brain,
+  Camera,
+  Settings,
+} from 'lucide-react';
 
 const UXFlowManager = ({ currentPage, onPageChange, user }) => {
   const [completedSteps, setCompletedSteps] = useState([]);
@@ -13,7 +22,7 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       description: 'Panoramica generale della tua squadra',
       icon: <BarChart3 size={24} />,
       color: '#3B82F6',
-      required: true
+      required: true,
     },
     {
       id: 'rosa',
@@ -21,7 +30,7 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       description: 'Aggiungi e gestisci i tuoi giocatori',
       icon: <Users size={24} />,
       color: '#10B981',
-      required: true
+      required: true,
     },
     {
       id: 'matchocr',
@@ -29,7 +38,7 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       description: 'Carica screenshot e analizza le prestazioni',
       icon: <Camera size={24} />,
       color: '#F59E0B',
-      required: false
+      required: false,
     },
     {
       id: 'statistiche',
@@ -37,7 +46,7 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       description: 'Analisi dettagliate delle prestazioni',
       icon: <BarChart3 size={24} />,
       color: '#8B5CF6',
-      required: false
+      required: false,
     },
     {
       id: 'avversario',
@@ -45,25 +54,25 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       description: 'Studia le formazioni degli avversari',
       icon: <Target size={24} />,
       color: '#EF4444',
-      required: false
-    }
+      required: false,
+    },
   ];
 
   // Simula completamento passi basato su dati esistenti
   useEffect(() => {
     const mockCompletedSteps = [];
-    
+
     // Simula che l'utente abbia già completato alcuni passi
     if (user) {
       mockCompletedSteps.push('dashboard');
-      
+
       // Simula che abbia giocatori nella rosa
       const hasPlayers = true; // In una vera app, controllerebbe i dati
       if (hasPlayers) {
         mockCompletedSteps.push('rosa');
       }
     }
-    
+
     setCompletedSteps(mockCompletedSteps);
   }, [user]);
 
@@ -73,7 +82,7 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
     setCurrentStep(currentIndex >= 0 ? currentIndex : 0);
   }, [currentPage]);
 
-  const getStepStatus = (stepId) => {
+  const getStepStatus = stepId => {
     if (completedSteps.includes(stepId)) return 'completed';
     if (stepId === currentPage) return 'current';
     return 'pending';
@@ -95,13 +104,13 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       borderRadius: '0.75rem',
       padding: '1.5rem',
       marginBottom: '2rem',
-      border: '1px solid #4B5563'
+      border: '1px solid #4B5563',
     },
     header: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: '1.5rem'
+      marginBottom: '1.5rem',
     },
     title: {
       fontSize: '1.25rem',
@@ -109,7 +118,7 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       color: '#E5E7EB',
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem'
+      gap: '0.5rem',
     },
     progressBar: {
       width: '100%',
@@ -117,19 +126,19 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       backgroundColor: '#374151',
       borderRadius: '2px',
       overflow: 'hidden',
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     progressFill: {
       height: '100%',
       backgroundColor: '#10B981',
       borderRadius: '2px',
-      transition: 'width 0.3s ease'
+      transition: 'width 0.3s ease',
     },
     stepsContainer: {
       display: 'flex',
       gap: '1rem',
       overflowX: 'auto',
-      paddingBottom: '0.5rem'
+      paddingBottom: '0.5rem',
     },
     step: {
       minWidth: '200px',
@@ -138,40 +147,40 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       border: '1px solid #4B5563',
       cursor: 'pointer',
       transition: 'all 0.2s',
-      position: 'relative'
+      position: 'relative',
     },
     stepCompleted: {
       backgroundColor: '#10B981',
       borderColor: '#10B981',
-      color: 'white'
+      color: 'white',
     },
     stepCurrent: {
       backgroundColor: '#3B82F6',
       borderColor: '#3B82F6',
-      color: 'white'
+      color: 'white',
     },
     stepPending: {
       backgroundColor: '#374151',
       borderColor: '#4B5563',
-      color: '#9CA3AF'
+      color: '#9CA3AF',
     },
     stepHeader: {
       display: 'flex',
       alignItems: 'center',
       gap: '0.5rem',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     stepTitle: {
       fontSize: '0.875rem',
-      fontWeight: '600'
+      fontWeight: '600',
     },
     stepDescription: {
       fontSize: '0.75rem',
-      opacity: 0.8
+      opacity: 0.8,
     },
     stepIcon: {
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     stepStatus: {
       position: 'absolute',
@@ -183,7 +192,7 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: '0.75rem'
+      fontSize: '0.75rem',
     },
     navigationButtons: {
       display: 'flex',
@@ -191,7 +200,7 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       alignItems: 'center',
       marginTop: '1rem',
       paddingTop: '1rem',
-      borderTop: '1px solid #4B5563'
+      borderTop: '1px solid #4B5563',
     },
     navButton: {
       display: 'flex',
@@ -203,26 +212,26 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       cursor: 'pointer',
       fontSize: '0.875rem',
       fontWeight: '600',
-      transition: 'all 0.2s'
+      transition: 'all 0.2s',
     },
     prevButton: {
       backgroundColor: '#6B7280',
-      color: 'white'
+      color: 'white',
     },
     nextButton: {
       backgroundColor: '#10B981',
-      color: 'white'
+      color: 'white',
     },
     skipButton: {
       backgroundColor: 'transparent',
       color: '#9CA3AF',
-      border: '1px solid #4B5563'
+      border: '1px solid #4B5563',
     },
     progressText: {
       fontSize: '0.875rem',
       color: '#9CA3AF',
-      textAlign: 'center'
-    }
+      textAlign: 'center',
+    },
   };
 
   const progressPercentage = (completedSteps.length / uxFlow.length) * 100;
@@ -242,10 +251,10 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
       </div>
 
       <div style={styles.progressBar}>
-        <div 
+        <div
           style={{
             ...styles.progressFill,
-            width: `${progressPercentage}%`
+            width: `${progressPercentage}%`,
           }}
         />
       </div>
@@ -255,9 +264,11 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
           const status = getStepStatus(step.id);
           const stepStyle = {
             ...styles.step,
-            ...(status === 'completed' ? styles.stepCompleted : 
-                status === 'current' ? styles.stepCurrent : 
-                styles.stepPending)
+            ...(status === 'completed'
+              ? styles.stepCompleted
+              : status === 'current'
+                ? styles.stepCurrent
+                : styles.stepPending),
           };
 
           return (
@@ -267,22 +278,19 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
               onClick={() => onPageChange(step.id)}
             >
               <div style={styles.stepStatus}>
-                {status === 'completed' ? '✓' : 
-                 status === 'current' ? '●' : '○'}
+                {status === 'completed'
+                  ? '✓'
+                  : status === 'current'
+                    ? '●'
+                    : '○'}
               </div>
-              
+
               <div style={styles.stepHeader}>
-                <div style={styles.stepIcon}>
-                  {step.icon}
-                </div>
-                <div style={styles.stepTitle}>
-                  {step.title}
-                </div>
+                <div style={styles.stepIcon}>{step.icon}</div>
+                <div style={styles.stepTitle}>{step.title}</div>
               </div>
-              
-              <div style={styles.stepDescription}>
-                {step.description}
-              </div>
+
+              <div style={styles.stepDescription}>{step.description}</div>
             </div>
           );
         })}
@@ -309,7 +317,7 @@ const UXFlowManager = ({ currentPage, onPageChange, user }) => {
               {nextStep.title} →
             </button>
           )}
-          
+
           {!nextStep && (
             <button
               style={{ ...styles.navButton, ...styles.skipButton }}

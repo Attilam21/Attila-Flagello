@@ -8,10 +8,10 @@ class GoogleAIService {
 
   async initialize() {
     if (this.isInitialized) return;
-    
+
     try {
       console.log('🤖 Initializing Google AI Service...');
-      
+
       if (!this.apiKey) {
         console.warn('⚠️ Google AI API key not found, using simulation mode');
         this.isInitialized = true;
@@ -30,9 +30,9 @@ class GoogleAIService {
   // Chat con coach virtuale
   async chatWithCoach(message, context = {}) {
     await this.initialize();
-    
+
     console.log('💬 Chatting with eFootball Coach...');
-    
+
     try {
       if (!this.apiKey) {
         return await this.simulateCoachResponse(message, context);
@@ -41,7 +41,6 @@ class GoogleAIService {
       // Usa Google AI Gemini per rispondere
       const response = await this.callGoogleAI(message, context);
       return response;
-      
     } catch (error) {
       console.error('❌ Google AI chat failed:', error);
       return await this.simulateCoachResponse(message, context);
@@ -51,22 +50,29 @@ class GoogleAIService {
   // Chiama Google AI Gemini
   async callGoogleAI(message, context) {
     const prompt = this.buildCoachPrompt(message, context);
-    
+
     // Simula chiamata a Google AI (da implementare con API reale)
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }]
-      })
-    });
+    const response = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error('Google AI API error');
@@ -98,10 +104,10 @@ Risposta:`;
   // Simula risposta coach
   async simulateCoachResponse(message, context) {
     console.log('🔄 Using coach simulation...');
-    
+
     // Analizza il tipo di domanda
     const questionType = this.analyzeQuestionType(message);
-    
+
     switch (questionType) {
       case 'formation':
         return this.getFormationAdvice(context);
@@ -119,17 +125,23 @@ Risposta:`;
   // Analizza tipo di domanda
   analyzeQuestionType(message) {
     const lowerMessage = message.toLowerCase();
-    
-    if (lowerMessage.includes('formazione') || lowerMessage.includes('modulo')) {
+
+    if (
+      lowerMessage.includes('formazione') ||
+      lowerMessage.includes('modulo')
+    ) {
       return 'formation';
     }
-    if (lowerMessage.includes('tattica') || lowerMessage.includes('strategia')) {
+    if (
+      lowerMessage.includes('tattica') ||
+      lowerMessage.includes('strategia')
+    ) {
       return 'tactics';
     }
     if (lowerMessage.includes('giocatore') || lowerMessage.includes('player')) {
       return 'player';
     }
-    
+
     return 'general';
   }
 
@@ -139,11 +151,12 @@ Risposta:`;
       '4-3-3: Perfetta per gioco offensivo con ali veloci',
       '4-2-3-1: Equilibrata, buona per controllo centrocampo',
       '3-5-2: Aggressiva, ideale per pressing alto',
-      '5-3-2: Difensiva, ottima per contropiede'
+      '5-3-2: Difensiva, ottima per contropiede',
     ];
-    
-    const randomFormation = formations[Math.floor(Math.random() * formations.length)];
-    
+
+    const randomFormation =
+      formations[Math.floor(Math.random() * formations.length)];
+
     return `🏆 **Consiglio Formazione:**
     
 ${randomFormation}
@@ -204,15 +217,15 @@ ${randomFormation}
   // Consigli generali
   getGeneralAdvice(message) {
     const advice = [
-      'Studia sempre l\'avversario prima della partita',
+      "Studia sempre l'avversario prima della partita",
       'Mantieni la calma sotto pressione',
       'Sfrutta i punti di forza della tua squadra',
-      'Non sottovalutare mai l\'importanza della difesa',
-      'La costanza nell\'allenamento è fondamentale'
+      "Non sottovalutare mai l'importanza della difesa",
+      "La costanza nell'allenamento è fondamentale",
     ];
-    
+
     const randomAdvice = advice[Math.floor(Math.random() * advice.length)];
-    
+
     return `💡 **Consiglio del Coach:**
     
 ${randomAdvice}
@@ -243,9 +256,9 @@ Sono qui per aiutarti a migliorare nel tuo eFootball.
   // Analizza partita post-gara
   async analyzeMatch(matchData) {
     await this.initialize();
-    
+
     console.log('📊 Analyzing match with Google AI...');
-    
+
     try {
       if (!this.apiKey) {
         return await this.simulateMatchAnalysis(matchData);
@@ -256,9 +269,8 @@ Sono qui per aiutarti a migliorare nel tuo eFootball.
         `Analizza questa partita: ${JSON.stringify(matchData)}`,
         { type: 'match_analysis' }
       );
-      
+
       return analysis;
-      
     } catch (error) {
       console.error('❌ Match analysis failed:', error);
       return await this.simulateMatchAnalysis(matchData);

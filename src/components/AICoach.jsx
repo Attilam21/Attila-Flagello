@@ -10,12 +10,14 @@ const AICoach = ({ user, teamContext = {} }) => {
 
   useEffect(() => {
     // Messaggio di benvenuto
-    setMessages([{
-      id: 1,
-      type: 'coach',
-      text: '🏆 Ciao! Sono il tuo Coach Virtuale eFootball!\n\nPosso aiutarti con:\n• Analisi formazioni\n• Consigli tattici\n• Strategie di gioco\n• Analisi giocatori\n\nCosa vorresti sapere?',
-      timestamp: new Date()
-    }]);
+    setMessages([
+      {
+        id: 1,
+        type: 'coach',
+        text: '🏆 Ciao! Sono il tuo Coach Virtuale eFootball!\n\nPosso aiutarti con:\n• Analisi formazioni\n• Consigli tattici\n• Strategie di gioco\n• Analisi giocatori\n\nCosa vorresti sapere?',
+        timestamp: new Date(),
+      },
+    ]);
   }, []);
 
   useEffect(() => {
@@ -33,7 +35,7 @@ const AICoach = ({ user, teamContext = {} }) => {
       id: Date.now(),
       type: 'user',
       text: inputMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -45,24 +47,27 @@ const AICoach = ({ user, teamContext = {} }) => {
       // Simula typing delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const response = await googleAIService.chatWithCoach(inputMessage, teamContext);
-      
+      const response = await googleAIService.chatWithCoach(
+        inputMessage,
+        teamContext
+      );
+
       const coachMessage = {
         id: Date.now() + 1,
         type: 'coach',
         text: response,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, coachMessage]);
     } catch (error) {
       console.error('❌ Chat error:', error);
-      
+
       const errorMessage = {
         id: Date.now() + 1,
         type: 'coach',
         text: '❌ Scusa, ho avuto un problema. Riprova tra un momento!',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, errorMessage]);
@@ -72,7 +77,7 @@ const AICoach = ({ user, teamContext = {} }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = e => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -80,12 +85,14 @@ const AICoach = ({ user, teamContext = {} }) => {
   };
 
   const clearChat = () => {
-    setMessages([{
-      id: 1,
-      type: 'coach',
-      text: '🏆 Chat resettata! Come posso aiutarti?',
-      timestamp: new Date()
-    }]);
+    setMessages([
+      {
+        id: 1,
+        type: 'coach',
+        text: '🏆 Chat resettata! Come posso aiutarti?',
+        timestamp: new Date(),
+      },
+    ]);
   };
 
   const styles = {
@@ -95,7 +102,7 @@ const AICoach = ({ user, teamContext = {} }) => {
       height: '600px',
       display: 'flex',
       flexDirection: 'column',
-      border: '1px solid #374151'
+      border: '1px solid #374151',
     },
     header: {
       backgroundColor: '#374151',
@@ -104,7 +111,7 @@ const AICoach = ({ user, teamContext = {} }) => {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      borderBottom: '1px solid #4B5563'
+      borderBottom: '1px solid #4B5563',
     },
     title: {
       color: '#E5E7EB',
@@ -112,7 +119,7 @@ const AICoach = ({ user, teamContext = {} }) => {
       fontWeight: 'bold',
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem'
+      gap: '0.5rem',
     },
     clearButton: {
       backgroundColor: '#EF4444',
@@ -122,7 +129,7 @@ const AICoach = ({ user, teamContext = {} }) => {
       padding: '0.5rem 1rem',
       cursor: 'pointer',
       fontSize: '0.875rem',
-      fontWeight: '500'
+      fontWeight: '500',
     },
     messagesContainer: {
       flex: 1,
@@ -130,15 +137,15 @@ const AICoach = ({ user, teamContext = {} }) => {
       padding: '1rem',
       display: 'flex',
       flexDirection: 'column',
-      gap: '1rem'
+      gap: '1rem',
     },
     message: {
       display: 'flex',
       gap: '0.75rem',
-      alignItems: 'flex-start'
+      alignItems: 'flex-start',
     },
     userMessage: {
-      flexDirection: 'row-reverse'
+      flexDirection: 'row-reverse',
     },
     messageContent: {
       maxWidth: '80%',
@@ -146,17 +153,17 @@ const AICoach = ({ user, teamContext = {} }) => {
       borderRadius: '1rem',
       fontSize: '0.875rem',
       lineHeight: '1.5',
-      whiteSpace: 'pre-wrap'
+      whiteSpace: 'pre-wrap',
     },
     userMessageContent: {
       backgroundColor: '#3B82F6',
       color: 'white',
-      borderBottomRightRadius: '0.25rem'
+      borderBottomRightRadius: '0.25rem',
     },
     coachMessageContent: {
       backgroundColor: '#374151',
       color: '#E5E7EB',
-      borderBottomLeftRadius: '0.25rem'
+      borderBottomLeftRadius: '0.25rem',
     },
     avatar: {
       width: '32px',
@@ -167,22 +174,22 @@ const AICoach = ({ user, teamContext = {} }) => {
       justifyContent: 'center',
       fontSize: '1rem',
       fontWeight: 'bold',
-      flexShrink: 0
+      flexShrink: 0,
     },
     userAvatar: {
       backgroundColor: '#3B82F6',
-      color: 'white'
+      color: 'white',
     },
     coachAvatar: {
       backgroundColor: '#10B981',
-      color: 'white'
+      color: 'white',
     },
     inputContainer: {
       padding: '1rem',
       borderTop: '1px solid #374151',
       display: 'flex',
       gap: '0.75rem',
-      alignItems: 'flex-end'
+      alignItems: 'flex-end',
     },
     input: {
       flex: 1,
@@ -194,7 +201,7 @@ const AICoach = ({ user, teamContext = {} }) => {
       fontSize: '0.875rem',
       resize: 'none',
       minHeight: '40px',
-      maxHeight: '120px'
+      maxHeight: '120px',
     },
     sendButton: {
       backgroundColor: '#10B981',
@@ -208,11 +215,11 @@ const AICoach = ({ user, teamContext = {} }) => {
       display: 'flex',
       alignItems: 'center',
       gap: '0.5rem',
-      transition: 'background-color 0.2s'
+      transition: 'background-color 0.2s',
     },
     sendButtonDisabled: {
       backgroundColor: '#6B7280',
-      cursor: 'not-allowed'
+      cursor: 'not-allowed',
     },
     typingIndicator: {
       display: 'flex',
@@ -220,61 +227,64 @@ const AICoach = ({ user, teamContext = {} }) => {
       gap: '0.5rem',
       color: '#9CA3AF',
       fontSize: '0.875rem',
-      fontStyle: 'italic'
+      fontStyle: 'italic',
     },
     typingDots: {
       display: 'flex',
-      gap: '0.25rem'
+      gap: '0.25rem',
     },
     typingDot: {
       width: '4px',
       height: '4px',
       backgroundColor: '#9CA3AF',
       borderRadius: '50%',
-      animation: 'typing 1.4s infinite ease-in-out'
-    }
+      animation: 'typing 1.4s infinite ease-in-out',
+    },
   };
 
   return (
     <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
-        <div style={styles.title}>
-          🤖 Coach Virtuale eFootball
-        </div>
-        <button 
-          style={styles.clearButton}
-          onClick={clearChat}
-        >
+        <div style={styles.title}>🤖 Coach Virtuale eFootball</div>
+        <button style={styles.clearButton} onClick={clearChat}>
           🗑️ Pulisci Chat
         </button>
       </div>
 
       {/* Messages */}
       <div style={styles.messagesContainer}>
-        {messages.map((message) => (
-          <div 
+        {messages.map(message => (
+          <div
             key={message.id}
             style={{
               ...styles.message,
-              ...(message.type === 'user' ? styles.userMessage : {})
+              ...(message.type === 'user' ? styles.userMessage : {}),
             }}
           >
-            <div style={{
-              ...styles.avatar,
-              ...(message.type === 'user' ? styles.userAvatar : styles.coachAvatar)
-            }}>
+            <div
+              style={{
+                ...styles.avatar,
+                ...(message.type === 'user'
+                  ? styles.userAvatar
+                  : styles.coachAvatar),
+              }}
+            >
               {message.type === 'user' ? '👤' : '🤖'}
             </div>
-            <div style={{
-              ...styles.messageContent,
-              ...(message.type === 'user' ? styles.userMessageContent : styles.coachMessageContent)
-            }}>
+            <div
+              style={{
+                ...styles.messageContent,
+                ...(message.type === 'user'
+                  ? styles.userMessageContent
+                  : styles.coachMessageContent),
+              }}
+            >
               {message.text}
             </div>
           </div>
         ))}
-        
+
         {/* Typing Indicator */}
         {isTyping && (
           <div style={styles.message}>
@@ -283,13 +293,17 @@ const AICoach = ({ user, teamContext = {} }) => {
               Coach sta scrivendo
               <div style={styles.typingDots}>
                 <div style={styles.typingDot}></div>
-                <div style={{...styles.typingDot, animationDelay: '0.2s'}}></div>
-                <div style={{...styles.typingDot, animationDelay: '0.4s'}}></div>
+                <div
+                  style={{ ...styles.typingDot, animationDelay: '0.2s' }}
+                ></div>
+                <div
+                  style={{ ...styles.typingDot, animationDelay: '0.4s' }}
+                ></div>
               </div>
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -298,7 +312,7 @@ const AICoach = ({ user, teamContext = {} }) => {
         <textarea
           style={styles.input}
           value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
+          onChange={e => setInputMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Scrivi la tua domanda al coach..."
           disabled={isLoading}
@@ -307,7 +321,7 @@ const AICoach = ({ user, teamContext = {} }) => {
         <button
           style={{
             ...styles.sendButton,
-            ...(isLoading ? styles.sendButtonDisabled : {})
+            ...(isLoading ? styles.sendButtonDisabled : {}),
           }}
           onClick={handleSendMessage}
           disabled={isLoading || !inputMessage.trim()}
@@ -318,7 +332,9 @@ const AICoach = ({ user, teamContext = {} }) => {
 
       <style jsx>{`
         @keyframes typing {
-          0%, 60%, 100% {
+          0%,
+          60%,
+          100% {
             transform: translateY(0);
             opacity: 0.4;
           }

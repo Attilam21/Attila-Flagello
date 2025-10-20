@@ -42,7 +42,7 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
     loadTeamData();
     loadMatchHistory();
     loadStats();
-    
+
     // Mostra onboarding per nuovi utenti
     const hasSeenOnboarding = localStorage.getItem('eFootballLab_onboarding');
     if (!hasSeenOnboarding) {
@@ -66,12 +66,12 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
         { name: 'Brahim Díaz', position: 'CAM', rating: 88 },
         { name: 'Rafael Leão', position: 'LW', rating: 91 },
         { name: 'Olivier Giroud', position: 'ST', rating: 87 },
-        { name: 'Alexis Saelemaekers', position: 'RW', rating: 83 }
+        { name: 'Alexis Saelemaekers', position: 'RW', rating: 83 },
       ],
       averageRating: 87,
-      lastUpdate: new Date()
+      lastUpdate: new Date(),
     };
-    
+
     setTeamData(mockTeamData);
   };
 
@@ -84,7 +84,7 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
         score: '3-1',
         result: 'W',
         date: '2024-01-15',
-        stats: { possession: 58, shots: 12, goals: 3 }
+        stats: { possession: 58, shots: 12, goals: 3 },
       },
       {
         id: 2,
@@ -92,7 +92,7 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
         score: '1-2',
         result: 'L',
         date: '2024-01-10',
-        stats: { possession: 45, shots: 8, goals: 1 }
+        stats: { possession: 45, shots: 8, goals: 1 },
       },
       {
         id: 3,
@@ -100,10 +100,10 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
         score: '2-0',
         result: 'W',
         date: '2024-01-05',
-        stats: { possession: 52, shots: 15, goals: 2 }
-      }
+        stats: { possession: 52, shots: 15, goals: 2 },
+      },
     ];
-    
+
     setMatchHistory(mockHistory);
   };
 
@@ -119,9 +119,9 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
       avgConceded: 1.2,
       possession: 54.2,
       shotsPerGame: 12.8,
-      accuracy: 68.5
+      accuracy: 68.5,
     };
-    
+
     setStats(mockStats);
   };
 
@@ -130,26 +130,26 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
       backgroundColor: '#1F2937',
       minHeight: '100vh',
       padding: '2rem',
-      color: 'white'
+      color: 'white',
     },
     header: {
-      marginBottom: '2rem'
+      marginBottom: '2rem',
     },
     title: {
       fontSize: '2.5rem',
       fontWeight: 'bold',
       color: '#E5E7EB',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     subtitle: {
       fontSize: '1.125rem',
-      color: '#9CA3AF'
+      color: '#9CA3AF',
     },
     tabs: {
       display: 'flex',
       gap: '1rem',
       marginBottom: '2rem',
-      borderBottom: '1px solid #374151'
+      borderBottom: '1px solid #374151',
     },
     tab: {
       padding: '0.75rem 1.5rem',
@@ -160,42 +160,42 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
       cursor: 'pointer',
       fontSize: '1rem',
       fontWeight: '500',
-      transition: 'all 0.2s'
+      transition: 'all 0.2s',
     },
     activeTab: {
       backgroundColor: '#374151',
       color: '#E5E7EB',
-      borderBottom: '2px solid #10B981'
+      borderBottom: '2px solid #10B981',
     },
     content: {
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
       gap: '2rem',
-      marginBottom: '2rem'
+      marginBottom: '2rem',
     },
     statsGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
       gap: '1rem',
-      marginBottom: '2rem'
+      marginBottom: '2rem',
     },
     statCard: {
       backgroundColor: '#374151',
       padding: '1.5rem',
       borderRadius: '0.75rem',
       border: '1px solid #4B5563',
-      textAlign: 'center'
+      textAlign: 'center',
     },
     statValue: {
       fontSize: '2.5rem',
       fontWeight: 'bold',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     statLabel: {
       fontSize: '0.875rem',
       color: '#9CA3AF',
       textTransform: 'uppercase',
-      letterSpacing: '0.05em'
+      letterSpacing: '0.05em',
     },
     winRate: { color: '#10B981' },
     avgGoals: { color: '#3B82F6' },
@@ -205,7 +205,7 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
       backgroundColor: '#374151',
       borderRadius: '0.75rem',
       padding: '1.5rem',
-      border: '1px solid #4B5563'
+      border: '1px solid #4B5563',
     },
     matchItem: {
       display: 'flex',
@@ -214,41 +214,45 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
       padding: '1rem',
       backgroundColor: '#1F2937',
       borderRadius: '0.5rem',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
     },
     matchInfo: {
       display: 'flex',
       alignItems: 'center',
-      gap: '1rem'
+      gap: '1rem',
     },
     matchResult: {
       fontSize: '1.25rem',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
     win: { color: '#10B981' },
     loss: { color: '#EF4444' },
     draw: { color: '#F59E0B' },
     fullWidth: {
-      gridColumn: '1 / -1'
-    }
+      gridColumn: '1 / -1',
+    },
   };
 
-  const getStatColor = (statName) => {
+  const getStatColor = statName => {
     const colors = {
       winRate: styles.winRate,
       avgGoals: styles.avgGoals,
       possession: styles.possession,
-      accuracy: styles.accuracy
+      accuracy: styles.accuracy,
     };
     return colors[statName] || {};
   };
 
-  const getResultColor = (result) => {
+  const getResultColor = result => {
     switch (result) {
-      case 'W': return styles.win;
-      case 'L': return styles.loss;
-      case 'D': return styles.draw;
-      default: return {};
+      case 'W':
+        return styles.win;
+      case 'L':
+        return styles.loss;
+      case 'D':
+        return styles.draw;
+      default:
+        return {};
     }
   };
 
@@ -266,7 +270,14 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
     <div style={styles.content}>
       {/* Statistiche Principali */}
       <div>
-        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+        <h3
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            marginBottom: '1rem',
+            color: '#E5E7EB',
+          }}
+        >
           📊 Statistiche Squadra
         </h3>
         <div style={styles.statsGrid}>
@@ -295,11 +306,25 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
             <div style={styles.statLabel}>Precisione</div>
           </div>
         </div>
-        
+
         {/* Grafici Dashboard */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '1rem',
+            marginTop: '2rem',
+          }}
+        >
           <div style={styles.chartContainer}>
-            <h4 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+            <h4
+              style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                marginBottom: '1rem',
+                color: '#E5E7EB',
+              }}
+            >
               📈 Performance Recenti
             </h4>
             <Line
@@ -311,60 +336,69 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
                     data: [2, 3, 1, 4, 2],
                     borderColor: '#3B82F6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4
+                    tension: 0.4,
                   },
                   {
                     label: 'Gol Subiti',
                     data: [1, 2, 0, 1, 1],
                     borderColor: '#EF4444',
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    tension: 0.4
-                  }
-                ]
+                    tension: 0.4,
+                  },
+                ],
               }}
               options={{
                 responsive: true,
                 plugins: {
                   legend: {
-                    labels: { color: '#E5E7EB' }
-                  }
+                    labels: { color: '#E5E7EB' },
+                  },
                 },
                 scales: {
                   y: {
                     beginAtZero: true,
                     ticks: { color: '#9CA3AF' },
-                    grid: { color: '#4B5563' }
+                    grid: { color: '#4B5563' },
                   },
                   x: {
                     ticks: { color: '#9CA3AF' },
-                    grid: { color: '#4B5563' }
-                  }
-                }
+                    grid: { color: '#4B5563' },
+                  },
+                },
               }}
             />
           </div>
-          
+
           <div style={styles.chartContainer}>
-            <h4 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+            <h4
+              style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                marginBottom: '1rem',
+                color: '#E5E7EB',
+              }}
+            >
               ⚽ Distribuzione Risultati
             </h4>
             <Doughnut
               data={{
                 labels: ['Vittorie', 'Pareggi', 'Sconfitte'],
-                datasets: [{
-                  data: [12, 3, 2],
-                  backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
-                  borderColor: ['#059669', '#D97706', '#DC2626'],
-                  borderWidth: 2
-                }]
+                datasets: [
+                  {
+                    data: [12, 3, 2],
+                    backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+                    borderColor: ['#059669', '#D97706', '#DC2626'],
+                    borderWidth: 2,
+                  },
+                ],
               }}
               options={{
                 responsive: true,
                 plugins: {
                   legend: {
-                    labels: { color: '#E5E7EB' }
-                  }
-                }
+                    labels: { color: '#E5E7EB' },
+                  },
+                },
               }}
             />
           </div>
@@ -373,18 +407,29 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
 
       {/* Ultime Partite */}
       <div style={styles.matchHistory}>
-        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+        <h3
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            marginBottom: '1rem',
+            color: '#E5E7EB',
+          }}
+        >
           ⚽ Ultime Partite
         </h3>
-        {matchHistory.map((match) => (
+        {matchHistory.map(match => (
           <div key={match.id} style={styles.matchItem}>
             <div style={styles.matchInfo}>
               <div>
                 <div style={{ fontWeight: '600' }}>vs {match.opponent}</div>
-                <div style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>{match.date}</div>
+                <div style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>
+                  {match.date}
+                </div>
               </div>
             </div>
-            <div style={{ ...styles.matchResult, ...getResultColor(match.result) }}>
+            <div
+              style={{ ...styles.matchResult, ...getResultColor(match.result) }}
+            >
               {match.score}
             </div>
           </div>
@@ -395,14 +440,21 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
 
   const renderTeam = () => (
     <div style={styles.fullWidth}>
-      <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+      <h3
+        style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          marginBottom: '1rem',
+          color: '#E5E7EB',
+        }}
+      >
         👥 Analisi Squadra
       </h3>
       {teamData && (
-        <TeamAnalysis 
-          players={teamData.players} 
+        <TeamAnalysis
+          players={teamData.players}
           formation={teamData.formation}
-          showDetails={true} 
+          showDetails={true}
         />
       )}
     </div>
@@ -410,13 +462,17 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
 
   const renderCoach = () => (
     <div style={styles.fullWidth}>
-      <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+      <h3
+        style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          marginBottom: '1rem',
+          color: '#E5E7EB',
+        }}
+      >
         🤖 Coach Virtuale
       </h3>
-      <AICoach 
-        user={user} 
-        teamContext={teamData}
-      />
+      <AICoach user={user} teamContext={teamData} />
     </div>
   );
 
@@ -435,12 +491,13 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
       <div style={styles.header}>
         <h1 style={styles.title}>🏆 eFootballLab Dashboard</h1>
         <p style={styles.subtitle}>
-          Benvenuto, {user?.email}! Gestisci la tua squadra e migliora le tue prestazioni.
+          Benvenuto, {user?.email}! Gestisci la tua squadra e migliora le tue
+          prestazioni.
         </p>
       </div>
 
       {/* UX Flow Manager */}
-      <UXFlowManager 
+      <UXFlowManager
         currentPage="dashboard"
         onPageChange={onPageChange}
         user={user}
@@ -451,7 +508,7 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
         <button
           style={{
             ...styles.tab,
-            ...(activeTab === 'overview' ? styles.activeTab : {})
+            ...(activeTab === 'overview' ? styles.activeTab : {}),
           }}
           onClick={() => setActiveTab('overview')}
         >
@@ -460,7 +517,7 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
         <button
           style={{
             ...styles.tab,
-            ...(activeTab === 'team' ? styles.activeTab : {})
+            ...(activeTab === 'team' ? styles.activeTab : {}),
           }}
           onClick={() => setActiveTab('team')}
         >
@@ -469,7 +526,7 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
         <button
           style={{
             ...styles.tab,
-            ...(activeTab === 'coach' ? styles.activeTab : {})
+            ...(activeTab === 'coach' ? styles.activeTab : {}),
           }}
           onClick={() => setActiveTab('coach')}
         >

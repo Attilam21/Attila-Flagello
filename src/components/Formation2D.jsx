@@ -7,21 +7,21 @@ const Formation2D = ({ formation, players, showDetails = false }) => {
       padding: '1.5rem',
       borderRadius: '0.75rem',
       marginBottom: '1rem',
-      border: '1px solid #374151'
+      border: '1px solid #374151',
     },
     title: {
       fontSize: '1.25rem',
       fontWeight: 'bold',
       color: '#E5E7EB',
       marginBottom: '1rem',
-      textAlign: 'center'
+      textAlign: 'center',
     },
     formation: {
       fontSize: '1.5rem',
       fontWeight: 'bold',
       color: '#10B981',
       textAlign: 'center',
-      marginBottom: '1rem'
+      marginBottom: '1rem',
     },
     field: {
       backgroundColor: '#065F46',
@@ -30,7 +30,7 @@ const Formation2D = ({ formation, players, showDetails = false }) => {
       padding: '1rem',
       marginBottom: '1rem',
       position: 'relative',
-      minHeight: '300px'
+      minHeight: '300px',
     },
     player: {
       position: 'absolute',
@@ -42,38 +42,38 @@ const Formation2D = ({ formation, players, showDetails = false }) => {
       fontWeight: '500',
       border: '1px solid #374151',
       cursor: 'pointer',
-      transition: 'all 0.2s'
+      transition: 'all 0.2s',
     },
     playerHover: {
       backgroundColor: '#10B981',
       color: 'white',
-      transform: 'scale(1.05)'
+      transform: 'scale(1.05)',
     },
     playersList: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-      gap: '0.5rem'
+      gap: '0.5rem',
     },
     playerCard: {
       backgroundColor: '#374151',
       padding: '0.75rem',
       borderRadius: '0.5rem',
-      border: '1px solid #4B5563'
+      border: '1px solid #4B5563',
     },
     playerName: {
       fontWeight: 'bold',
       color: '#E5E7EB',
-      marginBottom: '0.25rem'
+      marginBottom: '0.25rem',
     },
     playerPosition: {
       fontSize: '0.875rem',
       color: '#10B981',
-      fontWeight: '500'
+      fontWeight: '500',
     },
     playerRole: {
       fontSize: '0.75rem',
-      color: '#9CA3AF'
-    }
+      color: '#9CA3AF',
+    },
   };
 
   // Posizioni predefinite per formazione 4-3-3
@@ -89,42 +89,39 @@ const Formation2D = ({ formation, players, showDetails = false }) => {
       { x: 70, y: 50 }, // Centrocampista destro
       { x: 20, y: 30 }, // Ala sinistra
       { x: 50, y: 30 }, // Attaccante centrale
-      { x: 80, y: 30 }  // Ala destra
+      { x: 80, y: 30 }, // Ala destra
     ];
-    
+
     return positions[index] || { x: 50, y: 50 };
   };
 
   return (
     <div style={styles.container}>
       <h3 style={styles.title}>🏆 Formazione Squadra</h3>
-      
-      {formation && (
-        <div style={styles.formation}>
-          {formation}
-        </div>
-      )}
+
+      {formation && <div style={styles.formation}>{formation}</div>}
 
       <div style={styles.field}>
-        {players && players.map((player, index) => {
-          const position = getPlayerPosition(index, players.length);
-          return (
-            <div
-              key={index}
-              style={{
-                ...styles.player,
-                left: `${position.x}%`,
-                top: `${position.y}%`,
-                transform: 'translate(-50%, -50%)'
-              }}
-              title={`${player.name} - ${player.role}`}
-            >
-              {player.name}
-              <br />
-              <small style={{ color: '#10B981' }}>{player.position}</small>
-            </div>
-          );
-        })}
+        {players &&
+          players.map((player, index) => {
+            const position = getPlayerPosition(index, players.length);
+            return (
+              <div
+                key={index}
+                style={{
+                  ...styles.player,
+                  left: `${position.x}%`,
+                  top: `${position.y}%`,
+                  transform: 'translate(-50%, -50%)',
+                }}
+                title={`${player.name} - ${player.role}`}
+              >
+                {player.name}
+                <br />
+                <small style={{ color: '#10B981' }}>{player.position}</small>
+              </div>
+            );
+          })}
       </div>
 
       {showDetails && players && (
