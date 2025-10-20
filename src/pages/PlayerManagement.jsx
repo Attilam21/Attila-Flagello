@@ -65,21 +65,21 @@ const PlayerManagement = ({ user }) => {
 
   const filteredPlayers = players
     .filter(player => {
-      const matchesSearch = player.name
+      const matchesSearch = (player.name || '')
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const matchesPosition =
-        filterPosition === 'all' || player.position === filterPosition;
+        filterPosition === 'all' || (player.position || '') === filterPosition;
       return matchesSearch && matchesPosition;
     })
     .sort((a, b) => {
       switch (sortBy) {
         case 'rating':
-          return b.rating - a.rating;
+          return (b.rating || 0) - (a.rating || 0);
         case 'age':
-          return a.age - b.age;
+          return (a.age || 25) - (b.age || 25);
         case 'name':
-          return a.name.localeCompare(b.name);
+          return (a.name || '').localeCompare(b.name || '');
         default:
           return 0;
       }
@@ -893,50 +893,50 @@ const PlayerManagement = ({ user }) => {
               <div
                 style={{
                   ...styles.formBadge,
-                  ...getFormColor(player.form),
+                  ...getFormColor(player.form || 'B'),
                 }}
               >
-                {player.form}
+{player.form || 'B'}
               </div>
 
               {/* Player Header */}
               <div style={styles.playerHeader}>
                 <div>
-                  <div style={styles.playerName}>{player.name}</div>
+                  <div style={styles.playerName}>{player.name || 'Giocatore Sconosciuto'}</div>
                   <div style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>
-                    {player.position} • {player.age} anni
+                    {player.position || 'N/A'} • {player.age || 25} anni
                   </div>
                 </div>
-                <div style={styles.playerRating}>{player.rating}</div>
+                <div style={styles.playerRating}>{player.rating || 0}</div>
               </div>
 
               {/* Player Info */}
               <div style={styles.playerInfo}>
                 <div style={styles.infoItem}>
                   <div>Nazionalità:</div>
-                  <div style={styles.infoValue}>{player.nationality}</div>
+                  <div style={styles.infoValue}>{player.nationality || 'N/A'}</div>
                 </div>
                 <div style={styles.infoItem}>
                   <div>Squadra:</div>
-                  <div style={styles.infoValue}>{player.team}</div>
+                  <div style={styles.infoValue}>{player.team || 'N/A'}</div>
                 </div>
                 <div style={styles.infoItem}>
                   <div>Altezza:</div>
                   <div style={styles.infoValue}>
-                    {player.physical.height} cm
+                    {player.physical?.height || 180} cm
                   </div>
                 </div>
                 <div style={styles.infoItem}>
                   <div>Peso:</div>
                   <div style={styles.infoValue}>
-                    {player.physical.weight} kg
+                    {player.physical?.weight || 75} kg
                   </div>
                 </div>
               </div>
 
               {/* Stats */}
               <div style={styles.statsGrid}>
-                {Object.entries(player.stats)
+                {Object.entries(player.stats || {})
                   .slice(0, 4)
                   .map(([stat, value]) => (
                     <div key={stat} style={styles.statItem}>
@@ -948,7 +948,7 @@ const PlayerManagement = ({ user }) => {
 
               {/* Stat Bars */}
               <div style={{ marginTop: '1rem' }}>
-                {Object.entries(player.stats)
+                {Object.entries(player.stats || {})
                   .slice(0, 3)
                   .map(([stat, value]) => (
                     <div key={stat} style={{ marginBottom: '0.5rem' }}>
