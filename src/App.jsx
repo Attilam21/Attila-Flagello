@@ -4,7 +4,6 @@ import { auth } from './services/firebaseClient';
 import SideNav from './components/layout/SideNav';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
-import AdvancedDashboard from './pages/AdvancedDashboard';
 import Rosa from './pages/Rosa';
 import PlayerManagement from './pages/PlayerManagement';
 import Match from './pages/Match';
@@ -143,11 +142,6 @@ function App() {
       case 'home':
         console.log('🏠 Rendering Home page');
         return <Home user={user} onPageChange={handlePageChange} />;
-      case 'dashboard':
-        console.log('📊 Rendering Advanced Dashboard page');
-        return (
-          <AdvancedDashboard user={user} onPageChange={handlePageChange} />
-        );
       case 'rosa':
         console.log('👥 Rendering Player Management page');
         return <PlayerManagement user={user} />;
