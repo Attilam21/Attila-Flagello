@@ -23,30 +23,43 @@ const Home = ({ user }) => {
   const [coachNote, setCoachNote] = useState('');
   const [showSnackbar, setShowSnackbar] = useState(false);
 
-  // Simula dati fittizi per demo
+  // Simula dati calcistici per eFootball
   useEffect(() => {
-    console.log('📊 Loading mock summary data...');
+    console.log('⚽ Loading football summary data...');
     const mockSummary = {
-      kda: { kills: 12, deaths: 3, assists: 8 },
-      winRate: 75,
-      csPerMin: 8.5,
-      dmgPerMin: 450,
-      visionScore: 85,
-      last5: ['W', 'W', 'L', 'W', 'W'],
-      level: 45,
-      rank: 'Diamond III',
+      // Statistiche calcistiche pertinenti
+      teamStats: {
+        wins: 12,
+        draws: 3,
+        losses: 2,
+        goalsScored: 28,
+        goalsConceded: 12,
+        possession: 58,
+        shotsOnTarget: 45,
+        passesCompleted: 320,
+      },
+      recentForm: ['W', 'W', 'D', 'W', 'L'],
+      teamRating: 85,
+      formation: '4-3-3',
+      topScorer: 'Mbappé',
+      topAssister: 'Messi',
+      lastMatch: {
+        opponent: 'Real Madrid',
+        result: '2-1',
+        date: '2024-01-15',
+      },
     };
     setSummary(mockSummary);
-    console.log('✅ Mock summary loaded:', mockSummary);
+    console.log('✅ Football summary loaded:', mockSummary);
   }, []);
 
   const motivationalMessages = useMemo(
     () => [
-      '🔥 Sei un campione! Continua così!',
-      '⚡ La tua determinazione è incredibile!',
-      '🏆 Ogni partita ti rende più forte!',
-      '💪 La vittoria è nelle tue mani!',
-      '🌟 Il tuo potenziale è illimitato!',
+      '⚽ La tua squadra è pronta per la vittoria!',
+      '🏆 Ogni formazione è un capolavoro tattico!',
+      '🔥 I tuoi giocatori sono in forma perfetta!',
+      '💪 La strategia è la chiave del successo!',
+      '🌟 Il calcio è arte, tu sei l\'artista!',
     ],
     []
   );
@@ -99,15 +112,15 @@ const Home = ({ user }) => {
 
         <div className="user-stats">
           <div className="stat-item">
-            <div className="stat-label">Livello</div>
-            <div className="stat-value">{summary.level}</div>
+            <div className="stat-label">Rating Squadra</div>
+            <div className="stat-value">{summary.teamRating}</div>
           </div>
           <div className="stat-item">
-            <div className="stat-label">Rank</div>
-            <div className="stat-rank">{summary.rank}</div>
+            <div className="stat-label">Formazione</div>
+            <div className="stat-rank">{summary.formation}</div>
           </div>
           <div className="user-avatar-large">
-            {user?.email?.charAt(0).toUpperCase()}
+            ⚽
           </div>
         </div>
       </div>
@@ -115,19 +128,24 @@ const Home = ({ user }) => {
       {/* Last 5 Games */}
       <div className="card">
         <div className="card-header">
-          <h3 className="card-title">📊 Ultimi 5 Match</h3>
+          <h3 className="card-title">⚽ Ultimi 5 Match</h3>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          {summary.last5.map((result, index) => (
+          {summary.recentForm.map((result, index) => (
             <span
               key={index}
-              className={`badge ${result === 'W' ? 'success' : 'error'}`}
+              className={`badge ${result === 'W' ? 'success' : result === 'D' ? 'warning' : 'error'}`}
               style={{ fontSize: '16px', padding: '8px 12px' }}
             >
               {result}
             </span>
           ))}
         </div>
+        {summary.lastMatch && (
+          <div style={{ marginTop: '12px', padding: '8px', backgroundColor: '#f5f5f5', borderRadius: '6px' }}>
+            <strong>Ultima partita:</strong> {summary.lastMatch.opponent} - {summary.lastMatch.result} ({summary.lastMatch.date})
+          </div>
+        )}
       </div>
 
       {/* KPI Cards */}
@@ -135,11 +153,11 @@ const Home = ({ user }) => {
         <div className="kpi-card">
           <div className="kpi-header">
             <div>
-              <div className="kpi-label">Win Rate</div>
-              <div className="kpi-value">{summary.winRate}%</div>
+              <div className="kpi-label">Vittorie</div>
+              <div className="kpi-value">{summary.teamStats.wins}</div>
             </div>
             <div className="kpi-icon green">
-              <TrendingUp size={20} />
+              <Trophy size={20} />
             </div>
           </div>
         </div>
@@ -147,10 +165,8 @@ const Home = ({ user }) => {
         <div className="kpi-card">
           <div className="kpi-header">
             <div>
-              <div className="kpi-label">KDA AVG</div>
-              <div className="kpi-value">
-                {summary.kda.kills}/{summary.kda.deaths}/{summary.kda.assists}
-              </div>
+              <div className="kpi-label">Gol Segnati</div>
+              <div className="kpi-value">{summary.teamStats.goalsScored}</div>
             </div>
             <div className="kpi-icon blue">
               <Target size={20} />
@@ -161,8 +177,8 @@ const Home = ({ user }) => {
         <div className="kpi-card">
           <div className="kpi-header">
             <div>
-              <div className="kpi-label">CS/min</div>
-              <div className="kpi-value">{summary.csPerMin}</div>
+              <div className="kpi-label">Possesso</div>
+              <div className="kpi-value">{summary.teamStats.possession}%</div>
             </div>
             <div className="kpi-icon yellow">
               <Clock size={20} />
@@ -173,8 +189,8 @@ const Home = ({ user }) => {
         <div className="kpi-card">
           <div className="kpi-header">
             <div>
-              <div className="kpi-label">DMG/min</div>
-              <div className="kpi-value">{summary.dmgPerMin}</div>
+              <div className="kpi-label">Passaggi</div>
+              <div className="kpi-value">{summary.teamStats.passesCompleted}</div>
             </div>
             <div className="kpi-icon red">
               <Zap size={20} />
@@ -185,8 +201,8 @@ const Home = ({ user }) => {
         <div className="kpi-card">
           <div className="kpi-header">
             <div>
-              <div className="kpi-label">Vision Score</div>
-              <div className="kpi-value">{summary.visionScore}</div>
+              <div className="kpi-label">Tiri in Porta</div>
+              <div className="kpi-value">{summary.teamStats.shotsOnTarget}</div>
             </div>
             <div className="kpi-icon purple">
               <Eye size={20} />
@@ -195,53 +211,48 @@ const Home = ({ user }) => {
         </div>
       </div>
 
-      {/* Routine Anti-Tilt */}
+      {/* Annotatore IA */}
       <div className="card">
         <div className="card-header">
-          <h3 className="card-title">🧘 Routine Anti-Tilt</h3>
+          <h3 className="card-title">🤖 Annotatore IA</h3>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div>
-            <p
-              style={{
-                fontSize: '14px',
-                color: '#9CA3AF',
-                marginBottom: '8px',
-              }}
-            >
-              {routineState.running
-                ? 'Routine in corso...'
-                : 'Pausa consigliata tra le partite'}
-            </p>
-            {routineState.running && (
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#10B981',
-                }}
-              >
-                {Math.floor(routineState.remainingSec / 60)}:
-                {(routineState.remainingSec % 60).toString().padStart(2, '0')}
-              </p>
-            )}
+        <div style={{ padding: '16px' }}>
+          <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
+            L'Annotatore IA analizza le tue partite e fornisce consigli tattici personalizzati.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button className="btn btn-primary">
+              🎯 Analizza Partita
+            </button>
+            <button className="btn btn-secondary">
+              📊 Statistiche IA
+            </button>
+            <button className="btn btn-secondary">
+              💡 Consigli Tattici
+            </button>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            {!routineState.running ? (
-              <button onClick={startRoutine} className="btn btn-primary">
-                🚀 Inizia Routine
-              </button>
-            ) : (
-              <button onClick={stopRoutine} className="btn btn-destructive">
-                ⏹️ Stop
-              </button>
-            )}
+        </div>
+      </div>
+
+      {/* Caricamento Rosa */}
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">👥 Gestione Rosa</h3>
+        </div>
+        <div style={{ padding: '16px' }}>
+          <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
+            Carica e gestisci la tua rosa con abilità, skill e booster precompilati.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button className="btn btn-primary">
+              ➕ Aggiungi Giocatore
+            </button>
+            <button className="btn btn-secondary">
+              📸 Carica da Screenshot
+            </button>
+            <button className="btn btn-secondary">
+              ⚙️ Editor Formazione
+            </button>
           </div>
         </div>
       </div>
