@@ -23,15 +23,19 @@ const Login = ({ onLogin }) => {
         await createUserWithEmailAndPassword(auth, email, password);
         console.log('✅ Utente registrato:', email);
       } else {
-        // Verifica se l'email esiste già
-        const methods = await fetchSignInMethodsForEmail(auth, email);
-        if (!methods || methods.length === 0) {
-          // Auto-signup se l'utente non esiste
-          await createUserWithEmailAndPassword(auth, email, password);
-          console.log('✅ Utente creato (auto) e loggato:', email);
-        } else {
+        // Prova prima il login normale
+        try {
           await signInWithEmailAndPassword(auth, email, password);
           console.log('✅ Utente loggato:', email);
+        } catch (loginError) {
+          // Se fallisce, verifica se l'email esiste
+          if (loginError.code === 'auth/user-not-found') {
+            // Auto-crea l'account se non esiste
+            await createUserWithEmailAndPassword(auth, email, password);
+            console.log('✅ Utente creato (auto) e loggato:', email);
+          } else {
+            throw loginError; // Rilancia altri errori
+          }
         }
       }
 
@@ -41,14 +45,18 @@ const Login = ({ onLogin }) => {
       const code = err?.code || '';
       if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
         setError('Password errata. Riprova o usa "Registrati" se è il primo accesso.');
+      } else if (code === 'auth/email-already-in-use') {
+        setError('Email già in uso. Prova ad accedere invece di registrarti.');
       } else if (code === 'auth/too-many-requests') {
         setError('Troppi tentativi. Attendi qualche minuto e riprova.');
       } else if (code === 'auth/network-request-failed') {
         setError('Problema di rete. Verifica la connessione e riprova.');
       } else if (code === 'auth/weak-password') {
         setError('La password deve avere almeno 6 caratteri.');
+      } else if (code === 'auth/invalid-email') {
+        setError('Email non valida. Controlla il formato.');
       } else {
-        setError(err.message || 'Errore di autenticazione');
+        setError(`Errore: ${err.message || 'Errore di autenticazione'}`);
       }
     } finally {
       setLoading(false);
