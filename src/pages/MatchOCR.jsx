@@ -423,9 +423,10 @@ const MatchOCR = ({ user }) => {
     },
     title: {
       fontSize: '1.5rem',
-      fontWeight: 'bold',
+      fontWeight: '800',
       marginBottom: '1rem',
-      color: '#1f2937',
+      color: '#111827',
+      letterSpacing: '-0.01em',
     },
     input: {
       width: '100%',
@@ -438,14 +439,16 @@ const MatchOCR = ({ user }) => {
     button: {
       width: '100%',
       padding: '0.75rem',
-      backgroundColor: '#2563eb',
       color: 'white',
       border: 'none',
-      borderRadius: '0.375rem',
-      fontSize: '0.875rem',
-      fontWeight: '500',
+      borderRadius: '0.6rem',
+      fontSize: '0.9rem',
+      fontWeight: 700,
       cursor: 'pointer',
       marginBottom: '1rem',
+      transition: 'transform .2s ease, box-shadow .2s ease',
+      boxShadow:
+        '0 8px 16px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.08)',
     },
     buttonDisabled: {
       backgroundColor: '#9ca3af',
@@ -631,15 +634,16 @@ const MatchOCR = ({ user }) => {
       {/* Manual match stats entry */}
       <div style={styles.card}>
         <h2 style={styles.title}>✍️ Inserimento Manuale Statistiche Partita</h2>
-        <div className="flex gap-2 mb-3">
+        <div className="flex items-center mb-3">
           <button
             onClick={() => setManualMode(m => !m)}
-            className="px-4 py-2 rounded-lg text-white"
+            className="px-3 py-1 rounded-full text-white text-sm"
             style={{
               background: manualMode
-                ? 'linear-gradient(180deg, #3B82F6 0%, #2563EB 100%)'
-                : '#6B7280',
+                ? 'linear-gradient(180deg, #10B981 0%, #059669 100%)'
+                : 'linear-gradient(180deg, #6B7280 0%, #4B5563 100%)',
             }}
+            aria-pressed={manualMode}
           >
             {manualMode ? 'Modalità Manuale: ON' : 'Modalità Manuale: OFF'}
           </button>
@@ -799,7 +803,7 @@ const MatchOCR = ({ user }) => {
               {history.map(h => (
                 <li
                   key={h.id}
-                  className="py-2 flex items-center justify-between"
+                  className="py-2 flex items-center justify-between hover:bg-gray-50 rounded-lg px-2"
                 >
                   <div className="text-sm text-gray-700">
                     <span className="font-semibold">
@@ -812,7 +816,12 @@ const MatchOCR = ({ user }) => {
                   </div>
                   <button
                     className="px-3 py-1 rounded text-white"
-                    style={{ background: '#2563EB' }}
+                    style={{
+                      background:
+                        'linear-gradient(180deg, #3B82F6 0%, #2563EB 100%)',
+                      boxShadow:
+                        '0 6px 12px rgba(37,99,235,.25), inset 0 1px 0 rgba(255,255,255,.08)',
+                    }}
                     onClick={() => {
                       setAnalyzedData(h);
                       setImageType('match_stats');
