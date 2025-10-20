@@ -9,8 +9,9 @@ import {
 import PlayerProfile from '../components/PlayerProfile';
 import FormationBuilder from '../components/FormationBuilder';
 import PlayerEditForm from '../components/PlayerEditForm';
+import PlayerDatabaseSearch from '../components/PlayerDatabaseSearch';
 import { realOCRService } from '../services/realOCRService';
-import { Camera, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { Camera, Upload, CheckCircle, AlertCircle, Database, Plus } from 'lucide-react';
 
 const PlayerManagement = ({ user }) => {
   const [players, setPlayers] = useState([]);
@@ -28,6 +29,9 @@ const PlayerManagement = ({ user }) => {
   const [showOCRModal, setShowOCRModal] = useState(false);
   const [playerImages, setPlayerImages] = useState([]);
   const [currentImageType, setCurrentImageType] = useState('profile');
+
+  // Database States
+  const [showDatabaseSearch, setShowDatabaseSearch] = useState(false);
 
   // Live players from Firestore
   useEffect(() => {
@@ -778,6 +782,46 @@ const PlayerManagement = ({ user }) => {
     console.log('✅ Player added from OCR:', newPlayer);
   };
 
+  // Database functions
+  const handleDatabasePlayerSelect = async (dbPlayer) => {
+    if (!user) return;
+
+    try {
+      // Convert database player to our format
+      const newPlayer = {
+        name: dbPlayer.name,
+        position: dbPlayer.position,
+        overall: dbPlayer.overall,
+        age: dbPlayer.age,
+        nationality: dbPlayer.nationality,
+        club: dbPlayer.club,
+        preferredFoot: dbPlayer.preferredFoot,
+        weakFoot: dbPlayer.weakFoot,
+        injuryResistance: dbPlayer.injuryResistance,
+        form: dbPlayer.form,
+        playstyle: dbPlayer.playstyle,
+        aiPlaystyle: dbPlayer.aiPlaystyle,
+        stats: dbPlayer.stats,
+        skills: dbPlayer.skills,
+        playerSkills: dbPlayer.playerSkills,
+        boosters: dbPlayer.boosters,
+        physicalAttributes: dbPlayer.physicalAttributes,
+        source: 'database', // Mark as from database
+        createdAt: new Date().toISOString()
+      };
+
+      // Add to Firestore
+      await addPlayer(user.uid, newPlayer);
+      
+      // Close database search
+      setShowDatabaseSearch(false);
+      
+      console.log('✅ Giocatore aggiunto dal database:', newPlayer.name);
+    } catch (error) {
+      console.error('❌ Errore aggiunta giocatore:', error);
+    }
+  };
+
   return (
     <div style={styles.container}>
       {/* Header */}
@@ -822,6 +866,25 @@ const PlayerManagement = ({ user }) => {
 
         <div style={styles.uploadSection}>
           <div style={styles.uploadButtons}>
+            <button
+              onClick={() => setShowDatabaseSearch(true)}
+              style={{
+                ...styles.addButton,
+                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                padding: '0.5rem 1rem',
+                border: 'none',
+                color: 'white'
+              }}
+            >
+              <Database size={16} />
+              Database Giocatori
+            </button>
+            
             <input
               type="file"
               accept="image/*"
@@ -1295,6 +1358,14 @@ const PlayerManagement = ({ user }) => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Database Search Modal */}
+      {showDatabaseSearch && (
+        <PlayerDatabaseSearch
+          onPlayerSelect={handleDatabasePlayerSelect}
+          onClose={() => setShowDatabaseSearch(false)}
+        />
       )}
     </div>
   );
