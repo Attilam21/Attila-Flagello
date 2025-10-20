@@ -41,6 +41,11 @@ service cloud.firestore {
     // AI chat history, documents contain a userId field
     match /ai_chat_history/{sessionId} {
       allow read, write: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+
+      // Messages subcollection under a session
+      match /messages/{messageId} {
+        allow read, write: if isSignedIn() && get(/databases/$(database)/documents/ai_chat_history/$(sessionId)).data.userId == request.auth.uid;
+      }
     }
 
     // Default deny

@@ -12,6 +12,10 @@ import {
   orderBy,
   limit,
   Timestamp,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  where,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -125,6 +129,103 @@ export const listenToMatchHistory = (userId, callback, limitCount = 20) => {
   return onSnapshot(q, snap => {
     const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     callback(items);
+  });
+};
+
+// ---------- Players CRUD ----------
+export const addPlayer = async (userId, player) => {
+  const colRef = collection(db, 'users', userId, 'players');
+  const payload = {
+    ...player,
+    userId,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+  };
+  const refDoc = await addDoc(colRef, payload);
+  return { id: refDoc.id, ...payload };
+};
+
+export const updatePlayer = async (userId, playerId, updates) => {
+  const refDoc = doc(db, 'users', userId, 'players', playerId);
+  await updateDoc(refDoc, { ...updates, updatedAt: Timestamp.now() });
+};
+
+export const deletePlayerById = async (userId, playerId) => {
+  const refDoc = doc(db, 'users', userId, 'players', playerId);
+  await deleteDoc(refDoc);
+};
+
+export const getPlayerById = async (userId, playerId) => {
+  const refDoc = doc(db, 'users', userId, 'players', playerId);
+  const snap = await getDoc(refDoc);
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+};
+
+export const listenToPlayers = (userId, callback) => {
+  const colRef = collection(db, 'users', userId, 'players');
+  const q = query(colRef, orderBy('createdAt', 'desc'));
+  return onSnapshot(q, snap => {
+    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    callback(items);
+  });
+};
+
+// ---------- Player images (profile/stats/skills) ----------
+export const uploadPlayerImage = async (
+  userId,
+  playerId,
+  file,
+  kind = 'profile'
+) => {
+  const timestamp = Date.now();
+  const fileName = `${kind}_${timestamp}.png`;
+  const storagePath = `player_images/${userId}/${playerId}/${fileName}`;
+  const storageRef = ref(storage, storagePath);
+  const snapshot = await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(snapshot.ref);
+  // Optionally, we can update the player doc with image URL field
+  try {
+    const imageField =
+      kind === 'profile'
+        ? 'profileImageUrl'
+        : kind === 'stats'
+          ? 'statsImageUrl'
+          : 'skillsImageUrl';
+    await updatePlayer(userId, playerId, { [imageField]: downloadURL });
+  } catch (e) {
+    console.warn('Could not update player with image URL:', e);
+  }
+  return { storagePath, downloadURL };
+};
+
+// ---------- AI Chat History ----------
+export const saveChatMessage = async (userId, sessionId, message) => {
+  // Ensure session doc exists with owner
+  const sessionRef = doc(db, 'ai_chat_history', sessionId);
+  await setDoc(sessionRef, { userId }, { merge: true });
+
+  const messagesCol = collection(db, 'ai_chat_history', sessionId, 'messages');
+  const payload = {
+    ...message, // { role: 'user'|'assistant', text: string, meta? }
+    userId,
+    createdAt: Timestamp.now(),
+  };
+  const refDoc = await addDoc(messagesCol, payload);
+  return { id: refDoc.id, ...payload };
+};
+
+export const listenToChatMessages = (
+  userId,
+  sessionId,
+  callback,
+  limitCount = 50
+) => {
+  const messagesCol = collection(db, 'ai_chat_history', sessionId, 'messages');
+  const q = query(messagesCol, orderBy('createdAt', 'asc'), limit(limitCount));
+  return onSnapshot(q, snap => {
+    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Filter by owner just in case
+    callback(items.filter(m => m.userId === userId));
   });
 };
 
