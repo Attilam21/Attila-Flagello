@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import AICoach from '../components/AICoach';
 import TeamAnalysis from '../components/TeamAnalysis';
+import UXFlowManager from '../components/UXFlowManager';
+import OnboardingGuide from '../components/OnboardingGuide';
 
-const AdvancedDashboard = ({ user }) => {
+const AdvancedDashboard = ({ user, onPageChange }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [teamData, setTeamData] = useState(null);
   const [matchHistory, setMatchHistory] = useState([]);
   const [stats, setStats] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     // Carica dati squadra e statistiche
     loadTeamData();
     loadMatchHistory();
     loadStats();
+    
+    // Mostra onboarding per nuovi utenti
+    const hasSeenOnboarding = localStorage.getItem('eFootballLab_onboarding');
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
   }, [user]);
 
   const loadTeamData = async () => {
@@ -217,6 +226,16 @@ const AdvancedDashboard = ({ user }) => {
     }
   };
 
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('eFootballLab_onboarding', 'true');
+    setShowOnboarding(false);
+  };
+
+  const handleOnboardingSkip = () => {
+    localStorage.setItem('eFootballLab_onboarding', 'true');
+    setShowOnboarding(false);
+  };
+
   const renderOverview = () => (
     <div style={styles.content}>
       {/* Statistiche Principali */}
@@ -303,6 +322,15 @@ const AdvancedDashboard = ({ user }) => {
 
   return (
     <div style={styles.container}>
+      {/* Onboarding Guide */}
+      {showOnboarding && (
+        <OnboardingGuide
+          user={user}
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+      )}
+
       {/* Header */}
       <div style={styles.header}>
         <h1 style={styles.title}>🏆 eFootballLab Dashboard</h1>
@@ -310,6 +338,13 @@ const AdvancedDashboard = ({ user }) => {
           Benvenuto, {user?.email}! Gestisci la tua squadra e migliora le tue prestazioni.
         </p>
       </div>
+
+      {/* UX Flow Manager */}
+      <UXFlowManager 
+        currentPage="dashboard"
+        onPageChange={onPageChange}
+        user={user}
+      />
 
       {/* Tabs */}
       <div style={styles.tabs}>

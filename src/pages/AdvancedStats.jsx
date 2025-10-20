@@ -163,7 +163,7 @@ const AdvancedStats = ({ user }) => {
       letterSpacing: '0.05em'
     },
     winRate: { color: '#10B981' },
-    goals: { color: '#3B82F6' },
+    goalsColor: { color: '#3B82F6' },
     possession: { color: '#F59E0B' },
     accuracy: { color: '#8B5CF6' },
     playersTable: {
@@ -255,7 +255,7 @@ const AdvancedStats = ({ user }) => {
   const getStatColor = (statName) => {
     const colors = {
       winRate: styles.winRate,
-      goals: styles.goals,
+      goals: styles.goalsColor,
       possession: styles.possession,
       accuracy: styles.accuracy
     };

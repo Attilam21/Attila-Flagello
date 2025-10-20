@@ -134,9 +134,9 @@ function App() {
       case 'home':
         console.log('🏠 Rendering Home page');
         return <Home user={user} />;
-      case 'dashboard':
-        console.log('📊 Rendering Advanced Dashboard page');
-        return <AdvancedDashboard user={user} />;
+          case 'dashboard':
+            console.log('📊 Rendering Advanced Dashboard page');
+            return <AdvancedDashboard user={user} onPageChange={handlePageChange} />;
       case 'rosa':
         console.log('👥 Rendering Player Management page');
         return <PlayerManagement user={user} />;

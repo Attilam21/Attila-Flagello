@@ -6,17 +6,17 @@ import {
   UserCheck,
   LogOut,
   Camera,
+  Brain,
 } from 'lucide-react';
 
 const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'dashboard', label: 'Pannello di controllo', icon: BarChart3 },
     { id: 'rosa', label: 'Rosa', icon: Users },
-    { id: 'match', label: 'Match', icon: Target },
-    { id: 'matchocr', label: 'Match OCR', icon: Camera },
-    { id: 'statistiche', label: 'Statistiche', icon: BarChart3 },
-    { id: 'avversario', label: 'Avversario', icon: UserCheck },
+    { id: 'matchocr', label: 'Analisi Partite', icon: Camera },
+    { id: 'statistiche', label: 'Statistiche Avanzate', icon: BarChart3 },
+    { id: 'avversario', label: 'Analisi Avversari', icon: Target },
   ];
 
   return (

@@ -217,7 +217,7 @@ const FormationBuilder = ({ players, onSave, onReset }) => {
       borderRadius: '0 0 100px 100px',
       transform: 'translateX(-50%)'
     },
-    playerPosition: {
+    playerPositionMarker: {
       position: 'absolute',
       width: '40px',
       height: '40px',
@@ -325,7 +325,7 @@ const FormationBuilder = ({ players, onSave, onReset }) => {
       display: 'flex',
       flexDirection: 'column'
     },
-    playerName: {
+    playerNameFull: {
       fontSize: '0.875rem',
       fontWeight: '600',
       color: '#E5E7EB'
@@ -334,7 +334,7 @@ const FormationBuilder = ({ players, onSave, onReset }) => {
       fontSize: '0.75rem',
       color: '#9CA3AF'
     },
-    playerRating: {
+    playerRatingFull: {
       fontSize: '0.875rem',
       fontWeight: 'bold',
       color: '#10B981'
@@ -504,11 +504,11 @@ const FormationBuilder = ({ players, onSave, onReset }) => {
                     {player.name.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div style={styles.playerDetails}>
-                    <div style={styles.playerName}>{player.name}</div>
+                    <div style={styles.playerNameFull}>{player.name}</div>
                     <div style={styles.playerPositionText}>{player.position}</div>
                   </div>
                 </div>
-                <div style={styles.playerRating}>{player.rating}</div>
+                <div style={styles.playerRatingFull}>{player.rating}</div>
               </div>
             ))}
           </div>
