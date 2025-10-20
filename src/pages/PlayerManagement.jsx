@@ -867,7 +867,10 @@ const PlayerManagement = ({ user }) => {
         <div style={styles.uploadSection}>
           <div style={styles.uploadButtons}>
             <button
-              onClick={() => setShowDatabaseSearch(true)}
+              onClick={() => {
+                console.log('Database button clicked!');
+                setShowDatabaseSearch(true);
+              }}
               style={{
                 ...styles.addButton,
                 background: 'linear-gradient(135deg, #667eea, #764ba2)',
@@ -878,7 +881,9 @@ const PlayerManagement = ({ user }) => {
                 fontSize: '0.875rem',
                 padding: '0.5rem 1rem',
                 border: 'none',
-                color: 'white'
+                color: 'white',
+                minWidth: '150px',
+                height: '40px'
               }}
             >
               <Database size={16} />
