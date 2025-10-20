@@ -9,7 +9,6 @@ import {
 import PlayerProfile from '../components/PlayerProfile';
 import FormationBuilder from '../components/FormationBuilder';
 import PlayerEditForm from '../components/PlayerEditForm';
-import AdvancedPlayerSearch from '../components/AdvancedPlayerSearch';
 import CompletePlayerEditor from '../components/CompletePlayerEditor';
 import { realOCRService } from '../services/realOCRService';
 import {
@@ -17,7 +16,6 @@ import {
   Upload,
   CheckCircle,
   AlertCircle,
-  Database,
   Plus,
 } from 'lucide-react';
 
@@ -38,8 +36,6 @@ const PlayerManagement = ({ user }) => {
   const [playerImages, setPlayerImages] = useState([]);
   const [currentImageType, setCurrentImageType] = useState('profile');
 
-  // Database States
-  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
 
   // Editor States
   const [showCompleteEditor, setShowCompleteEditor] = useState(false);
@@ -794,22 +790,6 @@ const PlayerManagement = ({ user }) => {
     console.log('✅ Player added from OCR:', newPlayer);
   };
 
-  // Database functions
-  const handleAdvancedPlayerSelect = async player => {
-    if (!user) return;
-
-    try {
-      // Il giocatore è già convertito dal componente AdvancedPlayerSearch
-      await addPlayer(user.uid, player);
-
-      // Close advanced search
-      setShowAdvancedSearch(false);
-
-      console.log('✅ Giocatore aggiunto dal database avanzato:', player.name);
-    } catch (error) {
-      console.error('❌ Errore aggiunta giocatore:', error);
-    }
-  };
 
   // Editor functions
   const handleEditPlayer = player => {
@@ -889,29 +869,6 @@ const PlayerManagement = ({ user }) => {
 
         <div style={styles.uploadSection}>
           <div style={styles.uploadButtons}>
-            <button
-              onClick={() => {
-                console.log('Advanced Database button clicked!');
-                setShowAdvancedSearch(true);
-              }}
-              style={{
-                ...styles.addButton,
-                background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-                padding: '0.5rem 1rem',
-                border: 'none',
-                color: 'white',
-                minWidth: '150px',
-                height: '40px',
-              }}
-            >
-              <Database size={16} />
-              Database Giocatori
-            </button>
 
             <input
               type="file"
@@ -1426,14 +1383,6 @@ const PlayerManagement = ({ user }) => {
         </div>
       )}
 
-      {/* Advanced Database Search Modal */}
-      {showAdvancedSearch && (
-        <AdvancedPlayerSearch
-          isOpen={showAdvancedSearch}
-          onPlayerSelect={handleAdvancedPlayerSelect}
-          onClose={() => setShowAdvancedSearch(false)}
-        />
-      )}
 
       {/* Complete Player Editor Modal */}
       {showCompleteEditor && (
