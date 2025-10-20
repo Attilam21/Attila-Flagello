@@ -660,25 +660,43 @@ const PlayerManagement = ({ user }) => {
   const handleSavePlayer = (playerData) => {
     console.log('Saving player:', playerData);
     
-    if (selectedPlayer) {
-      // Modifica giocatore esistente
-      setPlayers(prev => prev.map(p => 
-        p.id === selectedPlayer.id ? { ...p, ...playerData, id: selectedPlayer.id } : p
-      ));
-    } else {
-      // Aggiungi nuovo giocatore
-      const newPlayer = {
-        ...playerData,
-        id: Date.now(), // ID temporaneo
-        matchesPlayed: 0,
-        goals: 0,
-        assists: 0
-      };
-      setPlayers(prev => [...prev, newPlayer]);
+    try {
+      if (selectedPlayer) {
+        // Modifica giocatore esistente
+        setPlayers(prev => prev.map(p => 
+          p.id === selectedPlayer.id ? { ...p, ...playerData, id: selectedPlayer.id } : p
+        ));
+      } else {
+        // Aggiungi nuovo giocatore
+        const newPlayer = {
+          ...playerData,
+          id: Date.now(), // ID temporaneo
+          matchesPlayed: 0,
+          goals: 0,
+          assists: 0,
+          // Assicurati che tutti i campi necessari siano presenti
+          stats: playerData.attackingStats || playerData.stats || {},
+          physical: playerData.physical || { height: 180, weight: 70, preferredFoot: 'Right' },
+          abilities: playerData.abilities || [],
+          aiPlayStyles: playerData.aiPlayStyles || [],
+          boosters: playerData.boosters || [],
+          form: playerData.advanced?.form || 'B',
+          preferredFoot: playerData.physical?.preferredFoot || 'Right',
+          weakFootFrequency: playerData.advanced?.weakFootFrequency || 'Occasionally',
+          weakFootAccuracy: playerData.advanced?.weakFootAccuracy || 'High',
+          injuryResistance: playerData.advanced?.injuryResistance || 'Medium',
+          alternativePositions: playerData.alternativePositions || []
+        };
+        setPlayers(prev => [...prev, newPlayer]);
+      }
+      
+      setIsEditing(false);
+      setSelectedPlayer(null);
+      console.log('✅ Player saved successfully');
+    } catch (error) {
+      console.error('❌ Error saving player:', error);
+      // Non chiudere il form in caso di errore
     }
-    
-    setIsEditing(false);
-    setSelectedPlayer(null);
   };
 
   const handleCancelEdit = () => {

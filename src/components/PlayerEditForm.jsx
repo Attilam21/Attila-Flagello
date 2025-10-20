@@ -135,7 +135,76 @@ const PlayerEditForm = ({ player, onSave, onCancel }) => {
   };
 
   const handleSave = () => {
-    onSave(formData);
+    // Validazione base
+    if (!formData.name.trim()) {
+      alert('Inserisci il nome del giocatore');
+      return;
+    }
+    
+    if (!formData.position) {
+      alert('Seleziona una posizione');
+      return;
+    }
+    
+    try {
+      // Converte i dati del form nel formato atteso
+      const playerData = {
+        name: formData.name.trim(),
+        position: formData.position,
+        rating: formData.rating || 50,
+        age: formData.age || 18,
+        nationality: formData.nationality || 'Unknown',
+        team: formData.team || 'Unknown',
+        
+        // Statistiche nel formato compatibile
+        stats: {
+          pace: formData.athleticStats?.speed || 50,
+          shooting: formData.attackingStats?.finishing || 50,
+          passing: formData.attackingStats?.lowPass || 50,
+          dribbling: formData.attackingStats?.dribbling || 50,
+          defending: formData.defendingStats?.defensiveAwareness || 50,
+          physical: formData.athleticStats?.physicalContact || 50
+        },
+        
+        // Statistiche dettagliate
+        attackingStats: formData.attackingStats || {},
+        defendingStats: formData.defendingStats || {},
+        athleticStats: formData.athleticStats || {},
+        
+        // Caratteristiche fisiche
+        physical: formData.physical || { height: 180, weight: 70, preferredFoot: 'Right' },
+        
+        // Caratteristiche avanzate
+        advanced: formData.advanced || { weakFootFrequency: 2, weakFootAccuracy: 2, form: 2, injuryResistance: 1 },
+        
+        // Abilità e stili
+        abilities: formData.abilities || [],
+        aiPlayStyles: formData.aiPlayStyles || [],
+        boosters: formData.boosters || [],
+        
+        // Campi legacy per compatibilità
+        form: formData.advanced?.form === 1 ? 'Poor' : 
+              formData.advanced?.form === 2 ? 'Average' : 
+              formData.advanced?.form === 3 ? 'Good' : 'Excellent',
+        preferredFoot: formData.physical?.preferredFoot || 'Right',
+        weakFootFrequency: formData.advanced?.weakFootFrequency === 1 ? 'Low' :
+                          formData.advanced?.weakFootFrequency === 2 ? 'Medium' :
+                          formData.advanced?.weakFootFrequency === 3 ? 'High' : 'Very High',
+        weakFootAccuracy: formData.advanced?.weakFootAccuracy === 1 ? 'Low' :
+                         formData.advanced?.weakFootAccuracy === 2 ? 'Medium' :
+                         formData.advanced?.weakFootAccuracy === 3 ? 'High' : 'Very High',
+        injuryResistance: formData.advanced?.injuryResistance === 1 ? 'Low' :
+                         formData.advanced?.injuryResistance === 2 ? 'Medium' :
+                         formData.advanced?.injuryResistance === 3 ? 'High' : 'Very High',
+        alternativePositions: []
+      };
+      
+      console.log('Form data converted:', playerData);
+      onSave(playerData);
+    } catch (error) {
+      console.error('Error converting form data:', error);
+      alert('Errore nel salvataggio. Riprova.');
+    }
   };
 
   // Opzioni per i dropdown
