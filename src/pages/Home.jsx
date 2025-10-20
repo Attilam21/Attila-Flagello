@@ -159,63 +159,65 @@ const Home = ({ user, onPageChange }) => {
   return (
     <div>
       {/* Hero Section KPI */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Card Ultima Partita */}
-        <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:shadow-lg transition cursor-pointer">
-          <h3 className="text-xl font-bold mb-3 text-white">
-            ⚽ Ultima Partita
-          </h3>
-          <p className="text-gray-400">
-            {heroData.ultimaPartita?.status === 'done'
-              ? `Testo rilevato: ${heroData.ultimaPartita.text?.substring(0, 50)}...`
-              : 'Nessuna partita'}
-          </p>
-          <button
-            onClick={() => onPageChange('matchocr')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
-            Vedi Dettagli
-          </button>
-        </div>
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Card Ultima Partita */}
+          <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+            <h3 className="text-lg font-semibold text-white mb-3">
+              ⚽ Ultima Partita
+            </h3>
+            <p className="text-muted mb-4">
+              {heroData.ultimaPartita?.status === 'done'
+                ? `Testo rilevato: ${heroData.ultimaPartita.text?.substring(0, 50)}...`
+                : 'Nessuna partita'}
+            </p>
+            <button
+              onClick={() => onPageChange('matchocr')}
+              className="btn btn-primary"
+            >
+              Vedi Dettagli
+            </button>
+          </div>
 
-        {/* Card Stato Rosa */}
-        <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:shadow-lg transition cursor-pointer">
-          <h3 className="text-xl font-bold mb-3 text-white">👥 Stato Rosa</h3>
-          <p className="text-gray-400">
-            {heroData.statoRosa
-              ? `Rating: ${heroData.statoRosa.rating}, Giocatori: ${heroData.statoRosa.giocatori}`
-              : 'Caricamento...'}
-          </p>
-          <button
-            onClick={() => onPageChange('rosa')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
-            Gestisci Rosa
-          </button>
-        </div>
+          {/* Card Stato Rosa */}
+          <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+            <h3 className="text-lg font-semibold text-white mb-3">👥 Stato Rosa</h3>
+            <p className="text-muted mb-4">
+              {heroData.statoRosa
+                ? `Rating: ${heroData.statoRosa.rating}, Giocatori: ${heroData.statoRosa.giocatori}`
+                : 'Caricamento...'}
+            </p>
+            <button
+              onClick={() => onPageChange('rosa')}
+              className="btn btn-primary"
+            >
+              Gestisci Rosa
+            </button>
+          </div>
 
-        {/* Card Consiglio IA */}
-        <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:shadow-lg transition cursor-pointer">
-          <h3 className="text-xl font-bold mb-3 text-white">
-            🤖 Ultimo Consiglio IA
-          </h3>
-          <p className="text-gray-400">
-            {heroData.consiglioIA?.preview || 'Nessun consiglio'}
-          </p>
-          <button
-            onClick={() => onPageChange('statistiche')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
-            Vedi Report
-          </button>
-        </div>
+          {/* Card Consiglio IA */}
+          <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+            <h3 className="text-lg font-semibold text-white mb-3">
+              🤖 Ultimo Consiglio IA
+            </h3>
+            <p className="text-muted mb-4">
+              {heroData.consiglioIA?.preview || 'Nessun consiglio'}
+            </p>
+            <button
+              onClick={() => onPageChange('statistiche')}
+              className="btn btn-primary"
+            >
+              Vedi Report
+            </button>
+          </div>
 
-        {/* Card Warning */}
-        <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:shadow-lg transition cursor-pointer">
-          <h3 className="text-xl font-bold mb-3 text-white">
-            ⚠️ Warning/Trend
-          </h3>
-          <p className="text-gray-400">{heroData.warning || 'Tutto ok'}</p>
+          {/* Card Warning */}
+          <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+            <h3 className="text-lg font-semibold text-white mb-3">
+              ⚠️ Warning/Trend
+            </h3>
+            <p className="text-muted">{heroData.warning || 'Tutto ok'}</p>
+          </div>
         </div>
       </div>
 

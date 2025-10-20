@@ -502,6 +502,11 @@ body {
   }
 }
 
+/* Text utilities */
+.text-muted {
+  color: #9ca3af;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar {
