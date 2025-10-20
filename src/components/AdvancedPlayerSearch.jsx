@@ -3,6 +3,7 @@ import { Search, Filter, X, Star, MapPin, Users, Trophy } from 'lucide-react';
 import { searchPlayers, getFilterOptions, convertDatabasePlayer } from '../data/playersDatabaseComplete';
 
 const AdvancedPlayerSearch = ({ isOpen, onClose, onPlayerSelect }) => {
+  console.log('🔍 AdvancedPlayerSearch rendered, isOpen:', isOpen);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState({
     position: 'all',
