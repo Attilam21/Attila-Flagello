@@ -57,16 +57,16 @@ function App() {
   }, []);
 
   const handleLogin = useCallback(() => {
-    // Optimistic: set user immediately if already available
-    try {
-      const current = auth.currentUser;
-      if (current) {
-        setUser(current);
-      }
-    } catch (e) {
-      console.warn('Auth currentUser not available yet');
+    console.log('🔑 Login callback triggered');
+    // Force re-check of auth state
+    const current = auth.currentUser;
+    if (current) {
+      console.log('✅ Found current user:', current.email);
+      setUser(current);
+      setCurrentPage('home');
+    } else {
+      console.log('❌ No current user found');
     }
-    setCurrentPage('home');
   }, []);
 
   const handlePageChange = useCallback(page => {
