@@ -1,5 +1,4 @@
 // Database completo giocatori eFootball - Versione ottimizzata
-import React, { useState, useEffect } from 'react';
 
 // Mock data per test - sostituire con caricamento dinamico
 const mockPlayers = [
