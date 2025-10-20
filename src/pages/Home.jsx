@@ -242,11 +242,9 @@ const Home = ({ user, onPageChange }) => {
       </div>
 
       {/* Last 5 Games */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">⚽ Ultimi 5 Match</h3>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+      <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">⚽ Ultimi 5 Match</h3>
+        <div className="flex gap-2 mb-4">
           {summary.recentForm.map((result, index) => (
             <span
               key={index}
@@ -258,14 +256,7 @@ const Home = ({ user, onPageChange }) => {
           ))}
         </div>
         {summary.lastMatch && (
-          <div
-            style={{
-              marginTop: '12px',
-              padding: '8px',
-              backgroundColor: '#f5f5f5',
-              borderRadius: '6px',
-            }}
-          >
+          <div className="text-muted">
             <strong>Ultima partita:</strong> {summary.lastMatch.opponent} -{' '}
             {summary.lastMatch.result} ({summary.lastMatch.date})
           </div>
@@ -273,163 +264,135 @@ const Home = ({ user, onPageChange }) => {
       </div>
 
       {/* KPI Cards */}
-      <div className="kpi-grid">
-        <div className="kpi-card">
-          <div className="kpi-header">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="kpi-label">Vittorie</div>
-              <div className="kpi-value">{summary.teamStats.wins}</div>
+              <div className="text-muted text-sm">Vittorie</div>
+              <div className="text-2xl font-bold text-white">{summary.teamStats.wins}</div>
             </div>
-            <div className="kpi-icon green">
-              <Trophy size={20} />
+            <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+              <Trophy size={20} className="text-white" />
             </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-header">
+        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="kpi-label">Gol Segnati</div>
-              <div className="kpi-value">{summary.teamStats.goalsScored}</div>
+              <div className="text-muted text-sm">Gol Segnati</div>
+              <div className="text-2xl font-bold text-white">{summary.teamStats.goalsScored}</div>
             </div>
-            <div className="kpi-icon blue">
-              <Target size={20} />
+            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+              <Target size={20} className="text-white" />
             </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-header">
+        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="kpi-label">Possesso</div>
-              <div className="kpi-value">{summary.teamStats.possession}%</div>
+              <div className="text-muted text-sm">Possesso</div>
+              <div className="text-2xl font-bold text-white">{summary.teamStats.possession}%</div>
             </div>
-            <div className="kpi-icon yellow">
-              <Clock size={20} />
+            <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
+              <Clock size={20} className="text-white" />
             </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-header">
+        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="kpi-label">Passaggi</div>
-              <div className="kpi-value">
+              <div className="text-muted text-sm">Passaggi</div>
+              <div className="text-2xl font-bold text-white">
                 {summary.teamStats.passesCompleted}
               </div>
             </div>
-            <div className="kpi-icon red">
-              <Zap size={20} />
+            <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+              <Zap size={20} className="text-white" />
             </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-header">
+        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="kpi-label">Tiri in Porta</div>
-              <div className="kpi-value">{summary.teamStats.shotsOnTarget}</div>
+              <div className="text-muted text-sm">Tiri in Porta</div>
+              <div className="text-2xl font-bold text-white">{summary.teamStats.shotsOnTarget}</div>
             </div>
-            <div className="kpi-icon purple">
-              <Eye size={20} />
+            <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+              <Eye size={20} className="text-white" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Annotatore IA */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">🤖 Annotatore IA</h3>
-        </div>
-        <div style={{ padding: '16px' }}>
-          <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
-            L'Annotatore IA analizza le tue partite e fornisce consigli tattici
-            personalizzati.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button
-              onClick={handleNavigateToAnalisi}
-              className="btn btn-primary"
-            >
-              🎯 Analizza Partita
-            </button>
-            <button
-              onClick={handleNavigateToStatistiche}
-              className="btn btn-secondary"
-            >
-              📊 Statistiche IA
-            </button>
-            <button
-              onClick={handleNavigateToStatistiche}
-              className="btn btn-secondary"
-            >
-              💡 Consigli Tattici
-            </button>
-          </div>
+      <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">🤖 Annotatore IA</h3>
+        <p className="text-muted mb-4">
+          L'Annotatore IA analizza le tue partite e fornisce consigli tattici
+          personalizzati.
+        </p>
+        <div className="flex gap-3 flex-wrap">
+          <button
+            onClick={handleNavigateToAnalisi}
+            className="btn btn-primary"
+          >
+            🎯 Analizza Partita
+          </button>
+          <button
+            onClick={handleNavigateToStatistiche}
+            className="btn btn-primary"
+          >
+            📊 Statistiche IA
+          </button>
+          <button
+            onClick={handleNavigateToStatistiche}
+            className="btn btn-primary"
+          >
+            💡 Consigli Tattici
+          </button>
         </div>
       </div>
 
       {/* Caricamento Rosa */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">👥 Gestione Rosa</h3>
-        </div>
-        <div style={{ padding: '16px' }}>
-          <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
-            Carica e gestisci la tua rosa con abilità, skill e booster
-            precompilati.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button onClick={handleNavigateToRosa} className="btn btn-primary">
-              ➕ Aggiungi Giocatore
-            </button>
-            <button
-              onClick={handleNavigateToRosa}
-              className="btn btn-secondary"
-            >
-              📸 Carica da Screenshot
-            </button>
-            <button
-              onClick={handleNavigateToRosa}
-              className="btn btn-secondary"
-            >
-              ⚙️ Editor Formazione
-            </button>
-          </div>
+      <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">👥 Gestione Rosa</h3>
+        <p className="text-muted mb-4">
+          Carica e gestisci la tua rosa con abilità, skill e booster
+          precompilati.
+        </p>
+        <div className="flex gap-3 flex-wrap">
+          <button onClick={handleNavigateToRosa} className="btn btn-primary">
+            ➕ Aggiungi Giocatore
+          </button>
+          <button
+            onClick={handleNavigateToRosa}
+            className="btn btn-primary"
+          >
+            📸 Carica da Screenshot
+          </button>
+          <button
+            onClick={handleNavigateToRosa}
+            className="btn btn-primary"
+          >
+            ⚙️ Editor Formazione
+          </button>
         </div>
       </div>
 
       {/* Coach Motivazionale */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">💬 Coach Motivazionale</h3>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
+      <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">💬 Coach Motivazionale</h3>
+        <div className="flex items-center justify-between">
           <div>
-            <p
-              style={{
-                fontSize: '14px',
-                color: '#9CA3AF',
-                marginBottom: '8px',
-              }}
-            >
+            <p className="text-muted text-sm mb-2">
               Hai bisogno di una spinta?
             </p>
             {coachNote && (
-              <p
-                style={{
-                  color: '#10B981',
-                  fontWeight: '500',
-                  marginTop: '4px',
-                }}
-              >
+              <p className="text-green-500 font-medium">
                 "{coachNote}"
               </p>
             )}
