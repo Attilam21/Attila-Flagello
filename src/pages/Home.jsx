@@ -159,14 +159,14 @@ const Home = ({ user, onPageChange }) => {
   return (
     <div>
       {/* Hero Section KPI */}
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card Ultima Partita */}
-          <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">
-              ⚽ Ultima Partita
-            </h3>
-            <p className="text-muted mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        {/* Card Ultima Partita */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">⚽ Ultima Partita</h3>
+          </div>
+          <div style={{ padding: '16px' }}>
+            <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
               {heroData.ultimaPartita?.status === 'done'
                 ? `Testo rilevato: ${heroData.ultimaPartita.text?.substring(0, 50)}...`
                 : 'Nessuna partita'}
@@ -178,11 +178,15 @@ const Home = ({ user, onPageChange }) => {
               Vedi Dettagli
             </button>
           </div>
+        </div>
 
-          {/* Card Stato Rosa */}
-          <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">👥 Stato Rosa</h3>
-            <p className="text-muted mb-4">
+        {/* Card Stato Rosa */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">👥 Stato Rosa</h3>
+          </div>
+          <div style={{ padding: '16px' }}>
+            <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
               {heroData.statoRosa
                 ? `Rating: ${heroData.statoRosa.rating}, Giocatori: ${heroData.statoRosa.giocatori}`
                 : 'Caricamento...'}
@@ -194,13 +198,15 @@ const Home = ({ user, onPageChange }) => {
               Gestisci Rosa
             </button>
           </div>
+        </div>
 
-          {/* Card Consiglio IA */}
-          <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">
-              🤖 Ultimo Consiglio IA
-            </h3>
-            <p className="text-muted mb-4">
+        {/* Card Consiglio IA */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">🤖 Ultimo Consiglio IA</h3>
+          </div>
+          <div style={{ padding: '16px' }}>
+            <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
               {heroData.consiglioIA?.preview || 'Nessun consiglio'}
             </p>
             <button
@@ -210,13 +216,17 @@ const Home = ({ user, onPageChange }) => {
               Vedi Report
             </button>
           </div>
+        </div>
 
-          {/* Card Warning */}
-          <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">
-              ⚠️ Warning/Trend
-            </h3>
-            <p className="text-muted">{heroData.warning || 'Tutto ok'}</p>
+        {/* Card Warning */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">⚠️ Warning/Trend</h3>
+          </div>
+          <div style={{ padding: '16px' }}>
+            <p style={{ color: '#9CA3AF' }}>
+              {heroData.warning || 'Tutto ok'}
+            </p>
           </div>
         </div>
       </div>
@@ -242,9 +252,11 @@ const Home = ({ user, onPageChange }) => {
       </div>
 
       {/* Last 5 Games */}
-      <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">⚽ Ultimi 5 Match</h3>
-        <div className="flex gap-2 mb-4">
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">⚽ Ultimi 5 Match</h3>
+        </div>
+        <div style={{ display: 'flex', gap: '8px' }}>
           {summary.recentForm.map((result, index) => (
             <span
               key={index}
@@ -256,7 +268,14 @@ const Home = ({ user, onPageChange }) => {
           ))}
         </div>
         {summary.lastMatch && (
-          <div className="text-muted">
+          <div
+            style={{
+              marginTop: '12px',
+              padding: '8px',
+              backgroundColor: '#f5f5f5',
+              borderRadius: '6px',
+            }}
+          >
             <strong>Ultima partita:</strong> {summary.lastMatch.opponent} -{' '}
             {summary.lastMatch.result} ({summary.lastMatch.date})
           </div>
@@ -264,135 +283,163 @@ const Home = ({ user, onPageChange }) => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-          <div className="flex items-center justify-between mb-3">
+      <div className="kpi-grid">
+        <div className="kpi-card">
+          <div className="kpi-header">
             <div>
-              <div className="text-muted text-sm">Vittorie</div>
-              <div className="text-2xl font-bold text-white">{summary.teamStats.wins}</div>
+              <div className="kpi-label">Vittorie</div>
+              <div className="kpi-value">{summary.teamStats.wins}</div>
             </div>
-            <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-              <Trophy size={20} className="text-white" />
+            <div className="kpi-icon green">
+              <Trophy size={20} />
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-          <div className="flex items-center justify-between mb-3">
+        <div className="kpi-card">
+          <div className="kpi-header">
             <div>
-              <div className="text-muted text-sm">Gol Segnati</div>
-              <div className="text-2xl font-bold text-white">{summary.teamStats.goalsScored}</div>
+              <div className="kpi-label">Gol Segnati</div>
+              <div className="kpi-value">{summary.teamStats.goalsScored}</div>
             </div>
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-              <Target size={20} className="text-white" />
+            <div className="kpi-icon blue">
+              <Target size={20} />
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-          <div className="flex items-center justify-between mb-3">
+        <div className="kpi-card">
+          <div className="kpi-header">
             <div>
-              <div className="text-muted text-sm">Possesso</div>
-              <div className="text-2xl font-bold text-white">{summary.teamStats.possession}%</div>
+              <div className="kpi-label">Possesso</div>
+              <div className="kpi-value">{summary.teamStats.possession}%</div>
             </div>
-            <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
-              <Clock size={20} className="text-white" />
+            <div className="kpi-icon yellow">
+              <Clock size={20} />
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-          <div className="flex items-center justify-between mb-3">
+        <div className="kpi-card">
+          <div className="kpi-header">
             <div>
-              <div className="text-muted text-sm">Passaggi</div>
-              <div className="text-2xl font-bold text-white">
+              <div className="kpi-label">Passaggi</div>
+              <div className="kpi-value">
                 {summary.teamStats.passesCompleted}
               </div>
             </div>
-            <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-              <Zap size={20} className="text-white" />
+            <div className="kpi-icon red">
+              <Zap size={20} />
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-          <div className="flex items-center justify-between mb-3">
+        <div className="kpi-card">
+          <div className="kpi-header">
             <div>
-              <div className="text-muted text-sm">Tiri in Porta</div>
-              <div className="text-2xl font-bold text-white">{summary.teamStats.shotsOnTarget}</div>
+              <div className="kpi-label">Tiri in Porta</div>
+              <div className="kpi-value">{summary.teamStats.shotsOnTarget}</div>
             </div>
-            <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-              <Eye size={20} className="text-white" />
+            <div className="kpi-icon purple">
+              <Eye size={20} />
             </div>
           </div>
         </div>
       </div>
 
       {/* Annotatore IA */}
-      <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">🤖 Annotatore IA</h3>
-        <p className="text-muted mb-4">
-          L'Annotatore IA analizza le tue partite e fornisce consigli tattici
-          personalizzati.
-        </p>
-        <div className="flex gap-3 flex-wrap">
-          <button
-            onClick={handleNavigateToAnalisi}
-            className="btn btn-primary"
-          >
-            🎯 Analizza Partita
-          </button>
-          <button
-            onClick={handleNavigateToStatistiche}
-            className="btn btn-primary"
-          >
-            📊 Statistiche IA
-          </button>
-          <button
-            onClick={handleNavigateToStatistiche}
-            className="btn btn-primary"
-          >
-            💡 Consigli Tattici
-          </button>
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">🤖 Annotatore IA</h3>
+        </div>
+        <div style={{ padding: '16px' }}>
+          <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
+            L'Annotatore IA analizza le tue partite e fornisce consigli tattici
+            personalizzati.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button
+              onClick={handleNavigateToAnalisi}
+              className="btn btn-primary"
+            >
+              🎯 Analizza Partita
+            </button>
+            <button
+              onClick={handleNavigateToStatistiche}
+              className="btn btn-secondary"
+            >
+              📊 Statistiche IA
+            </button>
+            <button
+              onClick={handleNavigateToStatistiche}
+              className="btn btn-secondary"
+            >
+              💡 Consigli Tattici
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Caricamento Rosa */}
-      <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">👥 Gestione Rosa</h3>
-        <p className="text-muted mb-4">
-          Carica e gestisci la tua rosa con abilità, skill e booster
-          precompilati.
-        </p>
-        <div className="flex gap-3 flex-wrap">
-          <button onClick={handleNavigateToRosa} className="btn btn-primary">
-            ➕ Aggiungi Giocatore
-          </button>
-          <button
-            onClick={handleNavigateToRosa}
-            className="btn btn-primary"
-          >
-            📸 Carica da Screenshot
-          </button>
-          <button
-            onClick={handleNavigateToRosa}
-            className="btn btn-primary"
-          >
-            ⚙️ Editor Formazione
-          </button>
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">👥 Gestione Rosa</h3>
+        </div>
+        <div style={{ padding: '16px' }}>
+          <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
+            Carica e gestisci la tua rosa con abilità, skill e booster
+            precompilati.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button onClick={handleNavigateToRosa} className="btn btn-primary">
+              ➕ Aggiungi Giocatore
+            </button>
+            <button
+              onClick={handleNavigateToRosa}
+              className="btn btn-secondary"
+            >
+              📸 Carica da Screenshot
+            </button>
+            <button
+              onClick={handleNavigateToRosa}
+              className="btn btn-secondary"
+            >
+              ⚙️ Editor Formazione
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Coach Motivazionale */}
-      <div className="rounded-2xl border border-gray-800 bg-gray-900 shadow-soft p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">💬 Coach Motivazionale</h3>
-        <div className="flex items-center justify-between">
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">💬 Coach Motivazionale</h3>
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           <div>
-            <p className="text-muted text-sm mb-2">
+            <p
+              style={{
+                fontSize: '14px',
+                color: '#9CA3AF',
+                marginBottom: '8px',
+              }}
+            >
               Hai bisogno di una spinta?
             </p>
             {coachNote && (
-              <p className="text-green-500 font-medium">
+              <p
+                style={{
+                  color: '#10B981',
+                  fontWeight: '500',
+                  marginTop: '4px',
+                }}
+              >
                 "{coachNote}"
               </p>
             )}
