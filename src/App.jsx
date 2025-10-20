@@ -4,11 +4,15 @@ import { auth } from './services/firebaseClient';
 import SideNav from './components/layout/SideNav';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
+import AdvancedDashboard from './pages/AdvancedDashboard';
 import Rosa from './pages/Rosa';
+import PlayerManagement from './pages/PlayerManagement';
 import Match from './pages/Match';
 import MatchOCR from './pages/MatchOCR';
 import Statistiche from './pages/Statistiche';
+import AdvancedStats from './pages/AdvancedStats';
 import Avversario from './pages/Avversario';
+import OpponentAnalysis from './pages/OpponentAnalysis';
 import Login from './pages/Login';
 
 function App() {
@@ -131,11 +135,11 @@ function App() {
         console.log('🏠 Rendering Home page');
         return <Home user={user} />;
       case 'dashboard':
-        console.log('📊 Rendering Dashboard page');
-        return <Dashboard />;
+        console.log('📊 Rendering Advanced Dashboard page');
+        return <AdvancedDashboard user={user} />;
       case 'rosa':
-        console.log('👥 Rendering Rosa page');
-        return <Rosa />;
+        console.log('👥 Rendering Player Management page');
+        return <PlayerManagement user={user} />;
       case 'match':
         console.log('⚽ Rendering Match page');
         return <Match />;
@@ -143,11 +147,11 @@ function App() {
         console.log('📸 Rendering MatchOCR page');
         return <MatchOCR user={user} />;
       case 'statistiche':
-        console.log('📈 Rendering Statistiche page');
-        return <Statistiche />;
+        console.log('📈 Rendering Advanced Stats page');
+        return <AdvancedStats user={user} />;
       case 'avversario':
-        console.log('👤 Rendering Avversario page');
-        return <Avversario />;
+        console.log('🎯 Rendering Opponent Analysis page');
+        return <OpponentAnalysis user={user} />;
       default:
         console.log('🏠 Rendering default Home page');
         return <Home user={user} />;

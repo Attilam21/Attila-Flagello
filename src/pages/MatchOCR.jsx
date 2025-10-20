@@ -5,8 +5,14 @@ import {
   listenToMatchStatus,
 } from '../services/firebaseClient';
 import { ocrService } from '../services/ocrService';
+import { advancedOCRService } from '../services/advancedOCRService';
+import { realOCRService } from '../services/realOCRService';
 import PlayerCard from '../components/PlayerCard';
 import MatchStats from '../components/MatchStats';
+import Formation2D from '../components/Formation2D';
+import PlayerStatsAdvanced from '../components/PlayerStatsAdvanced';
+import TeamAnalysis from '../components/TeamAnalysis';
+import OCRDebug from '../components/OCRDebug';
 
 const MatchOCR = ({ user }) => {
   const [file, setFile] = useState(null);
@@ -102,13 +108,14 @@ const MatchOCR = ({ user }) => {
     try {
       console.log('🔍 Starting OCR analysis...');
       
-      // Analizza l'immagine con il nuovo servizio OCR
-      const result = await ocrService.processImage(file);
-      setAnalyzedData(result);
-      
-      // Determina il tipo di immagine
-      const detectedType = await ocrService.detectImageType(file);
-      setImageType(detectedType);
+          // Analizza l'immagine con il servizio OCR REALE
+          console.log('🔍 Using REAL OCR service...');
+          const result = await realOCRService.processImage(file);
+          setAnalyzedData(result);
+
+          // Determina il tipo di immagine
+          const detectedType = result.type || 'unknown';
+          setImageType(detectedType);
       
       setOcrStatus('done');
       console.log('✅ OCR analysis completed:', result);
@@ -156,8 +163,8 @@ const MatchOCR = ({ user }) => {
       const downloadURL = await Promise.race([uploadPromise, uploadTimeout]);
       console.log('✅ Image uploaded to Firebase:', downloadURL);
 
-      // Poi processa con OCR veloce con timeout ridotto
-      const ocrPromise = ocrService.processImageWithTesseract(file);
+      // Poi processa con OCR avanzato con timeout ridotto
+      const ocrPromise = advancedOCRService.processImageWithTesseract(file);
       const ocrTimeout = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('OCR timeout')), 10000)
       );
@@ -525,20 +532,51 @@ const MatchOCR = ({ user }) => {
                 ✅ Analisi completata! Tipo rilevato: <strong>{imageType}</strong>
               </div>
               
-              {/* Visualizza dati analizzati in base al tipo */}
-              {imageType === 'player_profile' && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Profilo Giocatore</h3>
-                  <PlayerCard player={analyzedData} showDetails={true} />
-                </div>
-              )}
-              
-              {imageType === 'match_stats' && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Statistiche Partita</h3>
-                  <MatchStats match={analyzedData} showPlayerRatings={true} />
-                </div>
-              )}
+                  {/* Visualizza dati analizzati in base al tipo */}
+                  {imageType === 'formation_2d' && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Formazione 2D</h3>
+                      <Formation2D 
+                        formation={analyzedData.formation} 
+                        players={analyzedData.players} 
+                        showDetails={true} 
+                      />
+                      
+                      {/* Analisi AI della squadra */}
+                      <div className="mt-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">🧠 Analisi AI Squadra</h3>
+                        <TeamAnalysis 
+                          players={analyzedData.players} 
+                          formation={analyzedData.formation}
+                          showDetails={true} 
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {imageType === 'player_stats' && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Statistiche Giocatore</h3>
+                      <PlayerStatsAdvanced 
+                        stats={analyzedData.stats} 
+                        showDetails={true} 
+                      />
+                    </div>
+                  )}
+
+                  {imageType === 'match_stats' && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Statistiche Partita</h3>
+                      <MatchStats match={analyzedData} showPlayerRatings={true} />
+                    </div>
+                  )}
+
+                  {imageType === 'player_profile' && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Profilo Giocatore</h3>
+                      <PlayerCard player={analyzedData} showDetails={true} />
+                    </div>
+                  )}
               
               {imageType === 'team_formation' && (
                 <div>
@@ -677,6 +715,15 @@ const MatchOCR = ({ user }) => {
           <li>Il testo OCR appare qui sotto in tempo reale</li>
         </ol>
       </div>
+
+      {/* Debug OCR */}
+      {file && (
+        <OCRDebug 
+          imageFile={file}
+          ocrResult={analyzedData}
+          onRetry={handleAnalyzeImage}
+        />
+      )}
     </div>
   );
 };
