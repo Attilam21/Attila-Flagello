@@ -264,6 +264,28 @@ const PlayerManagement = ({ user }) => {
       color: '#E5E7EB',
       fontSize: '0.875rem',
     },
+    // Base button used for view-mode tabs
+    button: {
+      padding: '0.5rem 0.875rem',
+      borderRadius: '0.6rem',
+      border: '1px solid rgba(255,255,255,0.08)',
+      color: 'white',
+      fontSize: '0.875rem',
+      fontWeight: 600,
+      cursor: 'pointer',
+      transition: 'all 0.25s ease',
+      boxShadow: '0 1px 2px rgba(0,0,0,0.05), 0 1px 1px rgba(0,0,0,0.04)',
+    },
+    tabActive: {
+      background: 'linear-gradient(180deg, #3B82F6 0%, #2563EB 100%)',
+      boxShadow:
+        '0 6px 12px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255,255,255,0.06)',
+      transform: 'translateY(-1px)',
+    },
+    tabIdle: {
+      background: '#6B7280',
+      opacity: 0.95,
+    },
     addButton: {
       backgroundColor: '#10B981',
       color: 'white',
@@ -986,13 +1008,7 @@ const PlayerManagement = ({ user }) => {
           <button
             style={{
               ...styles.button,
-              backgroundColor: viewMode === 'list' ? '#3B82F6' : '#6B7280',
-              boxShadow:
-                viewMode === 'list'
-                  ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)'
-                  : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
-              transform: viewMode === 'list' ? 'translateY(-1px)' : 'none',
-              transition: 'all 0.3s ease',
+              ...(viewMode === 'list' ? styles.tabActive : styles.tabIdle),
             }}
             onClick={() => setViewMode('list')}
           >
@@ -1001,13 +1017,7 @@ const PlayerManagement = ({ user }) => {
           <button
             style={{
               ...styles.button,
-              backgroundColor: viewMode === 'profile' ? '#3B82F6' : '#6B7280',
-              boxShadow:
-                viewMode === 'profile'
-                  ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)'
-                  : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
-              transform: viewMode === 'profile' ? 'translateY(-1px)' : 'none',
-              transition: 'all 0.3s ease',
+              ...(viewMode === 'profile' ? styles.tabActive : styles.tabIdle),
             }}
             onClick={() => setViewMode('profile')}
           >
@@ -1016,13 +1026,7 @@ const PlayerManagement = ({ user }) => {
           <button
             style={{
               ...styles.button,
-              backgroundColor: viewMode === 'formation' ? '#3B82F6' : '#6B7280',
-              boxShadow:
-                viewMode === 'formation'
-                  ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)'
-                  : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
-              transform: viewMode === 'formation' ? 'translateY(-1px)' : 'none',
-              transition: 'all 0.3s ease',
+              ...(viewMode === 'formation' ? styles.tabActive : styles.tabIdle),
             }}
             onClick={() => setViewMode('formation')}
           >

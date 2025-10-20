@@ -446,7 +446,13 @@ const MatchOCR = ({ user }) => {
           <button
             onClick={handleAnalyzeImage}
             disabled={!file || ocrStatus === 'processing'}
-            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 rounded-lg text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
+            style={{
+              background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
+              boxShadow:
+                '0 8px 16px rgba(5, 150, 105, 0.24), inset 0 1px 0 rgba(255,255,255,0.08)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            }}
           >
             {ocrStatus === 'processing'
               ? '⏳ Analizzando...'
@@ -456,7 +462,13 @@ const MatchOCR = ({ user }) => {
           <button
             onClick={handleUpload}
             disabled={!file || uploading || ocrStatus === 'processing'}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 rounded-lg text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
+            style={{
+              background: 'linear-gradient(180deg, #3B82F6 0%, #2563EB 100%)',
+              boxShadow:
+                '0 8px 16px rgba(37, 99, 235, 0.28), inset 0 1px 0 rgba(255,255,255,0.08)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            }}
           >
             {uploading ? '⏳ Caricamento...' : '🚀 Carica su Firebase'}
           </button>
@@ -487,7 +499,12 @@ const MatchOCR = ({ user }) => {
               setOcrStatus('done');
               setOcrText('Dati di emergenza caricati (OCR bypassato)');
             }}
-            className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
+            className="w-full px-4 py-2 text-white rounded-lg text-sm"
+            style={{
+              background: 'linear-gradient(180deg, #F59E0B 0%, #D97706 100%)',
+              boxShadow:
+                '0 8px 16px rgba(217, 119, 6, 0.28), inset 0 1px 0 rgba(255,255,255,0.08)',
+            }}
           >
             🚨 Usa Dati di Esempio (Bypass OCR)
           </button>
