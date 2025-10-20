@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Users root profile (optional)
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // Players subcollection
+      match /players/{playerId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Matches saved per user (parsed stats)
+      match /matches/{matchId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Any other user-owned subcollection (future-proof)
+      match /{document=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Global matches status doc and OCR results addressed by uid
+    match /matches/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /ocr/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // AI chat history, documents contain a userId field
+    match /ai_chat_history/{sessionId} {
+      allow read, write: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+

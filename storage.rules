@@ -1,0 +1,31 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwnerPath(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Uploads for OCR: uploads/{userId}/{filename}
+    match /uploads/{userId}/{fileName} {
+      allow read: if isOwnerPath(userId);
+      allow write: if isOwnerPath(userId);
+    }
+
+    // Player images: player_images/{userId}/{playerId}/{filename}
+    match /player_images/{userId}/{playerId}/{fileName} {
+      allow read: if isOwnerPath(userId);
+      allow write: if isOwnerPath(userId);
+    }
+
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+
