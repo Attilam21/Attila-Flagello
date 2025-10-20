@@ -76,7 +76,7 @@ export const uploadMatchImage = async (file, userId) => {
 
     console.log('✅ Immagine caricata:', { userId, filePath: storagePath });
 
-    return storagePath;
+    return downloadURL;
   } catch (error) {
     console.error('❌ Errore upload:', error);
     throw error;

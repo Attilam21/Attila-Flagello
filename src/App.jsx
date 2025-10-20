@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Rosa from './pages/Rosa';
 import Match from './pages/Match';
+import MatchOCR from './pages/MatchOCR';
 import Statistiche from './pages/Statistiche';
 import Avversario from './pages/Avversario';
 import Login from './pages/Login';
@@ -53,6 +54,12 @@ function App() {
 
   const handleLogin = useCallback(() => {
     setCurrentPage('home');
+  }, []);
+
+  const handlePageChange = useCallback(page => {
+    console.log('📄 Page change requested:', page);
+    setCurrentPage(page);
+    console.log('✅ Page changed to:', page);
   }, []);
 
   console.log('🎯 App render state:', {
@@ -117,20 +124,32 @@ function App() {
   console.log('🏠 Showing main app with user:', user.email);
 
   const renderPage = () => {
+    console.log('🎯 Rendering page:', currentPage);
+    
     switch (currentPage) {
       case 'home':
+        console.log('🏠 Rendering Home page');
         return <Home user={user} />;
       case 'dashboard':
+        console.log('📊 Rendering Dashboard page');
         return <Dashboard />;
       case 'rosa':
+        console.log('👥 Rendering Rosa page');
         return <Rosa />;
       case 'match':
+        console.log('⚽ Rendering Match page');
         return <Match />;
+      case 'matchocr':
+        console.log('📸 Rendering MatchOCR page');
+        return <MatchOCR user={user} />;
       case 'statistiche':
+        console.log('📈 Rendering Statistiche page');
         return <Statistiche />;
       case 'avversario':
+        console.log('👤 Rendering Avversario page');
         return <Avversario />;
       default:
+        console.log('🏠 Rendering default Home page');
         return <Home user={user} />;
     }
   };
@@ -139,7 +158,7 @@ function App() {
     <div className="app-container">
       <SideNav
         currentPage={currentPage}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         user={user}
         onLogout={handleLogout}
       />

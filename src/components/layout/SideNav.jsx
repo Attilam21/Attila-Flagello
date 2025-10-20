@@ -5,6 +5,7 @@ import {
   BarChart3,
   UserCheck,
   LogOut,
+  Camera,
 } from 'lucide-react';
 
 const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
@@ -13,6 +14,7 @@ const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'rosa', label: 'Rosa', icon: Users },
     { id: 'match', label: 'Match', icon: Target },
+    { id: 'matchocr', label: 'Match OCR', icon: Camera },
     { id: 'statistiche', label: 'Statistiche', icon: BarChart3 },
     { id: 'avversario', label: 'Avversario', icon: UserCheck },
   ];

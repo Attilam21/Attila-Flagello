@@ -4,6 +4,9 @@ import {
   listenToOCRResults,
   listenToMatchStatus,
 } from '../services/firebaseClient';
+import { ocrService } from '../services/ocrService';
+import PlayerCard from '../components/PlayerCard';
+import MatchStats from '../components/MatchStats';
 
 const MatchOCR = ({ user }) => {
   const [file, setFile] = useState(null);
@@ -13,6 +16,8 @@ const MatchOCR = ({ user }) => {
   const [ocrText, setOcrText] = useState('');
   const [ocrError, setOcrError] = useState(null);
   const [uploadError, setUploadError] = useState(null);
+  const [analyzedData, setAnalyzedData] = useState(null);
+  const [imageType, setImageType] = useState(null);
 
   if (!user) {
     return (
@@ -52,7 +57,11 @@ const MatchOCR = ({ user }) => {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
   }, [user.uid]);
 
   const handleFileChange = e => {
@@ -63,6 +72,8 @@ const MatchOCR = ({ user }) => {
       setOcrError(null);
       setOcrStatus(null);
       setOcrText('');
+      setAnalyzedData(null);
+      setImageType(null);
 
       // Crea anteprima
       const reader = new FileReader();
@@ -77,6 +88,33 @@ const MatchOCR = ({ user }) => {
         mime: selectedFile.type,
         name: selectedFile.name,
       });
+    }
+  };
+
+  const handleAnalyzeImage = async () => {
+    if (!file) return;
+    
+    setOcrStatus('processing');
+    setOcrError(null);
+    
+    try {
+      console.log('🔍 Starting OCR analysis...');
+      
+      // Analizza l'immagine con il nuovo servizio OCR
+      const result = await ocrService.processImage(file);
+      setAnalyzedData(result);
+      
+      // Determina il tipo di immagine
+      const detectedType = await ocrService.detectImageType(file);
+      setImageType(detectedType);
+      
+      setOcrStatus('done');
+      console.log('✅ OCR analysis completed:', result);
+      
+    } catch (error) {
+      console.error('❌ OCR analysis failed:', error);
+      setOcrError(error.message);
+      setOcrStatus('error');
     }
   };
 
@@ -99,16 +137,29 @@ const MatchOCR = ({ user }) => {
       });
       const startTime = Date.now();
 
-      const result = await uploadMatchImage(file, user.uid);
+      // Prima carica l'immagine su Firebase
+      const downloadURL = await uploadMatchImage(file, user.uid);
+      console.log('✅ Image uploaded to Firebase:', downloadURL);
+
+      // Poi processa con OCR
+      const ocrResult = await ocrService.processImageWithFirebase(file, user.uid);
+      setAnalyzedData(ocrResult);
+      
+      const detectedType = await ocrService.detectImageType(file);
+      setImageType(detectedType);
 
       const uploadTime = Date.now() - startTime;
-      console.log(`✅ Upload completed in ${uploadTime}ms:`, result);
+      console.log(`✅ Upload and OCR completed in ${uploadTime}ms`);
+
+      setOcrStatus('done');
+      setOcrText('Analisi completata con successo!');
 
       // Log telemetria success
       console.log('📊 OCR upload success:', {
         bytes: file.size,
         mime: file.type,
         uploadTime,
+        ocrResult,
       });
     } catch (err) {
       console.error('❌ Upload failed:', err);
@@ -305,18 +356,23 @@ const MatchOCR = ({ user }) => {
           </div>
         )}
 
-        <button
-          onClick={handleUpload}
-          disabled={!file || uploading || ocrStatus === 'processing'}
-          style={{
-            ...styles.button,
-            ...(uploading || ocrStatus === 'processing'
-              ? styles.buttonDisabled
-              : {}),
-          }}
-        >
-          {uploading ? '⏳ Caricamento...' : '🚀 Carica su Firebase'}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleAnalyzeImage}
+            disabled={!file || ocrStatus === 'processing'}
+            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {ocrStatus === 'processing' ? '⏳ Analizzando...' : '🔍 Analizza Immagine'}
+          </button>
+          
+          <button
+            onClick={handleUpload}
+            disabled={!file || uploading || ocrStatus === 'processing'}
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {uploading ? '⏳ Caricamento...' : '🚀 Carica su Firebase'}
+          </button>
+        </div>
 
         {uploadError && <div style={styles.error}>❌ {uploadError}</div>}
       </div>
@@ -393,7 +449,63 @@ const MatchOCR = ({ user }) => {
             </div>
           )}
 
-          {ocrStatus === 'done' && ocrText && (
+          {ocrStatus === 'done' && analyzedData && (
+            <div className="space-y-6">
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                ✅ Analisi completata! Tipo rilevato: <strong>{imageType}</strong>
+              </div>
+              
+              {/* Visualizza dati analizzati in base al tipo */}
+              {imageType === 'player_profile' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Profilo Giocatore</h3>
+                  <PlayerCard player={analyzedData} showDetails={true} />
+                </div>
+              )}
+              
+              {imageType === 'match_stats' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Statistiche Partita</h3>
+                  <MatchStats match={analyzedData} showPlayerRatings={true} />
+                </div>
+              )}
+              
+              {imageType === 'team_formation' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Formazione Squadra</h3>
+                  <div className="bg-gray-100 p-4 rounded-lg">
+                    <p><strong>Squadra:</strong> {analyzedData.name}</p>
+                    <p><strong>Allenatore:</strong> {analyzedData.coach}</p>
+                    <p><strong>Formazione:</strong> {analyzedData.formation}</p>
+                    <p><strong>Stile di gioco:</strong> {analyzedData.playStyle}</p>
+                    <p><strong>Forza complessiva:</strong> {analyzedData.overallStrength}</p>
+                  </div>
+                </div>
+              )}
+              
+              {imageType === 'attack_areas' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Aree di Attacco</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-100 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2">Squadra Casa</h4>
+                      <p>Sinistra: {analyzedData.home.left}%</p>
+                      <p>Centro: {analyzedData.home.center}%</p>
+                      <p>Destra: {analyzedData.home.right}%</p>
+                    </div>
+                    <div className="bg-gray-100 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2">Squadra Trasferta</h4>
+                      <p>Sinistra: {analyzedData.away.left}%</p>
+                      <p>Centro: {analyzedData.away.center}%</p>
+                      <p>Destra: {analyzedData.away.right}%</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {ocrStatus === 'done' && ocrText && !analyzedData && (
             <div>
               <label
                 style={{
