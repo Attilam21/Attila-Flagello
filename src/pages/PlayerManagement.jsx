@@ -546,6 +546,30 @@ const PlayerManagement = ({ user }) => {
     good: { backgroundColor: '#3B82F6', color: 'white' },
     average: { backgroundColor: '#F59E0B', color: 'white' },
     poor: { backgroundColor: '#EF4444', color: 'white' },
+    uploadStatus: {
+      backgroundColor: '#374151',
+      border: '1px solid #4B5563',
+      borderRadius: '0.5rem',
+      padding: '1rem',
+      marginBottom: '1rem',
+      textAlign: 'center',
+    },
+    statusMessage: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '0.5rem',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+    },
+    spinner: {
+      width: '16px',
+      height: '16px',
+      border: '2px solid #4B5563',
+      borderTop: '2px solid #3B82F6',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+    },
   };
 
   const getFormColor = form => {
@@ -683,12 +707,38 @@ const PlayerManagement = ({ user }) => {
   const handlePlayerImageUpload = async (e, kind) => {
     const file = e.target.files[0];
     if (!file || !user || !selectedPlayer?.id) return;
+    
+    setIsUploading(true);
+    setUploadStatus('uploading');
+    
     try {
-      await uploadPlayerImage(user.uid, selectedPlayer.id, file, kind);
+      const result = await uploadPlayerImage(user.uid, selectedPlayer.id, file, kind);
+      console.log('✅ Player image uploaded:', result);
+      setUploadStatus('success');
+      
+      // Se è un'immagine di profilo, prova l'OCR
+      if (kind === 'profile') {
+        setUploadStatus('processing');
+        try {
+          const ocrData = await realOCRService.analyzePlayerImage(file);
+          if (ocrData) {
+            setOcrResult(ocrData);
+            setShowOCRModal(true);
+            setUploadStatus('ocr-completed');
+          } else {
+            setUploadStatus('success');
+          }
+        } catch (ocrError) {
+          console.warn('OCR analysis failed:', ocrError);
+          setUploadStatus('success');
+        }
+      }
     } catch (err) {
-      console.warn('uploadPlayerImage failed', err);
+      console.error('❌ Player image upload failed:', err);
+      setUploadStatus('error');
     } finally {
       e.target.value = '';
+      setIsUploading(false);
     }
   };
 
@@ -989,11 +1039,40 @@ const PlayerManagement = ({ user }) => {
       )}
 
       {viewMode === 'profile' && selectedPlayer && (
-        <PlayerProfile
-          player={selectedPlayer}
-          onEdit={() => setIsEditing(true)}
-          showEditButton={true}
-        />
+        <>
+          {isUploading && (
+            <div style={styles.uploadStatus}>
+              {uploadStatus === 'uploading' && (
+                <div style={styles.statusMessage}>
+                  <div style={styles.spinner}></div>
+                  Caricamento immagine...
+                </div>
+              )}
+              {uploadStatus === 'processing' && (
+                <div style={styles.statusMessage}>
+                  <div style={styles.spinner}></div>
+                  Google Vision sta analizzando l'immagine...
+                </div>
+              )}
+              {uploadStatus === 'success' && (
+                <div style={{...styles.statusMessage, color: '#10B981'}}>
+                  ✅ Immagine caricata con successo!
+                </div>
+              )}
+              {uploadStatus === 'error' && (
+                <div style={{...styles.statusMessage, color: '#EF4444'}}>
+                  ❌ Errore durante il caricamento
+                </div>
+              )}
+            </div>
+          )}
+          <PlayerProfile
+            player={selectedPlayer}
+            onEdit={() => setIsEditing(true)}
+            showEditButton={true}
+            onImageUpload={handlePlayerImageUpload}
+          />
+        </>
       )}
 
       {viewMode === 'formation' && (

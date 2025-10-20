@@ -10,7 +10,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 
-const PlayerProfile = ({ player, onEdit, showEditButton = true }) => {
+const PlayerProfile = ({ player, onEdit, showEditButton = true, onImageUpload }) => {
   const [activeTab, setActiveTab] = useState('overview');
 
   if (!player) {
@@ -435,14 +435,61 @@ const PlayerProfile = ({ player, onEdit, showEditButton = true }) => {
             {player.position} • {player.team || 'Nessuna squadra'}
           </p>
         </div>
-        {showEditButton && (
-          <button
-            onClick={onEdit}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-          >
-            ✏️ Modifica
-          </button>
-        )}
+        <div className="flex items-center space-x-3">
+          {onImageUpload && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => onImageUpload(e, 'profile')}
+                style={{ display: 'none' }}
+                id="player-profile-upload"
+              />
+              <label
+                htmlFor="player-profile-upload"
+                className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium transition-colors cursor-pointer flex items-center space-x-2"
+              >
+                📸 Profilo
+              </label>
+              
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => onImageUpload(e, 'stats')}
+                style={{ display: 'none' }}
+                id="player-stats-upload"
+              />
+              <label
+                htmlFor="player-stats-upload"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-colors cursor-pointer flex items-center space-x-2"
+              >
+                📊 Statistiche
+              </label>
+              
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => onImageUpload(e, 'skills')}
+                style={{ display: 'none' }}
+                id="player-skills-upload"
+              />
+              <label
+                htmlFor="player-skills-upload"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg font-medium transition-colors cursor-pointer flex items-center space-x-2"
+              >
+                ⭐ Abilità
+              </label>
+            </>
+          )}
+          {showEditButton && (
+            <button
+              onClick={onEdit}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              ✏️ Modifica
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}
