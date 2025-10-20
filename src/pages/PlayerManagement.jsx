@@ -337,9 +337,13 @@ const PlayerManagement = ({ user }) => {
   };
 
   const handleAddPlayer = () => {
-    console.log('Adding new player...');
+    console.log('🎯 Adding new player...');
+    console.log('🎯 showCompleteEditor before:', showCompleteEditor);
+    console.log('🎯 editingPlayer before:', editingPlayer);
     setShowCompleteEditor(true);
     setEditingPlayer(null);
+    console.log('🎯 showCompleteEditor after:', true);
+    console.log('🎯 editingPlayer after:', null);
   };
 
   const handleViewPlayer = player => {
@@ -761,12 +765,15 @@ const PlayerManagement = ({ user }) => {
 
         {/* Complete Player Editor Modal */}
         {showCompleteEditor && (
-          <CompletePlayerEditor
-            player={editingPlayer}
-            onSave={handleSaveEditedPlayer}
-            onClose={handleCloseEditor}
-            isOpen={showCompleteEditor}
-          />
+          <>
+            {console.log('🎯 Rendering CompletePlayerEditor with:', { showCompleteEditor, editingPlayer })}
+            <CompletePlayerEditor
+              player={editingPlayer}
+              onSave={handleSaveEditedPlayer}
+              onClose={handleCloseEditor}
+              isOpen={showCompleteEditor}
+            />
+          </>
         )}
       </div>
     );
