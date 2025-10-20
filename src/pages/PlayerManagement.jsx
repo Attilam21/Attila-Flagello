@@ -12,7 +12,14 @@ import PlayerEditForm from '../components/PlayerEditForm';
 import AdvancedPlayerSearch from '../components/AdvancedPlayerSearch';
 import CompletePlayerEditor from '../components/CompletePlayerEditor';
 import { realOCRService } from '../services/realOCRService';
-import { Camera, Upload, CheckCircle, AlertCircle, Database, Plus } from 'lucide-react';
+import {
+  Camera,
+  Upload,
+  CheckCircle,
+  AlertCircle,
+  Database,
+  Plus,
+} from 'lucide-react';
 
 const PlayerManagement = ({ user }) => {
   const [players, setPlayers] = useState([]);
@@ -33,7 +40,7 @@ const PlayerManagement = ({ user }) => {
 
   // Database States
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
-  
+
   // Editor States
   const [showCompleteEditor, setShowCompleteEditor] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(null);
@@ -610,7 +617,6 @@ const PlayerManagement = ({ user }) => {
     setIsEditing(true);
   };
 
-
   const handleViewPlayer = player => {
     setSelectedPlayer(player);
     setViewMode('profile');
@@ -712,15 +718,20 @@ const PlayerManagement = ({ user }) => {
   const handlePlayerImageUpload = async (e, kind) => {
     const file = e.target.files[0];
     if (!file || !user || !selectedPlayer?.id) return;
-    
+
     setIsUploading(true);
     setUploadStatus('uploading');
-    
+
     try {
-      const result = await uploadPlayerImage(user.uid, selectedPlayer.id, file, kind);
+      const result = await uploadPlayerImage(
+        user.uid,
+        selectedPlayer.id,
+        file,
+        kind
+      );
       console.log('✅ Player image uploaded:', result);
       setUploadStatus('success');
-      
+
       // Se è un'immagine di profilo, prova l'OCR
       if (kind === 'profile') {
         setUploadStatus('processing');
@@ -784,16 +795,16 @@ const PlayerManagement = ({ user }) => {
   };
 
   // Database functions
-  const handleAdvancedPlayerSelect = async (player) => {
+  const handleAdvancedPlayerSelect = async player => {
     if (!user) return;
 
     try {
       // Il giocatore è già convertito dal componente AdvancedPlayerSearch
       await addPlayer(user.uid, player);
-      
+
       // Close advanced search
       setShowAdvancedSearch(false);
-      
+
       console.log('✅ Giocatore aggiunto dal database avanzato:', player.name);
     } catch (error) {
       console.error('❌ Errore aggiunta giocatore:', error);
@@ -801,12 +812,12 @@ const PlayerManagement = ({ user }) => {
   };
 
   // Editor functions
-  const handleEditPlayer = (player) => {
+  const handleEditPlayer = player => {
     setEditingPlayer(player);
     setShowCompleteEditor(true);
   };
 
-  const handleSaveEditedPlayer = async (editedPlayer) => {
+  const handleSaveEditedPlayer = async editedPlayer => {
     if (!user) return;
 
     try {
@@ -824,7 +835,7 @@ const PlayerManagement = ({ user }) => {
     setEditingPlayer(null);
   };
 
-  const handleDeletePlayer = async (playerId) => {
+  const handleDeletePlayer = async playerId => {
     if (!user) return;
     try {
       await deletePlayerById(user.uid, playerId);
@@ -895,13 +906,13 @@ const PlayerManagement = ({ user }) => {
                 border: 'none',
                 color: 'white',
                 minWidth: '150px',
-                height: '40px'
+                height: '40px',
               }}
             >
               <Database size={16} />
               Database Giocatori
             </button>
-            
+
             <input
               type="file"
               accept="image/*"
@@ -1115,9 +1126,11 @@ const PlayerManagement = ({ user }) => {
               </div>
 
               {/* Edit Button */}
-              <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+              <div
+                style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}
+              >
                 <button
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     handleEditPlayer(player);
                   }}
@@ -1127,13 +1140,13 @@ const PlayerManagement = ({ user }) => {
                     color: '#fff',
                     fontSize: '0.75rem',
                     padding: '0.5rem 1rem',
-                    flex: 1
+                    flex: 1,
                   }}
                 >
                   ✏️ Modifica
                 </button>
                 <button
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     handleDeletePlayer(player.id);
                   }}
@@ -1143,7 +1156,7 @@ const PlayerManagement = ({ user }) => {
                     color: '#fff',
                     fontSize: '0.75rem',
                     padding: '0.5rem 1rem',
-                    flex: 1
+                    flex: 1,
                   }}
                 >
                   🗑️ Elimina
@@ -1171,12 +1184,12 @@ const PlayerManagement = ({ user }) => {
                 </div>
               )}
               {uploadStatus === 'success' && (
-                <div style={{...styles.statusMessage, color: '#10B981'}}>
+                <div style={{ ...styles.statusMessage, color: '#10B981' }}>
                   ✅ Immagine caricata con successo!
                 </div>
               )}
               {uploadStatus === 'error' && (
-                <div style={{...styles.statusMessage, color: '#EF4444'}}>
+                <div style={{ ...styles.statusMessage, color: '#EF4444' }}>
                   ❌ Errore durante il caricamento
                 </div>
               )}
