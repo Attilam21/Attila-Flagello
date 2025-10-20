@@ -12,6 +12,7 @@ import {
 const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
+    { id: 'dashboard', label: 'Home', icon: BarChart3 },
     { id: 'rosa', label: 'Rosa', icon: Users },
     { id: 'matchocr', label: 'Analisi Partite', icon: Camera },
     { id: 'statistiche', label: 'Statistiche Avanzate', icon: BarChart3 },
