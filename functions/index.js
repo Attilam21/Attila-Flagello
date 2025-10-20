@@ -2,6 +2,7 @@ const admin = require('firebase-admin');
 const vision = require('@google-cloud/vision');
 const { onObjectFinalized } = require('firebase-functions/v2/storage');
 const { setGlobalOptions } = require('firebase-functions/v2');
+const logger = require('firebase-functions/logger');
 
 setGlobalOptions({ region: 'europe-west1', memoryMiB: 512, timeoutSeconds: 120 });
 
@@ -73,7 +74,7 @@ exports.onImageUpload = onObjectFinalized(async event => {
     const ocrTime = Date.now() - startTime;
     console.log(`⚡ OCR completed in ${ocrTime}ms`);
 
-    functions.logger.info('OCR processing completed', {
+    logger.info('OCR processing completed', {
       requestId,
       uid: userId,
       path: filePath,
@@ -137,7 +138,7 @@ exports.onImageUpload = onObjectFinalized(async event => {
       return ocrResult;
     }
   } catch (error) {
-    functions.logger.error('OCR processing failed', {
+    logger.error('OCR processing failed', {
       requestId,
       uid: userId,
       path: filePath,

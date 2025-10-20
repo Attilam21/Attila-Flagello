@@ -121,25 +121,19 @@ const MatchOCR = ({ user }) => {
     setOcrText('');
   };
 
-  // Listener per risultati OCR in tempo reale - DISABILITATO TEMPORANEAMENTE
+  // Listener per risultati OCR in tempo reale (Firestore → Vision OCR)
   useEffect(() => {
-    console.log('🔍 OCR listener disabled - using local processing');
+    if (!user?.uid) return;
+    const unsubscribe = listenToOCRResults(user.uid, result => {
+      if (!result) return;
+      setOcrStatus(result.status || 'processing');
+      setOcrText(result.text || '');
+      setOcrError(result.error || null);
+    });
 
-    // TODO: Riabilitare quando Cloud Functions saranno configurate
-    // const unsubscribe = listenToOCRResults(user.uid, result => {
-    //   console.log('🔍 OCR result received:', result);
-    //   if (result) {
-    //     setOcrStatus(result.status || 'processing');
-    //     setOcrText(result.text || '');
-    //     setOcrError(result.error || null);
-    //   }
-    // });
-
-    // return () => {
-    //   if (typeof unsubscribe === 'function') {
-    //     unsubscribe();
-    //   }
-    // };
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    };
   }, [user]);
 
   // History subscription
@@ -292,7 +286,6 @@ const MatchOCR = ({ user }) => {
         bytes: file.size,
         mime: file.type,
         uploadTime,
-        ocrResult,
       });
     } catch (err) {
       clearTimeout(timeoutId);
@@ -884,7 +877,7 @@ const MatchOCR = ({ user }) => {
                     🔍 Analisi OCR in corso...
                   </div>
                   <div className="text-sm">
-                    Tesseract.js sta processando l'immagine
+                    Google Vision sta processando l'immagine
                   </div>
                 </div>
               </div>
