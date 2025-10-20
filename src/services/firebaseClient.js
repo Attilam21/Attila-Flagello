@@ -25,8 +25,7 @@ const firebaseConfig = {
     'attila-475314.firebaseapp.com',
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'attila-475314',
   storageBucket:
-    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ||
-    'attila-475314.firebasestorage.app',
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'attila-475314.appspot.com',
   messagingSenderId:
     import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '814206807853',
   appId:

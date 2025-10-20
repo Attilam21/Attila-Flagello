@@ -1,15 +1,21 @@
-const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const vision = require('@google-cloud/vision');
+const { onObjectFinalized } = require('firebase-functions/v2/storage');
+const { setGlobalOptions } = require('firebase-functions/v2');
 
-// Inizializza Firebase Admin
-admin.initializeApp();
+setGlobalOptions({ region: 'europe-west1', memoryMiB: 512, timeoutSeconds: 120 });
+
+// Inizializza Firebase Admin con bucket esplicito
+admin.initializeApp({
+  storageBucket: process.env.STORAGE_BUCKET || 'attila-475314.appspot.com',
+});
 
 // Inizializza Vision API client
 const visionClient = new vision.ImageAnnotatorClient();
 
-// Cloud Function che si attiva quando un'immagine viene caricata su Storage
-exports.onImageUpload = functions.storage.object().onFinalize(async object => {
+// Cloud Function che si attiva quando un'immagine viene caricata su Storage (Gen2)
+exports.onImageUpload = onObjectFinalized(async event => {
+  const object = event.data;
   const fileBucket = object.bucket;
   const filePath = object.name;
   const contentType = object.contentType;

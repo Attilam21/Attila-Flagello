@@ -13,7 +13,10 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "deploy:functions": "cd functions && npm install && npm run deploy",
+    "deploy:all": "npm run build && firebase deploy"
   },
   "dependencies": {
     "chart.js": "^4.5.1",
