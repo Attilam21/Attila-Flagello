@@ -14,10 +14,78 @@ const OpponentAnalysis = ({ user }) => {
   const [selectedOpponent, setSelectedOpponent] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [uploadedFormation, setUploadedFormation] = useState(null);
+  const [counterMeasures, setCounterMeasures] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     loadOpponents();
   }, []);
+
+  const handleFormationUpload = async (file) => {
+    setIsUploading(true);
+    try {
+      // Simula upload e analisi della formazione
+      const mockFormation = {
+        id: Date.now(),
+        opponent: 'Avversario Sconosciuto',
+        formation: '4-3-3',
+        players: [
+          { name: 'GK', position: 'GK', rating: 85 },
+          { name: 'LB', position: 'LB', rating: 82 },
+          { name: 'CB1', position: 'CB', rating: 88 },
+          { name: 'CB2', position: 'CB', rating: 86 },
+          { name: 'RB', position: 'RB', rating: 84 },
+          { name: 'CM1', position: 'CM', rating: 87 },
+          { name: 'CM2', position: 'CM', rating: 85 },
+          { name: 'CM3', position: 'CM', rating: 83 },
+          { name: 'LW', position: 'LW', rating: 89 },
+          { name: 'ST', position: 'ST', rating: 91 },
+          { name: 'RW', position: 'RW', rating: 88 },
+        ],
+        playStyle: 'Possesso',
+        strengths: ['Attacco', 'Velocità'],
+        weaknesses: ['Difesa', 'Arie'],
+      };
+      
+      setUploadedFormation(mockFormation);
+      generateCounterMeasures(mockFormation);
+    } catch (error) {
+      console.error('Errore upload formazione:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const generateCounterMeasures = (formation) => {
+    // Simula generazione contromisure basate sulla formazione
+    const measures = {
+      formation: '4-2-3-1', // Formazione consigliata
+      tactics: [
+        'Gioca con 2 centrocampisti difensivi per contrastare il possesso',
+        'Usa i terzini per sfruttare gli spazi laterali',
+        'Pressione alta sui centrocampisti avversari',
+        'Contrattacco veloce sui lati',
+      ],
+      keyPlayers: [
+        'Usa un centrocampista creativo per smarcare i difensori',
+        'Sfrutta la velocità delle ali per i contropiedi',
+        'Un attaccante fisico per contrastare i difensori centrali',
+      ],
+      setPieces: [
+        'Calci d\'angolo: cerca il giocatore più alto',
+        'Rigori: studia il portiere avversario',
+        'Tiri liberi: sfrutta la barriera',
+      ],
+      substitutions: [
+        'Minuto 60: cambia un centrocampista per freschezza',
+        'Minuto 75: inserisci un attaccante veloce',
+        'Minuto 85: rafforza la difesa se in vantaggio',
+      ],
+    };
+    
+    setCounterMeasures(measures);
+  };
 
   const loadOpponents = async () => {
     // Simula caricamento avversari
@@ -519,6 +587,73 @@ const OpponentAnalysis = ({ user }) => {
         </p>
       </div>
 
+      {/* Upload Formazione */}
+      <div style={styles.uploadSection}>
+        <h3 style={styles.sectionTitle}>📸 Carica Formazione Avversario</h3>
+        <div style={styles.uploadArea}>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files[0]) {
+                handleFormationUpload(e.target.files[0]);
+              }
+            }}
+            style={{ display: 'none' }}
+            id="formation-upload"
+          />
+          <label
+            htmlFor="formation-upload"
+            style={{
+              ...styles.uploadButton,
+              ...(isUploading ? styles.uploading : {}),
+            }}
+          >
+            {isUploading ? '⏳ Analizzando...' : '📸 Carica Foto Formazione'}
+          </label>
+          <p style={styles.uploadHint}>
+            Carica una foto della formazione avversaria per ricevere contromisure personalizzate
+          </p>
+        </div>
+      </div>
+
+      {/* Contromisure */}
+      {counterMeasures && (
+        <div style={styles.counterMeasuresSection}>
+          <h3 style={styles.sectionTitle}>🛡️ Contromisure Consigliate</h3>
+          <div style={styles.measuresGrid}>
+            <div style={styles.measureCard}>
+              <h4 style={styles.measureTitle}>Formazione Consigliata</h4>
+              <p style={styles.measureValue}>{counterMeasures.formation}</p>
+            </div>
+            <div style={styles.measureCard}>
+              <h4 style={styles.measureTitle}>Tattiche</h4>
+              <ul style={styles.measureList}>
+                {counterMeasures.tactics.map((tactic, index) => (
+                  <li key={index} style={styles.measureItem}>{tactic}</li>
+                ))}
+              </ul>
+            </div>
+            <div style={styles.measureCard}>
+              <h4 style={styles.measureTitle}>Giocatori Chiave</h4>
+              <ul style={styles.measureList}>
+                {counterMeasures.keyPlayers.map((player, index) => (
+                  <li key={index} style={styles.measureItem}>{player}</li>
+                ))}
+              </ul>
+            </div>
+            <div style={styles.measureCard}>
+              <h4 style={styles.measureTitle}>Sostituzioni</h4>
+              <ul style={styles.measureList}>
+                {counterMeasures.substitutions.map((sub, index) => (
+                  <li key={index} style={styles.measureItem}>{sub}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Opponents Grid */}
       <div style={styles.opponentsGrid}>
         {opponents.map(opponent => (
@@ -765,5 +900,90 @@ const OpponentAnalysis = ({ user }) => {
     </div>
   );
 };
+
+// Aggiungi gli stili per le nuove sezioni
+const additionalStyles = {
+  uploadSection: {
+    backgroundColor: '#374151',
+    borderRadius: '0.75rem',
+    padding: '1.5rem',
+    marginBottom: '2rem',
+    border: '1px solid #4B5563',
+  },
+  sectionTitle: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    color: '#E5E7EB',
+    marginBottom: '1rem',
+  },
+  uploadArea: {
+    textAlign: 'center',
+  },
+  uploadButton: {
+    display: 'inline-block',
+    backgroundColor: '#3B82F6',
+    color: 'white',
+    padding: '0.75rem 1.5rem',
+    borderRadius: '0.5rem',
+    cursor: 'pointer',
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    border: 'none',
+    transition: 'all 0.2s',
+  },
+  uploading: {
+    backgroundColor: '#F59E0B',
+    cursor: 'not-allowed',
+  },
+  uploadHint: {
+    color: '#9CA3AF',
+    fontSize: '0.875rem',
+    marginTop: '0.5rem',
+  },
+  counterMeasuresSection: {
+    backgroundColor: '#374151',
+    borderRadius: '0.75rem',
+    padding: '1.5rem',
+    marginBottom: '2rem',
+    border: '1px solid #4B5563',
+  },
+  measuresGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '1rem',
+  },
+  measureCard: {
+    backgroundColor: '#4B5563',
+    borderRadius: '0.5rem',
+    padding: '1rem',
+    border: '1px solid #6B7280',
+  },
+  measureTitle: {
+    fontSize: '1rem',
+    fontWeight: '600',
+    color: '#E5E7EB',
+    marginBottom: '0.5rem',
+  },
+  measureValue: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    color: '#10B981',
+  },
+  measureList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  measureItem: {
+    color: '#E5E7EB',
+    fontSize: '0.875rem',
+    marginBottom: '0.25rem',
+    paddingLeft: '1rem',
+    position: 'relative',
+  },
+};
+
+// Aggiungi gli stili al componente
+Object.assign(OpponentAnalysis.styles || {}, additionalStyles);
 
 export default OpponentAnalysis;
