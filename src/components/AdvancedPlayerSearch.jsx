@@ -20,6 +20,7 @@ const AdvancedPlayerSearch = ({ isOpen, onClose, onPlayerSelect }) => {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [results, setResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [filterOptions, setFilterOptions] = useState({
     positions: [],
     clubs: [],
@@ -30,24 +31,54 @@ const AdvancedPlayerSearch = ({ isOpen, onClose, onPlayerSelect }) => {
 
   // Carica opzioni filtri al mount
   useEffect(() => {
-    const options = getFilterOptions();
-    setFilterOptions(options);
+    try {
+      console.log('🔍 Loading filter options...');
+      const options = getFilterOptions();
+      setFilterOptions(options);
+      console.log('✅ Filter options loaded:', options);
+    } catch (error) {
+      console.error('❌ Error loading filter options:', error);
+      setFilterOptions({
+        positions: ['CF', 'LW', 'RW', 'AMF', 'CMF', 'DMF', 'LB', 'CB', 'RB', 'GK'],
+        clubs: ['Real Madrid', 'Barcelona', 'Manchester City', 'PSG'],
+        nationalities: ['Spain', 'France', 'Brazil', 'Argentina'],
+        minRating: 40,
+        maxRating: 100,
+      });
+    }
   }, []);
 
   // Ricerca giocatori
   const searchResults = useMemo(() => {
-    if (
-      !query.trim() &&
-      Object.values(filters).every(v => v === 'all' || v === '' || v === 'desc')
-    ) {
+    try {
+      if (
+        !query.trim() &&
+        Object.values(filters).every(v => v === 'all' || v === '' || v === 'desc')
+      ) {
+        return [];
+      }
+      console.log('🔍 Searching players...', { query, filters });
+      const results = searchPlayers(query, filters);
+      console.log('✅ Search results:', results.length, 'players found');
+      // Limita a 50 risultati per evitare crash
+      return results.slice(0, 50);
+    } catch (error) {
+      console.error('❌ Error searching players:', error);
       return [];
     }
-    return searchPlayers(query, filters);
   }, [query, filters]);
 
   // Aggiorna risultati
   useEffect(() => {
-    setResults(searchResults.slice(0, 50)); // Limita a 50 risultati per performance
+    setIsLoading(true);
+    try {
+      setResults(searchResults.slice(0, 50)); // Limita a 50 risultati per performance
+    } catch (error) {
+      console.error('❌ Error setting results:', error);
+      setResults([]);
+    } finally {
+      setIsLoading(false);
+    }
   }, [searchResults]);
 
   const handleFilterChange = (key, value) => {
@@ -272,6 +303,23 @@ const AdvancedPlayerSearch = ({ isOpen, onClose, onPlayerSelect }) => {
       marginBottom: '1rem',
       fontSize: '0.875rem',
     },
+    loadingIndicator: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '0.5rem',
+      padding: '1rem',
+      color: '#fff',
+      fontSize: '0.875rem',
+    },
+    spinner: {
+      width: '16px',
+      height: '16px',
+      border: '2px solid #333',
+      borderTop: '2px solid #fff',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+    },
   };
 
   if (!isOpen) return null;
@@ -307,6 +355,13 @@ const AdvancedPlayerSearch = ({ isOpen, onClose, onPlayerSelect }) => {
                 Filtri
               </button>
             </div>
+            
+            {isLoading && (
+              <div style={styles.loadingIndicator}>
+                <div style={styles.spinner}></div>
+                Caricamento giocatori...
+              </div>
+            )}
 
             <div style={styles.filtersPanel}>
               <div style={styles.filtersGrid}>
