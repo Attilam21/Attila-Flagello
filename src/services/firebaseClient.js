@@ -57,9 +57,15 @@ console.log('✅ Firebase initialized successfully');
 // Helper per upload immagine match
 export const uploadMatchImage = async (file, userId) => {
   try {
+    const currentUid = getAuth().currentUser?.uid;
+    const uid = currentUid || userId;
+    if (!uid) throw new Error('Utente non autenticato');
+    if (userId && userId !== uid) {
+      console.warn('uploadMatchImage: userId mismatch, using authenticated uid');
+    }
     const timestamp = Date.now();
     const fileName = `${timestamp}.png`;
-    const storagePath = `uploads/${userId}/${fileName}`;
+    const storagePath = `uploads/${uid}/${fileName}`;
 
     // Upload su Firebase Storage
     const storageRef = ref(storage, storagePath);
@@ -68,7 +74,7 @@ export const uploadMatchImage = async (file, userId) => {
 
     // Salva metadati su Firestore
     const matchDoc = {
-      userId,
+      userId: uid,
       filePath: storagePath,
       downloadURL,
       status: 'uploaded',
@@ -76,9 +82,9 @@ export const uploadMatchImage = async (file, userId) => {
       fileName,
     };
 
-    await setDoc(doc(db, 'matches', userId), matchDoc);
+    await setDoc(doc(db, 'matches', uid), matchDoc);
 
-    console.log('✅ Immagine caricata:', { userId, filePath: storagePath });
+    console.log('✅ Immagine caricata:', { userId: uid, filePath: storagePath });
 
     return downloadURL;
   } catch (error) {
