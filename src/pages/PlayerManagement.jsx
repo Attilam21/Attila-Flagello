@@ -11,13 +11,7 @@ import FormationBuilder from '../components/FormationBuilder';
 import PlayerEditForm from '../components/PlayerEditForm';
 import CompletePlayerEditor from '../components/CompletePlayerEditor';
 import { realOCRService } from '../services/realOCRService';
-import {
-  Camera,
-  Upload,
-  CheckCircle,
-  AlertCircle,
-  Plus,
-} from 'lucide-react';
+import { Camera, Upload, CheckCircle, AlertCircle, Plus } from 'lucide-react';
 
 const PlayerManagement = ({ user }) => {
   const [players, setPlayers] = useState([]);
@@ -35,7 +29,6 @@ const PlayerManagement = ({ user }) => {
   const [showOCRModal, setShowOCRModal] = useState(false);
   const [playerImages, setPlayerImages] = useState([]);
   const [currentImageType, setCurrentImageType] = useState('profile');
-
 
   // Editor States
   const [showCompleteEditor, setShowCompleteEditor] = useState(false);
@@ -790,7 +783,6 @@ const PlayerManagement = ({ user }) => {
     console.log('✅ Player added from OCR:', newPlayer);
   };
 
-
   // Editor functions
   const handleEditPlayer = player => {
     setEditingPlayer(player);
@@ -869,7 +861,6 @@ const PlayerManagement = ({ user }) => {
 
         <div style={styles.uploadSection}>
           <div style={styles.uploadButtons}>
-
             <input
               type="file"
               accept="image/*"
@@ -1382,7 +1373,6 @@ const PlayerManagement = ({ user }) => {
           </div>
         </div>
       )}
-
 
       {/* Complete Player Editor Modal */}
       {showCompleteEditor && (

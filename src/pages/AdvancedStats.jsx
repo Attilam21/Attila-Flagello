@@ -587,7 +587,7 @@ const AdvancedStats = ({ user }) => {
             <option value="last90days">Ultimi 90 giorni</option>
             <option value="all">Tutto il periodo</option>
           </select>
-          
+
           <select
             style={styles.select}
             value={selectedMatch}

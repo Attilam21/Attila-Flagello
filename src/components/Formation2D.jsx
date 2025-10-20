@@ -1,39 +1,54 @@
 import React, { useState, useCallback } from 'react';
 
-const Formation2D = ({ formation, players, showDetails = false, onPlayerMove, editable = false }) => {
+const Formation2D = ({
+  formation,
+  players,
+  showDetails = false,
+  onPlayerMove,
+  editable = false,
+}) => {
   const [draggedPlayer, setDraggedPlayer] = useState(null);
   const [playerPositions, setPlayerPositions] = useState({});
 
   // Funzioni per drag-and-drop
-  const handleDragStart = useCallback((e, player) => {
-    if (!editable) return;
-    setDraggedPlayer(player);
-    e.dataTransfer.effectAllowed = 'move';
-  }, [editable]);
+  const handleDragStart = useCallback(
+    (e, player) => {
+      if (!editable) return;
+      setDraggedPlayer(player);
+      e.dataTransfer.effectAllowed = 'move';
+    },
+    [editable]
+  );
 
-  const handleDragOver = useCallback((e) => {
-    if (!editable) return;
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  }, [editable]);
+  const handleDragOver = useCallback(
+    e => {
+      if (!editable) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    },
+    [editable]
+  );
 
-  const handleDrop = useCallback((e, newPosition) => {
-    if (!editable || !draggedPlayer) return;
-    e.preventDefault();
-    
-    const updatedPositions = {
-      ...playerPositions,
-      [draggedPlayer.id]: newPosition
-    };
-    
-    setPlayerPositions(updatedPositions);
-    
-    if (onPlayerMove) {
-      onPlayerMove(draggedPlayer.id, newPosition);
-    }
-    
-    setDraggedPlayer(null);
-  }, [editable, draggedPlayer, playerPositions, onPlayerMove]);
+  const handleDrop = useCallback(
+    (e, newPosition) => {
+      if (!editable || !draggedPlayer) return;
+      e.preventDefault();
+
+      const updatedPositions = {
+        ...playerPositions,
+        [draggedPlayer.id]: newPosition,
+      };
+
+      setPlayerPositions(updatedPositions);
+
+      if (onPlayerMove) {
+        onPlayerMove(draggedPlayer.id, newPosition);
+      }
+
+      setDraggedPlayer(null);
+    },
+    [editable, draggedPlayer, playerPositions, onPlayerMove]
+  );
 
   const styles = {
     container: {

@@ -22,7 +22,7 @@ const OpponentAnalysis = ({ user }) => {
     loadOpponents();
   }, []);
 
-  const handleFormationUpload = async (file) => {
+  const handleFormationUpload = async file => {
     setIsUploading(true);
     try {
       // Simula upload e analisi della formazione
@@ -47,7 +47,7 @@ const OpponentAnalysis = ({ user }) => {
         strengths: ['Attacco', 'Velocità'],
         weaknesses: ['Difesa', 'Arie'],
       };
-      
+
       setUploadedFormation(mockFormation);
       generateCounterMeasures(mockFormation);
     } catch (error) {
@@ -57,7 +57,7 @@ const OpponentAnalysis = ({ user }) => {
     }
   };
 
-  const generateCounterMeasures = (formation) => {
+  const generateCounterMeasures = formation => {
     // Simula generazione contromisure basate sulla formazione
     const measures = {
       formation: '4-2-3-1', // Formazione consigliata
@@ -73,7 +73,7 @@ const OpponentAnalysis = ({ user }) => {
         'Un attaccante fisico per contrastare i difensori centrali',
       ],
       setPieces: [
-        'Calci d\'angolo: cerca il giocatore più alto',
+        "Calci d'angolo: cerca il giocatore più alto",
         'Rigori: studia il portiere avversario',
         'Tiri liberi: sfrutta la barriera',
       ],
@@ -83,7 +83,7 @@ const OpponentAnalysis = ({ user }) => {
         'Minuto 85: rafforza la difesa se in vantaggio',
       ],
     };
-    
+
     setCounterMeasures(measures);
   };
 
@@ -594,7 +594,7 @@ const OpponentAnalysis = ({ user }) => {
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => {
+            onChange={e => {
               if (e.target.files[0]) {
                 handleFormationUpload(e.target.files[0]);
               }
@@ -612,7 +612,8 @@ const OpponentAnalysis = ({ user }) => {
             {isUploading ? '⏳ Analizzando...' : '📸 Carica Foto Formazione'}
           </label>
           <p style={styles.uploadHint}>
-            Carica una foto della formazione avversaria per ricevere contromisure personalizzate
+            Carica una foto della formazione avversaria per ricevere
+            contromisure personalizzate
           </p>
         </div>
       </div>
@@ -630,7 +631,9 @@ const OpponentAnalysis = ({ user }) => {
               <h4 style={styles.measureTitle}>Tattiche</h4>
               <ul style={styles.measureList}>
                 {counterMeasures.tactics.map((tactic, index) => (
-                  <li key={index} style={styles.measureItem}>{tactic}</li>
+                  <li key={index} style={styles.measureItem}>
+                    {tactic}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -638,7 +641,9 @@ const OpponentAnalysis = ({ user }) => {
               <h4 style={styles.measureTitle}>Giocatori Chiave</h4>
               <ul style={styles.measureList}>
                 {counterMeasures.keyPlayers.map((player, index) => (
-                  <li key={index} style={styles.measureItem}>{player}</li>
+                  <li key={index} style={styles.measureItem}>
+                    {player}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -646,7 +651,9 @@ const OpponentAnalysis = ({ user }) => {
               <h4 style={styles.measureTitle}>Sostituzioni</h4>
               <ul style={styles.measureList}>
                 {counterMeasures.substitutions.map((sub, index) => (
-                  <li key={index} style={styles.measureItem}>{sub}</li>
+                  <li key={index} style={styles.measureItem}>
+                    {sub}
+                  </li>
                 ))}
               </ul>
             </div>

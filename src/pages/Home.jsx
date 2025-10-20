@@ -59,7 +59,7 @@ const Home = ({ user }) => {
       '🏆 Ogni formazione è un capolavoro tattico!',
       '🔥 I tuoi giocatori sono in forma perfetta!',
       '💪 La strategia è la chiave del successo!',
-      '🌟 Il calcio è arte, tu sei l\'artista!',
+      "🌟 Il calcio è arte, tu sei l'artista!",
     ],
     []
   );
@@ -119,9 +119,7 @@ const Home = ({ user }) => {
             <div className="stat-label">Formazione</div>
             <div className="stat-rank">{summary.formation}</div>
           </div>
-          <div className="user-avatar-large">
-            ⚽
-          </div>
+          <div className="user-avatar-large">⚽</div>
         </div>
       </div>
 
@@ -142,8 +140,16 @@ const Home = ({ user }) => {
           ))}
         </div>
         {summary.lastMatch && (
-          <div style={{ marginTop: '12px', padding: '8px', backgroundColor: '#f5f5f5', borderRadius: '6px' }}>
-            <strong>Ultima partita:</strong> {summary.lastMatch.opponent} - {summary.lastMatch.result} ({summary.lastMatch.date})
+          <div
+            style={{
+              marginTop: '12px',
+              padding: '8px',
+              backgroundColor: '#f5f5f5',
+              borderRadius: '6px',
+            }}
+          >
+            <strong>Ultima partita:</strong> {summary.lastMatch.opponent} -{' '}
+            {summary.lastMatch.result} ({summary.lastMatch.date})
           </div>
         )}
       </div>
@@ -190,7 +196,9 @@ const Home = ({ user }) => {
           <div className="kpi-header">
             <div>
               <div className="kpi-label">Passaggi</div>
-              <div className="kpi-value">{summary.teamStats.passesCompleted}</div>
+              <div className="kpi-value">
+                {summary.teamStats.passesCompleted}
+              </div>
             </div>
             <div className="kpi-icon red">
               <Zap size={20} />
@@ -218,18 +226,13 @@ const Home = ({ user }) => {
         </div>
         <div style={{ padding: '16px' }}>
           <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
-            L'Annotatore IA analizza le tue partite e fornisce consigli tattici personalizzati.
+            L'Annotatore IA analizza le tue partite e fornisce consigli tattici
+            personalizzati.
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary">
-              🎯 Analizza Partita
-            </button>
-            <button className="btn btn-secondary">
-              📊 Statistiche IA
-            </button>
-            <button className="btn btn-secondary">
-              💡 Consigli Tattici
-            </button>
+            <button className="btn btn-primary">🎯 Analizza Partita</button>
+            <button className="btn btn-secondary">📊 Statistiche IA</button>
+            <button className="btn btn-secondary">💡 Consigli Tattici</button>
           </div>
         </div>
       </div>
@@ -241,18 +244,15 @@ const Home = ({ user }) => {
         </div>
         <div style={{ padding: '16px' }}>
           <p style={{ marginBottom: '16px', color: '#9CA3AF' }}>
-            Carica e gestisci la tua rosa con abilità, skill e booster precompilati.
+            Carica e gestisci la tua rosa con abilità, skill e booster
+            precompilati.
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary">
-              ➕ Aggiungi Giocatore
-            </button>
+            <button className="btn btn-primary">➕ Aggiungi Giocatore</button>
             <button className="btn btn-secondary">
               📸 Carica da Screenshot
             </button>
-            <button className="btn btn-secondary">
-              ⚙️ Editor Formazione
-            </button>
+            <button className="btn btn-secondary">⚙️ Editor Formazione</button>
           </div>
         </div>
       </div>
