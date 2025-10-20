@@ -532,7 +532,7 @@ const MatchOCR = ({ user }) => {
             )}
           </div>
         )}
-            <button
+        <button
               onClick={handleStatisticaUpload}
               disabled={!statisticaFile || statisticaUploading}
               className="btn btn-primary"
@@ -540,8 +540,8 @@ const MatchOCR = ({ user }) => {
               {statisticaUploading
                 ? '⏳ Caricamento...'
                 : '📸 Carica Statistica Partita'}
-            </button>
-            
+        </button>
+
             {/* Indicatore stato OCR */}
             {statisticaUploading && (
               <div className="mt-3 p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg">
@@ -569,166 +569,197 @@ const MatchOCR = ({ user }) => {
             </div>
 
             {statisticaManualMode && (
-              <form
-                onSubmit={handleStatisticaManualSubmit}
-                className="space-y-4"
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <input
-                      className={`w-full p-3 bg-gray-800 text-white border rounded-lg ${
-                        errors.statistica?.homeTeam ? 'border-red-500' : 'border-gray-600'
-                      }`}
-                      placeholder="Squadra Casa"
-                      value={statisticaData.homeTeam}
-                      onChange={e =>
-                        setStatisticaData(prev => ({
-                          ...prev,
-                          homeTeam: e.target.value,
-                        }))
-                      }
-                    />
-                    {errors.statistica?.homeTeam && (
-                      <p className="text-red-500 text-sm mt-1">{errors.statistica.homeTeam}</p>
-                    )}
-                  </div>
-                  <div>
-                    <input
-                      className={`w-full p-3 bg-gray-800 text-white border rounded-lg ${
-                        errors.statistica?.awayTeam ? 'border-red-500' : 'border-gray-600'
-                      }`}
-                      placeholder="Squadra Trasferta"
-                      value={statisticaData.awayTeam}
-                      onChange={e =>
-                        setStatisticaData(prev => ({
-                          ...prev,
-                          awayTeam: e.target.value,
-                        }))
-                      }
-                    />
-                    {errors.statistica?.awayTeam && (
-                      <p className="text-red-500 text-sm mt-1">{errors.statistica.awayTeam}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <input
-                    type="number"
-                    className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
-                    placeholder="Gol Casa"
-                    value={statisticaData.homeScore}
-                    onChange={e =>
-                      setStatisticaData(prev => ({
-                        ...prev,
-                        homeScore: Number(e.target.value),
-                      }))
-                    }
-                  />
-                  <input
-                    type="number"
-                    className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
-                    placeholder="Gol Trasferta"
-                    value={statisticaData.awayScore}
-                    onChange={e =>
-                      setStatisticaData(prev => ({
-                        ...prev,
-                        awayScore: Number(e.target.value),
-                      }))
-                    }
-                  />
-                  <input
-                    type="date"
-                    className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg"
-                    value={statisticaData.date}
-                    onChange={e =>
-                      setStatisticaData(prev => ({
-                        ...prev,
-                        date: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-
-                {/* Statistiche */}
-                {[
-                  'possession',
-                  'totalShots',
-                  'shotsOnTarget',
-                  'fouls',
-                  'offsides',
-                  'corners',
-                  'freeKicks',
-                  'passes',
-                  'successfulPasses',
-                  'crosses',
-                  'interceptedPasses',
-                  'tackles',
-                  'saves',
-                ].map(key => (
-                  <div
-                    key={key}
-                    className="grid grid-cols-3 gap-4 items-center"
-                  >
-                    <div className="text-gray-300 text-sm font-medium">
-                      {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+              <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                <form onSubmit={handleStatisticaManualSubmit} className="space-y-6">
+                  {/* Informazioni Partita */}
+                  <div className="border-b border-gray-200 pb-4">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Informazioni Partita</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Squadra Casa</label>
+                        <input
+                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.statistica?.homeTeam 
+                              ? 'border-red-300 bg-red-50' 
+                              : 'border-gray-300 bg-white'
+                          }`}
+                          placeholder="Es. Real Madrid"
+                          value={statisticaData.homeTeam}
+                          onChange={e =>
+                            setStatisticaData(prev => ({
+                              ...prev,
+                              homeTeam: e.target.value,
+                            }))
+                          }
+                        />
+                        {errors.statistica?.homeTeam && (
+                          <p className="text-red-600 text-sm mt-1">{errors.statistica.homeTeam}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Squadra Trasferta</label>
+                        <input
+                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.statistica?.awayTeam 
+                              ? 'border-red-300 bg-red-50' 
+                              : 'border-gray-300 bg-white'
+                          }`}
+                          placeholder="Es. Barcelona"
+                          value={statisticaData.awayTeam}
+                          onChange={e =>
+                            setStatisticaData(prev => ({
+                              ...prev,
+                              awayTeam: e.target.value,
+                            }))
+                          }
+                        />
+                        {errors.statistica?.awayTeam && (
+                          <p className="text-red-600 text-sm mt-1">{errors.statistica.awayTeam}</p>
+                        )}
+                      </div>
                     </div>
-                    <input
-                      type="number"
-                      className="w-full p-2 bg-gray-800 text-white border border-gray-600 rounded-lg text-sm"
-                      placeholder={`${key} casa`}
-                      value={statisticaData.teamStats[key].home}
-                      onChange={e =>
-                        updateStatisticaStat(key, 'home', e.target.value)
-                      }
-                    />
-                    <input
-                      type="number"
-                      className="w-full p-2 bg-gray-800 text-white border border-gray-600 rounded-lg text-sm"
-                      placeholder={`${key} trasf.`}
-                      value={statisticaData.teamStats[key].away}
-                      onChange={e =>
-                        updateStatisticaStat(key, 'away', e.target.value)
-                      }
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Gol Casa</label>
+                        <input
+                          type="number"
+                          min="0"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          placeholder="0"
+                          value={statisticaData.homeScore}
+                          onChange={e =>
+                            setStatisticaData(prev => ({
+                              ...prev,
+                              homeScore: Number(e.target.value),
+                            }))
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Gol Trasferta</label>
+                        <input
+                          type="number"
+                          min="0"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          placeholder="0"
+                          value={statisticaData.awayScore}
+                          onChange={e =>
+                            setStatisticaData(prev => ({
+                              ...prev,
+                              awayScore: Number(e.target.value),
+                            }))
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Data Partita</label>
+                        <input
+                          type="date"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          value={statisticaData.date}
+                          onChange={e =>
+                            setStatisticaData(prev => ({
+                              ...prev,
+                              date: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
                   </div>
-                ))}
+                  {/* Statistiche Partita */}
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Statistiche Partita</h4>
+                    <div className="space-y-4">
+                      {[
+                        { key: 'possession', label: 'Possesso Palla', suffix: '%' },
+                        { key: 'totalShots', label: 'Tiri Totali' },
+                        { key: 'shotsOnTarget', label: 'Tiri in Porta' },
+                        { key: 'fouls', label: 'Falli' },
+                        { key: 'offsides', label: 'Fuorigioco' },
+                        { key: 'corners', label: 'Calci d\'Angolo' },
+                        { key: 'freeKicks', label: 'Calci di Punizione' },
+                        { key: 'passes', label: 'Passaggi' },
+                        { key: 'successfulPasses', label: 'Passaggi Riusciti' },
+                        { key: 'crosses', label: 'Cross' },
+                        { key: 'interceptedPasses', label: 'Intercetti' },
+                        { key: 'tackles', label: 'Tackle' },
+                        { key: 'saves', label: 'Parate' },
+                      ].map(stat => (
+                        <div key={stat.key} className="grid grid-cols-3 gap-4 items-center">
+                          <div className="text-sm font-medium text-gray-700">
+                            {stat.label}
+                          </div>
+                          <div>
+                            <input
+                              type="number"
+                              min="0"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+                              placeholder="0"
+                              value={statisticaData.teamStats[stat.key].home}
+                              onChange={e =>
+                                updateStatisticaStat(stat.key, 'home', e.target.value)
+                              }
+                            />
+                          </div>
+                          <div>
+                            <input
+                              type="number"
+                              min="0"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+                              placeholder="0"
+                              value={statisticaData.teamStats[stat.key].away}
+                              onChange={e =>
+                                updateStatisticaStat(stat.key, 'away', e.target.value)
+                              }
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-                <div className="flex gap-2">
-                  <button type="submit" className="btn btn-primary flex-1">
-                    ✅ Salva Statistiche Partita
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setStatisticaData({
-                        homeTeam: '',
-                        awayTeam: '',
-                        homeScore: 0,
-                        awayScore: 0,
-                        date: new Date().toISOString().split('T')[0],
-                        teamStats: {
-                          possession: { home: 50, away: 50 },
-                          totalShots: { home: 0, away: 0 },
-                          shotsOnTarget: { home: 0, away: 0 },
-                          fouls: { home: 0, away: 0 },
-                          offsides: { home: 0, away: 0 },
-                          corners: { home: 0, away: 0 },
-                          freeKicks: { home: 0, away: 0 },
-                          passes: { home: 0, away: 0 },
-                          successfulPasses: { home: 0, away: 0 },
-                          crosses: { home: 0, away: 0 },
-                          interceptedPasses: { home: 0, away: 0 },
-                          tackles: { home: 0, away: 0 },
-                          saves: { home: 0, away: 0 },
-                        },
-                      })
-                    }
-                    className="btn btn-secondary flex-1"
-                  >
-                    ♻️ Resetta
-                  </button>
-                </div>
-              </form>
+                  {/* Bottoni Azione */}
+                  <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    <button 
+                      type="submit" 
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      💾 Salva Statistiche
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setStatisticaData({
+                          homeTeam: '',
+                          awayTeam: '',
+                          homeScore: 0,
+                          awayScore: 0,
+                          date: new Date().toISOString().split('T')[0],
+                          teamStats: {
+                            possession: { home: 50, away: 50 },
+                            totalShots: { home: 0, away: 0 },
+                            shotsOnTarget: { home: 0, away: 0 },
+                            fouls: { home: 0, away: 0 },
+                            offsides: { home: 0, away: 0 },
+                            corners: { home: 0, away: 0 },
+                            freeKicks: { home: 0, away: 0 },
+                            passes: { home: 0, away: 0 },
+                            successfulPasses: { home: 0, away: 0 },
+                            crosses: { home: 0, away: 0 },
+                            interceptedPasses: { home: 0, away: 0 },
+                            tackles: { home: 0, away: 0 },
+                            saves: { home: 0, away: 0 },
+                          },
+                        })
+                      }
+                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    >
+                      🔄 Resetta
+                    </button>
+                  </div>
+                </form>
+              </div>
             )}
           </div>
             </div>
@@ -805,99 +836,121 @@ const MatchOCR = ({ user }) => {
             </div>
 
             {votiManualMode && (
-              <form onSubmit={handleVotiManualSubmit} className="space-y-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h4 className="text-white font-semibold">Giocatori e Voti</h4>
-                  <button
-                    type="button"
-                    onClick={addVotoGiocatore}
-                    className="btn btn-secondary"
-                  >
-                    ➕ Aggiungi Giocatore
-                  </button>
-                </div>
-
-                {votiData.map((voto, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-4 gap-4 items-center p-3 bg-gray-800 rounded-lg"
-                  >
-                    <div>
-                      <input
-                        className={`w-full p-2 bg-gray-700 text-white border rounded-lg text-sm ${
-                          errors.voti?.[`name_${index}`] ? 'border-red-500' : 'border-gray-600'
-                        }`}
-                        placeholder="Nome Giocatore"
-                        value={voto.name}
-                        onChange={e =>
-                          updateVotoGiocatore(index, 'name', e.target.value)
-                        }
-                      />
-                      {errors.voti?.[`name_${index}`] && (
-                        <p className="text-red-500 text-xs mt-1">{errors.voti[`name_${index}`]}</p>
-                      )}
-                    </div>
-                    <div>
-                      <input
-                        className={`w-full p-2 bg-gray-700 text-white border rounded-lg text-sm ${
-                          errors.voti?.[`role_${index}`] ? 'border-red-500' : 'border-gray-600'
-                        }`}
-                        placeholder="Ruolo"
-                        value={voto.role}
-                        onChange={e =>
-                          updateVotoGiocatore(index, 'role', e.target.value)
-                        }
-                      />
-                      {errors.voti?.[`role_${index}`] && (
-                        <p className="text-red-500 text-xs mt-1">{errors.voti[`role_${index}`]}</p>
-                      )}
-                    </div>
-                    <div>
-                      <input
-                        type="number"
-                        min="1"
-                        max="10"
-                        step="0.5"
-                        className={`w-full p-2 bg-gray-700 text-white border rounded-lg text-sm ${
-                          errors.voti?.[`rating_${index}`] ? 'border-red-500' : 'border-gray-600'
-                        }`}
-                        placeholder="Voto"
-                        value={voto.rating}
-                        onChange={e =>
-                          updateVotoGiocatore(
-                            index,
-                            'rating',
-                            Number(e.target.value)
-                          )
-                        }
-                      />
-                      {errors.voti?.[`rating_${index}`] && (
-                        <p className="text-red-500 text-xs mt-1">{errors.voti[`rating_${index}`]}</p>
-                      )}
-                    </div>
+              <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                <form onSubmit={handleVotiManualSubmit} className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-lg font-semibold text-gray-900">Giocatori e Voti</h4>
                     <button
                       type="button"
-                      onClick={() => removeVotoGiocatore(index)}
-                      className="btn btn-danger text-sm"
+                      onClick={addVotoGiocatore}
+                      className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
-                      ❌
+                      ➕ Aggiungi Giocatore
                     </button>
                   </div>
-                ))}
 
-                <div className="flex gap-2">
-                  <button type="submit" className="btn btn-primary flex-1">
-                    ✅ Salva Voti Giocatori
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setVotiData([])}
-                    className="btn btn-secondary flex-1"
-                  >
-                    ♻️ Resetta
-                  </button>
-                </div>
-              </form>
+                  {/* Lista Giocatori */}
+                  <div className="space-y-3">
+                    {votiData.map((voto, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Nome Giocatore</label>
+                            <input
+                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
+                                errors.voti?.[`name_${index}`] 
+                                  ? 'border-red-300 bg-red-50' 
+                                  : 'border-gray-300 bg-white'
+                              }`}
+                              placeholder="Es. Lionel Messi"
+                              value={voto.name}
+                              onChange={e =>
+                                updateVotoGiocatore(index, 'name', e.target.value)
+                              }
+                            />
+                            {errors.voti?.[`name_${index}`] && (
+                              <p className="text-red-600 text-xs mt-1">{errors.voti[`name_${index}`]}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Ruolo</label>
+                            <input
+                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
+                                errors.voti?.[`role_${index}`] 
+                                  ? 'border-red-300 bg-red-50' 
+                                  : 'border-gray-300 bg-white'
+                              }`}
+                              placeholder="Es. CF, CMF, CB"
+                              value={voto.role}
+                              onChange={e =>
+                                updateVotoGiocatore(index, 'role', e.target.value)
+                              }
+                            />
+                            {errors.voti?.[`role_${index}`] && (
+                              <p className="text-red-600 text-xs mt-1">{errors.voti[`role_${index}`]}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Voto</label>
+                            <input
+                              type="number"
+                              min="1"
+                              max="10"
+                              step="0.5"
+                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
+                                errors.voti?.[`rating_${index}`] 
+                                  ? 'border-red-300 bg-red-50' 
+                                  : 'border-gray-300 bg-white'
+                              }`}
+                              placeholder="7.5"
+                              value={voto.rating}
+                              onChange={e =>
+                                updateVotoGiocatore(
+                                  index,
+                                  'rating',
+                                  Number(e.target.value)
+                                )
+                              }
+                            />
+                            {errors.voti?.[`rating_${index}`] && (
+                              <p className="text-red-600 text-xs mt-1">{errors.voti[`rating_${index}`]}</p>
+                            )}
+                          </div>
+                          <div className="flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => removeVotoGiocatore(index)}
+                              className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-3 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                            >
+                              🗑️ Rimuovi
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Bottoni Azione */}
+                  <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    <button 
+                      type="submit" 
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      💾 Salva Voti
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setVotiData([])}
+                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    >
+                      🔄 Resetta
+                    </button>
+                  </div>
+                </form>
+              </div>
             )}
           </div>
         </div>
@@ -920,7 +973,7 @@ const MatchOCR = ({ user }) => {
               {errors.heatmap.general}
             </div>
           )}
-          
+
           {/* Upload OCR */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-white mb-4">
@@ -958,7 +1011,7 @@ const MatchOCR = ({ user }) => {
                 ? '⏳ Caricamento...'
                 : '📸 Carica Mappa di Calore'}
             </button>
-          </div>
+              </div>
 
           {/* Compilazione Manuale */}
           <div>
@@ -976,76 +1029,91 @@ const MatchOCR = ({ user }) => {
             </div>
 
             {heatmapManualMode && (
-              <form onSubmit={handleHeatmapManualSubmit} className="space-y-4">
-                {/* Indicazione origine dati */}
-                {heatmapData.autoGenerated && (
-                  <div className="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg">
-                    <div className="flex items-center">
-                      <span className="text-lg mr-2">🤖</span>
-                      <div>
-                        <strong>Heatmap Auto-generata</strong>
-                        <p className="text-sm mt-1">
-                          Basata sulle statistiche della partita. Puoi modificare i valori manualmente.
-                        </p>
+              <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                <form onSubmit={handleHeatmapManualSubmit} className="space-y-6">
+                  {/* Indicazione origine dati */}
+                  {heatmapData.autoGenerated && (
+                    <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg">
+                      <div className="flex items-center">
+                        <span className="text-lg mr-2">🤖</span>
+                        <div>
+                          <strong>Heatmap Auto-generata</strong>
+                          <p className="text-sm mt-1">
+                            Basata sulle statistiche della partita. Puoi modificare i valori manualmente.
+                          </p>
+                        </div>
                       </div>
+        </div>
+      )}
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Zone di Calore</h4>
+                    <div className="space-y-3">
+                      {heatmapData.zones.map((zone, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {zone.name}
+                              </label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+                                placeholder="0"
+                                value={zone.percentage}
+                                onChange={e =>
+                                  updateHeatmapZone(index, e.target.value)
+                                }
+                              />
+                              <span className="text-gray-500 text-sm font-medium">%</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                )}
-                
-                <div className="space-y-3">
-                  {heatmapData.zones.map((zone, index) => (
-                    <div
-                      key={index}
-                      className="grid grid-cols-2 gap-4 items-center p-3 bg-gray-800 rounded-lg"
-                    >
-                      <div className="text-white font-medium">{zone.name}</div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-lg text-sm"
-                          placeholder="Percentuale"
-                          value={zone.percentage}
-                          onChange={e =>
-                            updateHeatmapZone(index, e.target.value)
-                          }
-                        />
-                        <span className="text-gray-400 text-sm">%</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
 
-                <div className="flex gap-2">
-                  <button type="submit" className="btn btn-primary flex-1">
-                    ✅ Salva Mappa di Calore
-                  </button>
-                  <button
-                    type="button"
-                    onClick={generateAutoHeatmap}
-                    className="btn btn-secondary flex-1"
-                  >
-                    🤖 Genera Automatica
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setHeatmapData(prev => ({
-                        ...prev,
-                        zones: prev.zones.map(zone => ({
-                          ...zone,
-                          percentage: 0,
-                        })),
-                        autoGenerated: false,
-                      }))
-                    }
-                    className="btn btn-secondary flex-1"
-                  >
-                    ♻️ Resetta
-                  </button>
-                </div>
-              </form>
+                  {/* Bottoni Azione */}
+                  <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    <button 
+                      type="submit" 
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      💾 Salva Heatmap
+                    </button>
+                    <button
+                      type="button"
+                      onClick={generateAutoHeatmap}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                      🤖 Genera Auto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setHeatmapData(prev => ({
+                          ...prev,
+                          zones: prev.zones.map(zone => ({
+                            ...zone,
+                            percentage: 0,
+                          })),
+                          autoGenerated: false,
+                        }))
+                      }
+                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    >
+                      🔄 Resetta
+                    </button>
+                  </div>
+                </form>
+              </div>
             )}
           </div>
         </div>
