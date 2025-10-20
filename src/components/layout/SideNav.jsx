@@ -1,11 +1,11 @@
-import { 
-  Home, 
-  Users, 
-  Target, 
-  BarChart3, 
+import {
+  Home,
+  Users,
+  Target,
+  BarChart3,
   UserCheck,
-  LogOut 
-} from 'lucide-react'
+  LogOut,
+} from 'lucide-react';
 
 const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
   const navItems = [
@@ -14,18 +14,18 @@ const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
     { id: 'rosa', label: 'Rosa', icon: Users },
     { id: 'match', label: 'Match', icon: Target },
     { id: 'statistiche', label: 'Statistiche', icon: BarChart3 },
-    { id: 'avversario', label: 'Avversario', icon: UserCheck }
-  ]
+    { id: 'avversario', label: 'Avversario', icon: UserCheck },
+  ];
 
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <h1 className="sidebar-title">🏆 eFootballLab</h1>
       </div>
-      
+
       <nav className="sidebar-nav">
-        {navItems.map((item) => {
-          const Icon = item.icon
+        {navItems.map(item => {
+          const Icon = item.icon;
           return (
             <button
               key={item.id}
@@ -35,7 +35,7 @@ const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
               <Icon size={20} />
               {item.label}
             </button>
-          )
+          );
         })}
       </nav>
 
@@ -45,20 +45,15 @@ const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
             <div className="user-avatar">
               {user.email?.charAt(0).toUpperCase()}
             </div>
-            <span className="user-email">
-              {user.email}
-            </span>
-            <button
-              onClick={onLogout}
-              className="logout-btn"
-            >
+            <span className="user-email">{user.email}</span>
+            <button onClick={onLogout} className="logout-btn">
               <LogOut size={16} />
             </button>
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default SideNav
+export default SideNav;

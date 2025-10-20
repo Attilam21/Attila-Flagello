@@ -1,15 +1,15 @@
-import { cn } from '../../utils/cn'
+import { cn } from '../../utils/cn';
 
 const LoadingSkeleton = ({ className, ...props }) => (
   <div
     className={cn('animate-pulse rounded-xl bg-gray-800', className)}
     {...props}
   />
-)
+);
 
 const LoadingSkeletonBlock = ({ className, ...props }) => (
   <LoadingSkeleton className={cn('h-4 w-full', className)} {...props} />
-)
+);
 
 const LoadingSkeletonCard = ({ className, ...props }) => (
   <div className={cn('space-y-3', className)} {...props}>
@@ -17,6 +17,6 @@ const LoadingSkeletonCard = ({ className, ...props }) => (
     <LoadingSkeleton className="h-4 w-1/2" />
     <LoadingSkeleton className="h-4 w-5/6" />
   </div>
-)
+);
 
-export { LoadingSkeleton, LoadingSkeletonBlock, LoadingSkeletonCard }
+export { LoadingSkeleton, LoadingSkeletonBlock, LoadingSkeletonCard };

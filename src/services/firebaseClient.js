@@ -2,17 +2,35 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { collection, doc, setDoc, addDoc, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  setDoc,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  limit,
+} from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // Configurazione Firebase
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "attila-475314.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "attila-475314",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "attila-475314.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "814206807853",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:814206807853:web:256884e64c9d867509eda4"
+  apiKey:
+    import.meta.env.VITE_FIREBASE_API_KEY ||
+    'AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI',
+  authDomain:
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ||
+    'attila-475314.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'attila-475314',
+  storageBucket:
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ||
+    'attila-475314.firebasestorage.app',
+  messagingSenderId:
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '814206807853',
+  appId:
+    import.meta.env.VITE_FIREBASE_APP_ID ||
+    '1:814206807853:web:256884e64c9d867509eda4',
 };
 
 // Inizializza Firebase
@@ -22,7 +40,7 @@ console.log('🔥 Initializing Firebase with config:', {
   projectId: firebaseConfig.projectId ? '✅ Set' : '❌ Missing',
   storageBucket: firebaseConfig.storageBucket ? '✅ Set' : '❌ Missing',
   messagingSenderId: firebaseConfig.messagingSenderId ? '✅ Set' : '❌ Missing',
-  appId: firebaseConfig.appId ? '✅ Set' : '❌ Missing'
+  appId: firebaseConfig.appId ? '✅ Set' : '❌ Missing',
 });
 
 const app = initializeApp(firebaseConfig);
@@ -51,7 +69,7 @@ export const uploadMatchImage = async (file, userId) => {
       downloadURL,
       status: 'uploaded',
       createdAt: new Date(),
-      fileName
+      fileName,
     };
 
     await setDoc(doc(db, 'matches', userId), matchDoc);
@@ -70,7 +88,7 @@ export const listenToOCRResults = (userId, callback) => {
   const ocrRef = collection(db, 'matches', userId, 'ocr');
   const q = query(ocrRef, orderBy('updatedAt', 'desc'), limit(1));
 
-  return onSnapshot(q, (snapshot) => {
+  return onSnapshot(q, snapshot => {
     if (!snapshot.empty) {
       const latestOCR = snapshot.docs[0].data();
       callback(latestOCR);
@@ -81,8 +99,8 @@ export const listenToOCRResults = (userId, callback) => {
 // Helper per ascoltare stato match
 export const listenToMatchStatus = (userId, callback) => {
   const matchRef = doc(db, 'matches', userId);
-  
-  return onSnapshot(matchRef, (doc) => {
+
+  return onSnapshot(matchRef, doc => {
     if (doc.exists()) {
       callback(doc.data());
     }

@@ -1,4 +1,4 @@
-import { cn } from '../../utils/cn'
+import { cn } from '../../utils/cn';
 
 const Select = ({ className, children, ...props }) => {
   return (
@@ -11,7 +11,7 @@ const Select = ({ className, children, ...props }) => {
     >
       {children}
     </select>
-  )
-}
+  );
+};
 
-export default Select
+export default Select;

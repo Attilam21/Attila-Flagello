@@ -1,8 +1,8 @@
-import { Target, Upload, FileText } from 'lucide-react'
-import EmptyState from '../components/ui/EmptyState'
-import { Card, CardContent, CardHeader } from '../components/ui/Card'
-import Button from '../components/ui/Button'
-import Badge from '../components/ui/Badge'
+import { Target, Upload, FileText } from 'lucide-react';
+import EmptyState from '../components/ui/EmptyState';
+import { Card, CardContent, CardHeader } from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Badge from '../components/ui/Badge';
 
 const Match = () => {
   return (
@@ -18,13 +18,17 @@ const Match = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-white">Carica Screenshot</h3>
+            <h3 className="text-lg font-semibold text-white">
+              Carica Screenshot
+            </h3>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="border-2 border-dashed border-surface rounded-xl p-6 text-center">
                 <Upload className="h-8 w-8 text-muted mx-auto mb-2" />
-                <p className="text-sm text-muted">Trascina qui l'immagine del tabellino</p>
+                <p className="text-sm text-muted">
+                  Trascina qui l'immagine del tabellino
+                </p>
                 <p className="text-xs text-muted mt-1">PNG, JPG fino a 10MB</p>
               </div>
               <Button className="w-full">
@@ -62,7 +66,7 @@ const Match = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Match
+export default Match;

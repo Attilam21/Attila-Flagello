@@ -1,8 +1,8 @@
-import { UserCheck, Search, Users } from 'lucide-react'
-import EmptyState from '../components/ui/EmptyState'
-import { Card, CardContent, CardHeader } from '../components/ui/Card'
-import Button from '../components/ui/Button'
-import Input from '../components/ui/Input'
+import { UserCheck, Search, Users } from 'lucide-react';
+import EmptyState from '../components/ui/EmptyState';
+import { Card, CardContent, CardHeader } from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
 
 const Avversario = () => {
   return (
@@ -20,10 +20,7 @@ const Avversario = () => {
 
       <div className="flex gap-4">
         <div className="flex-1">
-          <Input
-            placeholder="Cerca squadra avversaria..."
-            className="pl-10"
-          />
+          <Input placeholder="Cerca squadra avversaria..." className="pl-10" />
         </div>
         <Button variant="ghost">
           <Search className="h-4 w-4" />
@@ -33,7 +30,9 @@ const Avversario = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-white">Squadre Analizzate</h3>
+            <h3 className="text-lg font-semibold text-white">
+              Squadre Analizzate
+            </h3>
           </CardHeader>
           <CardContent>
             <EmptyState
@@ -60,7 +59,9 @@ const Avversario = () => {
 
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-white">Analisi Avversari</h3>
+          <h3 className="text-lg font-semibold text-white">
+            Analisi Avversari
+          </h3>
         </CardHeader>
         <CardContent>
           <EmptyState
@@ -77,7 +78,7 @@ const Avversario = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Avversario
+export default Avversario;

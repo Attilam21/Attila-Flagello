@@ -1,4 +1,4 @@
-import { cn } from '../../utils/cn'
+import { cn } from '../../utils/cn';
 
 const Input = ({ className, type, ...props }) => {
   return (
@@ -10,7 +10,7 @@ const Input = ({ className, type, ...props }) => {
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-export default Input
+export default Input;

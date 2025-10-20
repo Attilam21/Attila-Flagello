@@ -1,10 +1,10 @@
-import { BarChart3, TrendingUp, Activity } from 'lucide-react'
-import EmptyState from '../components/ui/EmptyState'
-import { Card, CardContent, CardHeader } from '../components/ui/Card'
-import { LoadingSkeletonCard } from '../components/ui/LoadingSkeleton'
+import { BarChart3, TrendingUp, Activity } from 'lucide-react';
+import EmptyState from '../components/ui/EmptyState';
+import { Card, CardContent, CardHeader } from '../components/ui/Card';
+import { LoadingSkeletonCard } from '../components/ui/LoadingSkeleton';
 
 const Statistiche = () => {
-  const isLoading = false // Simula loading
+  const isLoading = false; // Simula loading
 
   return (
     <div className="space-y-6">
@@ -16,7 +16,9 @@ const Statistiche = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-white">Performance Generale</h3>
+            <h3 className="text-lg font-semibold text-white">
+              Performance Generale
+            </h3>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -33,7 +35,9 @@ const Statistiche = () => {
 
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-white">Trend Performance</h3>
+            <h3 className="text-lg font-semibold text-white">
+              Trend Performance
+            </h3>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -50,7 +54,9 @@ const Statistiche = () => {
 
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-white">Attività Recente</h3>
+            <h3 className="text-lg font-semibold text-white">
+              Attività Recente
+            </h3>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -68,7 +74,9 @@ const Statistiche = () => {
 
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-white">Analisi Dettagliata</h3>
+          <h3 className="text-lg font-semibold text-white">
+            Analisi Dettagliata
+          </h3>
         </CardHeader>
         <CardContent>
           <EmptyState
@@ -79,7 +87,7 @@ const Statistiche = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Statistiche
+export default Statistiche;

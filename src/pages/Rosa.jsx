@@ -1,8 +1,8 @@
-import { Users, Plus, Search } from 'lucide-react'
-import EmptyState from '../components/ui/EmptyState'
-import { Card, CardContent, CardHeader } from '../components/ui/Card'
-import Button from '../components/ui/Button'
-import Input from '../components/ui/Input'
+import { Users, Plus, Search } from 'lucide-react';
+import EmptyState from '../components/ui/EmptyState';
+import { Card, CardContent, CardHeader } from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
 
 const Rosa = () => {
   return (
@@ -20,10 +20,7 @@ const Rosa = () => {
 
       <div className="flex gap-4">
         <div className="flex-1">
-          <Input
-            placeholder="Cerca giocatori..."
-            className="pl-10"
-          />
+          <Input placeholder="Cerca giocatori..." className="pl-10" />
         </div>
         <Button variant="ghost">
           <Search className="h-4 w-4" />
@@ -46,7 +43,7 @@ const Rosa = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Rosa
+export default Rosa;

@@ -1,36 +1,39 @@
-import { useState } from 'react'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../services/firebaseClient'
+import { useState } from 'react';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import { auth } from '../services/firebaseClient';
 
 const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
     try {
       if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, email, password)
-        console.log('✅ Utente registrato:', email)
+        await createUserWithEmailAndPassword(auth, email, password);
+        console.log('✅ Utente registrato:', email);
       } else {
-        await signInWithEmailAndPassword(auth, email, password)
-        console.log('✅ Utente loggato:', email)
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log('✅ Utente loggato:', email);
       }
-      
-      onLogin()
+
+      onLogin();
     } catch (err) {
-      console.error('❌ Errore auth:', err)
-      setError(err.message)
+      console.error('❌ Errore auth:', err);
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="login-container">
@@ -39,7 +42,7 @@ const Login = ({ onLogin }) => {
         <h2 className="login-subtitle">
           {isSignUp ? 'Crea Account' : 'Accedi'}
         </h2>
-        
+
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email" className="form-label">
@@ -53,7 +56,7 @@ const Login = ({ onLogin }) => {
               className="form-input"
               placeholder="inserisci@email.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
             />
           </div>
           <div className="form-group">
@@ -68,28 +71,22 @@ const Login = ({ onLogin }) => {
               className="form-input"
               placeholder="••••••••"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
             />
           </div>
 
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
+          {error && <div className="error-message">{error}</div>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="login-button"
-          >
+          <button type="submit" disabled={loading} className="login-button">
             {loading ? (
               <>
                 <div className="loading-spinner"></div>
                 Caricamento...
               </>
+            ) : isSignUp ? (
+              '🚀 Crea Account'
             ) : (
-              isSignUp ? '🚀 Crea Account' : '🔑 Accedi'
+              '🔑 Accedi'
             )}
           </button>
         </form>
@@ -105,7 +102,7 @@ const Login = ({ onLogin }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

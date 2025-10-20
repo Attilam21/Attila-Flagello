@@ -3,6 +3,7 @@
 ## 📋 **PASSI DA SEGUIRE:**
 
 ### 1. **Crea il file `.env.local`**
+
 Crea manualmente un file chiamato `.env.local` nella root del progetto con questo contenuto:
 
 ```bash
@@ -17,6 +18,7 @@ VITE_FIREBASE_MEASUREMENT_ID=G-Y061BQJMRT
 ```
 
 ### 2. **Verifica la configurazione**
+
 Dopo aver creato il file, testa la configurazione:
 
 ```bash
@@ -24,6 +26,7 @@ npm run dev
 ```
 
 ### 3. **Controlla la console**
+
 - Apri il browser su `http://localhost:5173`
 - Controlla la console per eventuali errori Firebase
 - Verifica che l'autenticazione funzioni
@@ -31,21 +34,25 @@ npm run dev
 ## 🔧 **CONFIGURAZIONE FIREBASE PROJECT**
 
 ### **Project ID**: `attila-475314`
+
 ### **Storage Bucket**: `attila-475314.firebasestorage.app`
+
 ### **Auth Domain**: `attila-475314.firebaseapp.com`
 
 ## 📱 **SERVIZI ATTIVI:**
+
 - ✅ Authentication
-- ✅ Firestore Database  
+- ✅ Firestore Database
 - ✅ Storage
 - ✅ Cloud Functions
 
 ## 🚀 **TEST RAPIDO:**
+
 1. Avvia il server: `npm run dev`
 2. Vai su `http://localhost:5173`
 3. Prova a registrarti/loggarti
 4. Controlla che i dati vengano salvati su Firestore
 
 ## ⚠️ **NOTA SICUREZZA:**
-Il file `.env.local` è già nel `.gitignore`, quindi le tue credenziali non verranno committate su Git.
 
+Il file `.env.local` è già nel `.gitignore`, quindi le tue credenziali non verranno committate su Git.

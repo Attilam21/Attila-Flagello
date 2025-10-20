@@ -1,14 +1,16 @@
-import { Home, TrendingUp, Users, Target } from 'lucide-react'
-import EmptyState from '../components/ui/EmptyState'
-import { Card, CardContent, CardHeader } from '../components/ui/Card'
-import Badge from '../components/ui/Badge'
+import { Home, TrendingUp, Users, Target } from 'lucide-react';
+import EmptyState from '../components/ui/EmptyState';
+import { Card, CardContent, CardHeader } from '../components/ui/Card';
+import Badge from '../components/ui/Badge';
 
 const Dashboard = () => {
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-gray-400">Panoramica generale del tuo eFootballLab</p>
+        <p className="text-gray-400">
+          Panoramica generale del tuo eFootballLab
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -59,7 +61,9 @@ const Dashboard = () => {
 
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-white">Benvenuto in eFootballLab</h3>
+          <h3 className="text-lg font-semibold text-white">
+            Benvenuto in eFootballLab
+          </h3>
         </CardHeader>
         <CardContent>
           <EmptyState
@@ -80,7 +84,7 @@ const Dashboard = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

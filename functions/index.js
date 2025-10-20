@@ -9,13 +9,17 @@ admin.initializeApp();
 const visionClient = new vision.ImageAnnotatorClient();
 
 // Cloud Function che si attiva quando un'immagine viene caricata su Storage
-exports.onImageUpload = functions.storage.object().onFinalize(async (object) => {
+exports.onImageUpload = functions.storage.object().onFinalize(async object => {
   const fileBucket = object.bucket;
   const filePath = object.name;
   const contentType = object.contentType;
   const requestId = object.name.split('/').pop().split('.')[0];
 
-  console.log('🔍 Triggered onImageUpload:', { filePath, contentType, requestId });
+  console.log('🔍 Triggered onImageUpload:', {
+    filePath,
+    contentType,
+    requestId,
+  });
 
   // Verifica che sia un'immagine
   if (!contentType || !contentType.startsWith('image/')) {
@@ -35,9 +39,10 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
 
   try {
     const startTime = Date.now();
-    
+
     // Aggiorna stato a processing
-    await admin.firestore()
+    await admin
+      .firestore()
       .collection('matches')
       .doc(userId)
       .collection('ocr')
@@ -47,12 +52,12 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
         filePath,
         status: 'processing',
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        requestId
+        requestId,
       });
 
     // Costruisci URI per Vision API
     const imageUri = `gs://${fileBucket}/${filePath}`;
-    
+
     console.log('🔍 Calling Vision API on:', imageUri);
 
     // Chiama Google Vision OCR
@@ -66,7 +71,7 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
       requestId,
       uid: userId,
       path: filePath,
-      processingTimeMs: ocrTime
+      processingTimeMs: ocrTime,
     });
 
     if (detections && detections.length > 0) {
@@ -81,11 +86,12 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
         status: 'done',
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         processingTimeMs: ocrTime,
-        requestId
+        requestId,
       };
 
       // Salva in matches/{userId}/ocr/latest
-      await admin.firestore()
+      await admin
+        .firestore()
         .collection('matches')
         .doc(userId)
         .collection('ocr')
@@ -96,13 +102,13 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
         userId,
         textLength: fullText.length,
         processingTime: ocrTime,
-        requestId
+        requestId,
       });
 
       return ocrResult;
     } else {
       console.log('⚠️ No text detected in image');
-      
+
       // Salva risultato vuoto
       const ocrResult = {
         userId,
@@ -111,10 +117,11 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
         status: 'done',
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         processingTimeMs: ocrTime,
-        requestId
+        requestId,
       };
 
-      await admin.firestore()
+      await admin
+        .firestore()
         .collection('matches')
         .doc(userId)
         .collection('ocr')
@@ -128,11 +135,12 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
       requestId,
       uid: userId,
       path: filePath,
-      error: error.message
+      error: error.message,
     });
-    
+
     // Salva errore
-    await admin.firestore()
+    await admin
+      .firestore()
       .collection('matches')
       .doc(userId)
       .collection('ocr')
@@ -143,7 +151,7 @@ exports.onImageUpload = functions.storage.object().onFinalize(async (object) => 
         status: 'error',
         error: error.message,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        requestId
+        requestId,
       });
 
     throw error;

@@ -10,9 +10,15 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #0B1220;
-  color: #FFFFFF;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background: #0b1220;
+  color: #ffffff;
   line-height: 1.6;
 }
 
@@ -20,12 +26,12 @@ body {
 .app-container {
   min-height: 100vh;
   display: flex;
-  background: #0B1220;
+  background: #0b1220;
 }
 
 .sidebar {
   width: 256px;
-  background: #1F2937;
+  background: #1f2937;
   border-right: 1px solid #374151;
   display: flex;
   flex-direction: column;
@@ -39,7 +45,7 @@ body {
 .sidebar-title {
   font-size: 20px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .sidebar-nav {
@@ -53,7 +59,7 @@ body {
   gap: 12px;
   padding: 12px;
   border-radius: 12px;
-  color: #9CA3AF;
+  color: #9ca3af;
   text-decoration: none;
   transition: all 0.2s;
   cursor: pointer;
@@ -65,12 +71,12 @@ body {
 
 .nav-item:hover {
   background: #374151;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .nav-item.active {
-  background: #10B981;
-  color: #FFFFFF;
+  background: #10b981;
+  color: #ffffff;
 }
 
 .sidebar-footer {
@@ -88,18 +94,18 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #10B981;
+  background: #10b981;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 12px;
   font-weight: 500;
 }
 
 .user-email {
   font-size: 14px;
-  color: #9CA3AF;
+  color: #9ca3af;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -108,7 +114,7 @@ body {
 
 .logout-btn {
   padding: 4px;
-  color: #9CA3AF;
+  color: #9ca3af;
   background: none;
   border: none;
   cursor: pointer;
@@ -116,14 +122,14 @@ body {
 }
 
 .logout-btn:hover {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* Main content */
 .main-content {
   flex: 1;
   padding: 24px;
-  background: #0B1220;
+  background: #0b1220;
 }
 
 /* Login page */
@@ -132,13 +138,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0B1220;
+  background: #0b1220;
 }
 
 .login-card {
   max-width: 400px;
   width: 100%;
-  background: #1F2937;
+  background: #1f2937;
   border-radius: 16px;
   padding: 32px;
   border: 1px solid #374151;
@@ -148,14 +154,14 @@ body {
   text-align: center;
   font-size: 32px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-bottom: 8px;
 }
 
 .login-subtitle {
   text-align: center;
   font-size: 18px;
-  color: #D1D5DB;
+  color: #d1d5db;
   margin-bottom: 32px;
 }
 
@@ -174,33 +180,33 @@ body {
 .form-label {
   font-size: 14px;
   font-weight: 500;
-  color: #D1D5DB;
+  color: #d1d5db;
 }
 
 .form-input {
   padding: 12px;
-  border: 1px solid #4B5563;
+  border: 1px solid #4b5563;
   border-radius: 12px;
   background: #374151;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 14px;
   transition: all 0.2s;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #10B981;
+  border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .form-input::placeholder {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .login-button {
   padding: 12px;
-  background: #10B981;
-  color: #FFFFFF;
+  background: #10b981;
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   font-size: 14px;
@@ -218,14 +224,14 @@ body {
 }
 
 .login-button:disabled {
-  background: #6B7280;
+  background: #6b7280;
   cursor: not-allowed;
 }
 
 .error-message {
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
-  color: #DC2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
   padding: 12px;
   border-radius: 12px;
   font-size: 14px;
@@ -235,11 +241,11 @@ body {
   text-align: center;
   margin-top: 16px;
   font-size: 14px;
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .toggle-button {
-  color: #10B981;
+  color: #10b981;
   background: none;
   border: none;
   cursor: pointer;
@@ -247,7 +253,7 @@ body {
 }
 
 .toggle-button:hover {
-  color: #34D399;
+  color: #34d399;
 }
 
 /* Loading spinner */
@@ -255,19 +261,23 @@ body {
   width: 16px;
   height: 16px;
   border: 2px solid transparent;
-  border-top: 2px solid #FFFFFF;
+  border-top: 2px solid #ffffff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Cards */
 .card {
-  background: #1F2937;
+  background: #1f2937;
   border: 1px solid #374151;
   border-radius: 16px;
   padding: 24px;
@@ -281,13 +291,13 @@ body {
 .card-title {
   font-size: 18px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-bottom: 8px;
 }
 
 .card-subtitle {
   font-size: 14px;
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Home page specific */
@@ -301,12 +311,12 @@ body {
 .home-title {
   font-size: 24px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .home-subtitle {
   font-size: 16px;
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .user-stats {
@@ -321,30 +331,30 @@ body {
 
 .stat-label {
   font-size: 12px;
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .stat-value {
   font-size: 20px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .stat-rank {
   font-size: 16px;
   font-weight: 600;
-  color: #F59E0B;
+  color: #f59e0b;
 }
 
 .user-avatar-large {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 18px;
   font-weight: bold;
 }
@@ -358,7 +368,7 @@ body {
 }
 
 .kpi-card {
-  background: #1F2937;
+  background: #1f2937;
   border: 1px solid #374151;
   border-radius: 12px;
   padding: 16px;
@@ -373,13 +383,13 @@ body {
 
 .kpi-label {
   font-size: 12px;
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .kpi-value {
   font-size: 24px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .kpi-icon {
@@ -391,11 +401,26 @@ body {
   justify-content: center;
 }
 
-.kpi-icon.green { background: #10B981; color: #FFFFFF; }
-.kpi-icon.blue { background: #3B82F6; color: #FFFFFF; }
-.kpi-icon.yellow { background: #F59E0B; color: #FFFFFF; }
-.kpi-icon.red { background: #EF4444; color: #FFFFFF; }
-.kpi-icon.purple { background: #8B5CF6; color: #FFFFFF; }
+.kpi-icon.green {
+  background: #10b981;
+  color: #ffffff;
+}
+.kpi-icon.blue {
+  background: #3b82f6;
+  color: #ffffff;
+}
+.kpi-icon.yellow {
+  background: #f59e0b;
+  color: #ffffff;
+}
+.kpi-icon.red {
+  background: #ef4444;
+  color: #ffffff;
+}
+.kpi-icon.purple {
+  background: #8b5cf6;
+  color: #ffffff;
+}
 
 /* Badges */
 .badge {
@@ -409,15 +434,15 @@ body {
 }
 
 .badge.success {
-  background: #10B981;
-  color: #FFFFFF;
-  border-color: #10B981;
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
 }
 
 .badge.error {
-  background: #EF4444;
-  color: #FFFFFF;
-  border-color: #EF4444;
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
 }
 
 /* Buttons */
@@ -435,8 +460,8 @@ body {
 }
 
 .btn-primary {
-  background: #10B981;
-  color: #FFFFFF;
+  background: #10b981;
+  color: #ffffff;
 }
 
 .btn-primary:hover {
@@ -444,12 +469,12 @@ body {
 }
 
 .btn-destructive {
-  background: #EF4444;
-  color: #FFFFFF;
+  background: #ef4444;
+  color: #ffffff;
 }
 
 .btn-destructive:hover {
-  background: #DC2626;
+  background: #dc2626;
 }
 
 /* Snackbar */
@@ -457,8 +482,8 @@ body {
   position: fixed;
   bottom: 16px;
   right: 16px;
-  background: #10B981;
-  color: #FFFFFF;
+  background: #10b981;
+  color: #ffffff;
   padding: 12px 16px;
   border-radius: 8px;
   font-size: 14px;
@@ -482,15 +507,15 @@ body {
   .sidebar {
     width: 200px;
   }
-  
+
   .main-content {
     padding: 16px;
   }
-  
+
   .kpi-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .home-header {
     flex-direction: column;
     align-items: flex-start;
