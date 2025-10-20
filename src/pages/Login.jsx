@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
 } from 'firebase/auth';
 import { auth } from '../services/firebaseClient';
 
@@ -22,14 +23,33 @@ const Login = ({ onLogin }) => {
         await createUserWithEmailAndPassword(auth, email, password);
         console.log('✅ Utente registrato:', email);
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
-        console.log('✅ Utente loggato:', email);
+        // Verifica se l'email esiste già
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        if (!methods || methods.length === 0) {
+          // Auto-signup se l'utente non esiste
+          await createUserWithEmailAndPassword(auth, email, password);
+          console.log('✅ Utente creato (auto) e loggato:', email);
+        } else {
+          await signInWithEmailAndPassword(auth, email, password);
+          console.log('✅ Utente loggato:', email);
+        }
       }
 
       onLogin();
     } catch (err) {
       console.error('❌ Errore auth:', err);
-      setError(err.message);
+      const code = err?.code || '';
+      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        setError('Password errata. Riprova o usa "Registrati" se è il primo accesso.');
+      } else if (code === 'auth/too-many-requests') {
+        setError('Troppi tentativi. Attendi qualche minuto e riprova.');
+      } else if (code === 'auth/network-request-failed') {
+        setError('Problema di rete. Verifica la connessione e riprova.');
+      } else if (code === 'auth/weak-password') {
+        setError('La password deve avere almeno 6 caratteri.');
+      } else {
+        setError(err.message || 'Errore di autenticazione');
+      }
     } finally {
       setLoading(false);
     }
