@@ -24,6 +24,96 @@ const MatchOCR = ({ user }) => {
   const [uploadError, setUploadError] = useState(null);
   const [analyzedData, setAnalyzedData] = useState(null);
   const [imageType, setImageType] = useState(null);
+  // Manual match stats mode
+  const [manualMode, setManualMode] = useState(false);
+  const [manual, setManual] = useState({
+    homeTeam: '',
+    awayTeam: '',
+    homeScore: 0,
+    awayScore: 0,
+    teamStats: {
+      possession: { home: 50, away: 50 },
+      totalShots: { home: 0, away: 0 },
+      shotsOnTarget: { home: 0, away: 0 },
+      fouls: { home: 0, away: 0 },
+      offsides: { home: 0, away: 0 },
+      corners: { home: 0, away: 0 },
+      freeKicks: { home: 0, away: 0 },
+      passes: { home: 0, away: 0 },
+      successfulPasses: { home: 0, away: 0 },
+      crosses: { home: 0, away: 0 },
+      interceptedPasses: { home: 0, away: 0 },
+      tackles: { home: 0, away: 0 },
+      saves: { home: 0, away: 0 },
+    },
+  });
+
+  const updateManualStat = (statKey, side, value) => {
+    setManual(prev => ({
+      ...prev,
+      teamStats: {
+        ...prev.teamStats,
+        [statKey]: {
+          ...prev.teamStats[statKey],
+          [side]: Number(value),
+        },
+      },
+    }));
+  };
+
+  const handleManualSubmit = e => {
+    e.preventDefault();
+    // Normalize possession to 100 total if needed
+    const pHome = manual.teamStats.possession.home;
+    const pAway = manual.teamStats.possession.away;
+    let possession = { home: pHome, away: pAway };
+    if (pHome + pAway !== 100) {
+      const total = pHome + pAway || 1;
+      possession = {
+        home: Math.round((pHome / total) * 100),
+        away: Math.round((pAway / total) * 100),
+      };
+    }
+
+    const match = {
+      ...manual,
+      teamStats: { ...manual.teamStats, possession },
+    };
+
+    setAnalyzedData(match);
+    setImageType('match_stats');
+    setOcrStatus('done');
+    setOcrText('Inserimento manuale completato');
+  };
+
+  const handleManualReset = () => {
+    setManual(prev => ({
+      ...prev,
+      homeTeam: '',
+      awayTeam: '',
+      homeScore: 0,
+      awayScore: 0,
+      teamStats: {
+        possession: { home: 50, away: 50 },
+        totalShots: { home: 0, away: 0 },
+        shotsOnTarget: { home: 0, away: 0 },
+        fouls: { home: 0, away: 0 },
+        offsides: { home: 0, away: 0 },
+        corners: { home: 0, away: 0 },
+        freeKicks: { home: 0, away: 0 },
+        passes: { home: 0, away: 0 },
+        successfulPasses: { home: 0, away: 0 },
+        crosses: { home: 0, away: 0 },
+        interceptedPasses: { home: 0, away: 0 },
+        tackles: { home: 0, away: 0 },
+        saves: { home: 0, away: 0 },
+      },
+    }));
+    setAnalyzedData(null);
+    setImageType(null);
+    setOcrStatus(null);
+    setOcrText('');
+  };
 
   // Listener per risultati OCR in tempo reale - DISABILITATO TEMPORANEAMENTE
   useEffect(() => {
@@ -511,6 +601,125 @@ const MatchOCR = ({ user }) => {
         </div>
 
         {uploadError && <div style={styles.error}>❌ {uploadError}</div>}
+      </div>
+
+      {/* Manual match stats entry */}
+      <div style={styles.card}>
+        <h2 style={styles.title}>✍️ Inserimento Manuale Statistiche Partita</h2>
+        <div className="flex gap-2 mb-3">
+          <button
+            onClick={() => setManualMode(m => !m)}
+            className="px-4 py-2 rounded-lg text-white"
+            style={{
+              background: manualMode
+                ? 'linear-gradient(180deg, #3B82F6 0%, #2563EB 100%)'
+                : '#6B7280',
+            }}
+          >
+            {manualMode ? 'Modalità Manuale: ON' : 'Modalità Manuale: OFF'}
+          </button>
+        </div>
+
+        {manualMode && (
+          <form onSubmit={handleManualSubmit} className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                style={styles.input}
+                placeholder="Squadra Casa"
+                value={manual.homeTeam}
+                onChange={e =>
+                  setManual({ ...manual, homeTeam: e.target.value })
+                }
+              />
+              <input
+                style={styles.input}
+                placeholder="Squadra Trasferta"
+                value={manual.awayTeam}
+                onChange={e =>
+                  setManual({ ...manual, awayTeam: e.target.value })
+                }
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="number"
+                style={styles.input}
+                placeholder="Gol Casa"
+                value={manual.homeScore}
+                onChange={e =>
+                  setManual({ ...manual, homeScore: Number(e.target.value) })
+                }
+              />
+              <input
+                type="number"
+                style={styles.input}
+                placeholder="Gol Trasferta"
+                value={manual.awayScore}
+                onChange={e =>
+                  setManual({ ...manual, awayScore: Number(e.target.value) })
+                }
+              />
+            </div>
+
+            {/* Core stats */}
+            {[
+              'possession',
+              'totalShots',
+              'shotsOnTarget',
+              'fouls',
+              'offsides',
+              'corners',
+              'freeKicks',
+              'passes',
+              'successfulPasses',
+              'crosses',
+              'interceptedPasses',
+              'tackles',
+              'saves',
+            ].map(key => (
+              <div key={key} className="grid grid-cols-3 gap-3 items-center">
+                <div style={{ color: '#374151', fontSize: '0.9rem' }}>
+                  {key}
+                </div>
+                <input
+                  type="number"
+                  style={styles.input}
+                  placeholder={`${key} casa`}
+                  value={manual.teamStats[key].home}
+                  onChange={e => updateManualStat(key, 'home', e.target.value)}
+                />
+                <input
+                  type="number"
+                  style={styles.input}
+                  placeholder={`${key} trasf.`}
+                  value={manual.teamStats[key].away}
+                  onChange={e => updateManualStat(key, 'away', e.target.value)}
+                />
+              </div>
+            ))}
+
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2 rounded-lg text-white"
+                style={{
+                  background:
+                    'linear-gradient(180deg, #10B981 0%, #059669 100%)',
+                }}
+              >
+                ✅ Salva Statistiche
+              </button>
+              <button
+                type="button"
+                onClick={handleManualReset}
+                className="flex-1 px-4 py-2 rounded-lg text-white"
+                style={{ background: '#6B7280' }}
+              >
+                ♻️ Resetta
+              </button>
+            </div>
+          </form>
+        )}
       </div>
 
       {/* OCR Status & Results */}
