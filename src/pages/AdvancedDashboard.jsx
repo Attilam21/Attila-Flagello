@@ -1,8 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from 'chart.js';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import AICoach from '../components/AICoach';
 import TeamAnalysis from '../components/TeamAnalysis';
 import UXFlowManager from '../components/UXFlowManager';
 import OnboardingGuide from '../components/OnboardingGuide';
+
+// Registra i componenti di Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const AdvancedDashboard = ({ user, onPageChange }) => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -267,6 +293,80 @@ const AdvancedDashboard = ({ user, onPageChange }) => {
               {stats?.accuracy}%
             </div>
             <div style={styles.statLabel}>Precisione</div>
+          </div>
+        </div>
+        
+        {/* Grafici Dashboard */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
+          <div style={styles.chartContainer}>
+            <h4 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+              📈 Performance Recenti
+            </h4>
+            <Line
+              data={{
+                labels: ['Sett 1', 'Sett 2', 'Sett 3', 'Sett 4', 'Sett 5'],
+                datasets: [
+                  {
+                    label: 'Gol Segnati',
+                    data: [2, 3, 1, 4, 2],
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4
+                  },
+                  {
+                    label: 'Gol Subiti',
+                    data: [1, 2, 0, 1, 1],
+                    borderColor: '#EF4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    tension: 0.4
+                  }
+                ]
+              }}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    labels: { color: '#E5E7EB' }
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: { color: '#9CA3AF' },
+                    grid: { color: '#4B5563' }
+                  },
+                  x: {
+                    ticks: { color: '#9CA3AF' },
+                    grid: { color: '#4B5563' }
+                  }
+                }
+              }}
+            />
+          </div>
+          
+          <div style={styles.chartContainer}>
+            <h4 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+              ⚽ Distribuzione Risultati
+            </h4>
+            <Doughnut
+              data={{
+                labels: ['Vittorie', 'Pareggi', 'Sconfitte'],
+                datasets: [{
+                  data: [12, 3, 2],
+                  backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+                  borderColor: ['#059669', '#D97706', '#DC2626'],
+                  borderWidth: 2
+                }]
+              }}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    labels: { color: '#E5E7EB' }
+                  }
+                }
+              }}
+            />
           </div>
         </div>
       </div>

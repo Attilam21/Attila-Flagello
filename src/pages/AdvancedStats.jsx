@@ -1,4 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from 'chart.js';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
+
+// Registra i componenti di Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const AdvancedStats = ({ user }) => {
   const [stats, setStats] = useState(null);
@@ -263,82 +289,192 @@ const AdvancedStats = ({ user }) => {
   };
 
   const renderTeamStats = () => (
-    <div style={styles.statsGrid}>
-      <div style={styles.statCard}>
-        <div style={{ ...styles.statValue, ...getStatColor('winRate') }}>
-          {stats?.team.winRate}%
+    <div>
+      <div style={styles.statsGrid}>
+        <div style={styles.statCard}>
+          <div style={{ ...styles.statValue, ...getStatColor('winRate') }}>
+            {stats?.team.winRate}%
+          </div>
+          <div style={styles.statLabel}>Vittorie</div>
         </div>
-        <div style={styles.statLabel}>Vittorie</div>
+        <div style={styles.statCard}>
+          <div style={{ ...styles.statValue, ...getStatColor('goals') }}>
+            {stats?.team.goalsScored}
+          </div>
+          <div style={styles.statLabel}>Gol Segnati</div>
+        </div>
+        <div style={styles.statCard}>
+          <div style={{ ...styles.statValue, ...getStatColor('possession') }}>
+            {stats?.team.avgPossession}%
+          </div>
+          <div style={styles.statLabel}>Possesso Medio</div>
+        </div>
+        <div style={styles.statCard}>
+          <div style={{ ...styles.statValue, ...getStatColor('accuracy') }}>
+            {stats?.team.avgPassAccuracy}%
+          </div>
+          <div style={styles.statLabel}>Precisione Passaggi</div>
+        </div>
+        <div style={styles.statCard}>
+          <div style={{ ...styles.statValue, color: '#EF4444' }}>
+            {stats?.team.goalsConceded}
+          </div>
+          <div style={styles.statLabel}>Gol Subiti</div>
+        </div>
+        <div style={styles.statCard}>
+          <div style={{ ...styles.statValue, color: '#8B5CF6' }}>
+            {stats?.team.avgShots}
+          </div>
+          <div style={styles.statLabel}>Tiri/Partita</div>
+        </div>
       </div>
-      <div style={styles.statCard}>
-        <div style={{ ...styles.statValue, ...getStatColor('goals') }}>
-          {stats?.team.goalsScored}
+      
+      {/* Grafici Team */}
+      <div style={styles.chartGrid}>
+        <div style={styles.chartContainer}>
+          <h3 style={styles.chartTitle}>📊 Performance Squadra</h3>
+          <Bar
+            data={{
+              labels: ['Vittorie', 'Pareggi', 'Sconfitte'],
+              datasets: [{
+                label: 'Risultati',
+                data: [stats?.team.wins || 0, stats?.team.draws || 0, stats?.team.losses || 0],
+                backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+                borderColor: ['#059669', '#D97706', '#DC2626'],
+                borderWidth: 1
+              }]
+            }}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  labels: { color: '#E5E7EB' }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: { color: '#9CA3AF' },
+                  grid: { color: '#4B5563' }
+                },
+                x: {
+                  ticks: { color: '#9CA3AF' },
+                  grid: { color: '#4B5563' }
+                }
+              }
+            }}
+          />
         </div>
-        <div style={styles.statLabel}>Gol Segnati</div>
-      </div>
-      <div style={styles.statCard}>
-        <div style={{ ...styles.statValue, ...getStatColor('possession') }}>
-          {stats?.team.avgPossession}%
+        
+        <div style={styles.chartContainer}>
+          <h3 style={styles.chartTitle}>⚽ Gol e Possesso</h3>
+          <Doughnut
+            data={{
+              labels: ['Gol Segnati', 'Gol Subiti'],
+              datasets: [{
+                data: [stats?.team.goalsScored || 0, stats?.team.goalsConceded || 0],
+                backgroundColor: ['#3B82F6', '#EF4444'],
+                borderColor: ['#2563EB', '#DC2626'],
+                borderWidth: 2
+              }]
+            }}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  labels: { color: '#E5E7EB' }
+                }
+              }
+            }}
+          />
         </div>
-        <div style={styles.statLabel}>Possesso Medio</div>
-      </div>
-      <div style={styles.statCard}>
-        <div style={{ ...styles.statValue, ...getStatColor('accuracy') }}>
-          {stats?.team.avgPassAccuracy}%
-        </div>
-        <div style={styles.statLabel}>Precisione Passaggi</div>
-      </div>
-      <div style={styles.statCard}>
-        <div style={{ ...styles.statValue, color: '#EF4444' }}>
-          {stats?.team.goalsConceded}
-        </div>
-        <div style={styles.statLabel}>Gol Subiti</div>
-      </div>
-      <div style={styles.statCard}>
-        <div style={{ ...styles.statValue, color: '#8B5CF6' }}>
-          {stats?.team.avgShots}
-        </div>
-        <div style={styles.statLabel}>Tiri/Partita</div>
       </div>
     </div>
   );
 
   const renderPlayersTable = () => (
-    <div style={styles.playersTable}>
-      <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
-        👥 Statistiche Giocatori
-      </h3>
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th style={styles.th}>Giocatore</th>
-            <th style={styles.th}>Pos</th>
-            <th style={styles.th}>Partite</th>
-            <th style={styles.th}>Gol</th>
-            <th style={styles.th}>Assist</th>
-            <th style={styles.th}>Tiri</th>
-            <th style={styles.th}>Passaggi</th>
-            <th style={styles.th}>Rating</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stats?.players.map((player) => (
-            <tr key={player.id}>
-              <td style={styles.td}>
-                <div style={styles.playerName}>{player.name}</div>
-                <div style={styles.position}>{player.position}</div>
-              </td>
-              <td style={styles.td}>{player.position}</td>
-              <td style={styles.td}>{player.matches}</td>
-              <td style={{ ...styles.td, ...styles.goalsText }}>{player.goals}</td>
-              <td style={{ ...styles.td, ...styles.assists }}>{player.assists}</td>
-              <td style={styles.td}>{player.shots}</td>
-              <td style={styles.td}>{player.passes}</td>
-              <td style={{ ...styles.td, ...styles.rating }}>{player.rating}</td>
+    <div>
+      <div style={styles.playersTable}>
+        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#E5E7EB' }}>
+          👥 Statistiche Giocatori
+        </h3>
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th style={styles.th}>Giocatore</th>
+              <th style={styles.th}>Pos</th>
+              <th style={styles.th}>Partite</th>
+              <th style={styles.th}>Gol</th>
+              <th style={styles.th}>Assist</th>
+              <th style={styles.th}>Tiri</th>
+              <th style={styles.th}>Passaggi</th>
+              <th style={styles.th}>Rating</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {stats?.players.map((player) => (
+              <tr key={player.id}>
+                <td style={styles.td}>
+                  <div style={styles.playerName}>{player.name}</div>
+                  <div style={styles.position}>{player.position}</div>
+                </td>
+                <td style={styles.td}>{player.position}</td>
+                <td style={styles.td}>{player.matches}</td>
+                <td style={{ ...styles.td, ...styles.goalsText }}>{player.goals}</td>
+                <td style={{ ...styles.td, ...styles.assists }}>{player.assists}</td>
+                <td style={styles.td}>{player.shots}</td>
+                <td style={styles.td}>{player.passes}</td>
+                <td style={{ ...styles.td, ...styles.rating }}>{player.rating}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* Grafico Top Performers */}
+      <div style={styles.chartContainer}>
+        <h3 style={styles.chartTitle}>⭐ Top Performers - Gol e Assist</h3>
+        <Bar
+          data={{
+            labels: stats?.players.slice(0, 5).map(p => p.name) || [],
+            datasets: [
+              {
+                label: 'Gol',
+                data: stats?.players.slice(0, 5).map(p => p.goals) || [],
+                backgroundColor: '#3B82F6',
+                borderColor: '#2563EB',
+                borderWidth: 1
+              },
+              {
+                label: 'Assist',
+                data: stats?.players.slice(0, 5).map(p => p.assists) || [],
+                backgroundColor: '#F59E0B',
+                borderColor: '#D97706',
+                borderWidth: 1
+              }
+            ]
+          }}
+          options={{
+            responsive: true,
+            plugins: {
+              legend: {
+                labels: { color: '#E5E7EB' }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { color: '#9CA3AF' },
+                grid: { color: '#4B5563' }
+              },
+              x: {
+                ticks: { color: '#9CA3AF' },
+                grid: { color: '#4B5563' }
+              }
+            }
+          }}
+        />
+      </div>
     </div>
   );
 

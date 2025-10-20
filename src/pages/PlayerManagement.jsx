@@ -224,14 +224,23 @@ const PlayerManagement = ({ user }) => {
       backgroundColor: '#10B981',
       color: 'white',
       border: 'none',
-      borderRadius: '0.5rem',
+      borderRadius: '0.75rem',
       padding: '0.75rem 1.5rem',
       cursor: 'pointer',
       fontSize: '0.875rem',
       fontWeight: '600',
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem'
+      gap: '0.5rem',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      textTransform: 'none',
+      letterSpacing: '0.025em',
+      ':hover': {
+        backgroundColor: '#059669',
+        transform: 'translateY(-1px)',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+      }
     },
     playersGrid: {
       display: 'grid',
@@ -503,13 +512,6 @@ const PlayerManagement = ({ user }) => {
 
     errorIcon: {
       fontSize: '3rem',
-      marginBottom: '1rem',
-    },
-
-    errorTitle: {
-      fontSize: '1.25rem',
-      fontWeight: 'bold',
-      color: '#EF4444',
       marginBottom: '1rem',
     },
 
@@ -922,7 +924,10 @@ const PlayerManagement = ({ user }) => {
           <button
             style={{
               ...styles.button,
-              backgroundColor: viewMode === 'list' ? '#3B82F6' : '#6B7280'
+              backgroundColor: viewMode === 'list' ? '#3B82F6' : '#6B7280',
+              boxShadow: viewMode === 'list' ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)' : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+              transform: viewMode === 'list' ? 'translateY(-1px)' : 'none',
+              transition: 'all 0.3s ease'
             }}
             onClick={() => setViewMode('list')}
           >
@@ -931,7 +936,10 @@ const PlayerManagement = ({ user }) => {
           <button
             style={{
               ...styles.button,
-              backgroundColor: viewMode === 'profile' ? '#3B82F6' : '#6B7280'
+              backgroundColor: viewMode === 'profile' ? '#3B82F6' : '#6B7280',
+              boxShadow: viewMode === 'profile' ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)' : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+              transform: viewMode === 'profile' ? 'translateY(-1px)' : 'none',
+              transition: 'all 0.3s ease'
             }}
             onClick={() => setViewMode('profile')}
           >
@@ -940,7 +948,10 @@ const PlayerManagement = ({ user }) => {
           <button
             style={{
               ...styles.button,
-              backgroundColor: viewMode === 'formation' ? '#3B82F6' : '#6B7280'
+              backgroundColor: viewMode === 'formation' ? '#3B82F6' : '#6B7280',
+              boxShadow: viewMode === 'formation' ? '0 4px 6px -1px rgba(59, 130, 246, 0.3)' : '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+              transform: viewMode === 'formation' ? 'translateY(-1px)' : 'none',
+              transition: 'all 0.3s ease'
             }}
             onClick={() => setViewMode('formation')}
           >
