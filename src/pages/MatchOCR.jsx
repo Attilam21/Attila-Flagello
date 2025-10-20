@@ -461,7 +461,7 @@ const MatchOCR = ({ user }) => {
   }, [user]);
 
   if (!user) {
-    return (
+  return (
       <div className="max-w-6xl mx-auto p-6">
         <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg">
           ❌ Devi essere loggato per accedere a questa pagina
@@ -556,7 +556,7 @@ const MatchOCR = ({ user }) => {
           {/* Compilazione Manuale */}
           <div>
             <div className="flex items-center mb-4">
-              <button
+        <button
                 onClick={() => setStatisticaManualMode(!statisticaManualMode)}
                 className={`px-4 py-2 rounded-full text-sm ${
                   statisticaManualMode ? 'bg-green-600' : 'bg-gray-600'
@@ -565,109 +565,73 @@ const MatchOCR = ({ user }) => {
                 {statisticaManualMode
                   ? 'Modalità Manuale: ON'
                   : 'Modalità Manuale: OFF'}
-              </button>
+        </button>
             </div>
 
             {statisticaManualMode && (
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 p-8 shadow-xl">
-                <form onSubmit={handleStatisticaManualSubmit} className="space-y-8">
+              <div className="card">
+                <form onSubmit={handleStatisticaManualSubmit} className="space-y-6">
                   {/* Header Section */}
-                  <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-                      <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                      </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold text-slate-800 mb-2">Informazioni Partita</h3>
-                    <p className="text-slate-600">Inserisci i dettagli della partita e le statistiche</p>
-                  </div>
+                  <div className="card-header">
+                    <h3 className="card-title">📊 Informazioni Partita</h3>
+                    <p className="card-subtitle">Inserisci i dettagli della partita e le statistiche</p>
+      </div>
 
-                  {/* Match Info Card */}
-                  <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                    <h4 className="text-lg font-semibold text-slate-800 mb-6 flex items-center">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                      Dettagli Partita
-                    </h4>
+                  {/* Match Info Section */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-white mb-4">🏟️ Dettagli Partita</h4>
                     
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-semibold text-slate-700 mb-2">Squadra Casa</label>
-                          <div className="relative">
-                            <input
-                              className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-100 ${
-                                errors.statistica?.homeTeam 
-                                  ? 'border-red-300 bg-red-50 focus:ring-red-100' 
-                                  : 'border-slate-200 bg-white focus:border-blue-400'
-                              }`}
-                              placeholder="Es. Real Madrid"
-                              value={statisticaData.homeTeam}
-                              onChange={e =>
-                                setStatisticaData(prev => ({
-                                  ...prev,
-                                  homeTeam: e.target.value,
-                                }))
-                              }
-                            />
-                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                              </svg>
-                            </div>
-                          </div>
+                        <div className="form-group">
+                          <label className="form-label">Squadra Casa</label>
+                          <input
+                            className={`form-input ${
+                              errors.statistica?.homeTeam ? 'border-red-500' : ''
+                            }`}
+                            placeholder="Es. Real Madrid"
+                            value={statisticaData.homeTeam}
+                            onChange={e =>
+                              setStatisticaData(prev => ({
+                                ...prev,
+                                homeTeam: e.target.value,
+                              }))
+                            }
+                          />
                           {errors.statistica?.homeTeam && (
-                            <p className="text-red-600 text-sm mt-2 flex items-center">
-                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
-                              </svg>
-                              {errors.statistica.homeTeam}
-                            </p>
+                            <p className="text-red-400 text-sm mt-1">{errors.statistica.homeTeam}</p>
                           )}
                         </div>
                         
-                        <div>
-                          <label className="block text-sm font-semibold text-slate-700 mb-2">Squadra Trasferta</label>
-                          <div className="relative">
-                            <input
-                              className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-100 ${
-                                errors.statistica?.awayTeam 
-                                  ? 'border-red-300 bg-red-50 focus:ring-red-100' 
-                                  : 'border-slate-200 bg-white focus:border-blue-400'
-                              }`}
-                              placeholder="Es. Barcelona"
-                              value={statisticaData.awayTeam}
-                              onChange={e =>
-                                setStatisticaData(prev => ({
-                                  ...prev,
-                                  awayTeam: e.target.value,
-                                }))
-                              }
-                            />
-                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                              </svg>
-                            </div>
-                          </div>
+                        <div className="form-group">
+                          <label className="form-label">Squadra Trasferta</label>
+                          <input
+                            className={`form-input ${
+                              errors.statistica?.awayTeam ? 'border-red-500' : ''
+                            }`}
+                            placeholder="Es. Barcelona"
+                            value={statisticaData.awayTeam}
+                            onChange={e =>
+                              setStatisticaData(prev => ({
+                                ...prev,
+                                awayTeam: e.target.value,
+                              }))
+                            }
+                          />
                           {errors.statistica?.awayTeam && (
-                            <p className="text-red-600 text-sm mt-2 flex items-center">
-                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
-                              </svg>
-                              {errors.statistica.awayTeam}
-                            </p>
+                            <p className="text-red-400 text-sm mt-1">{errors.statistica.awayTeam}</p>
                           )}
                         </div>
                       </div>
                       
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">Gol Casa</label>
+                          <div className="form-group">
+                            <label className="form-label">Gol Casa</label>
                             <input
                               type="number"
                               min="0"
-                              className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 bg-white transition-all duration-200"
+                              className="form-input"
                               placeholder="0"
                               value={statisticaData.homeScore}
                               onChange={e =>
@@ -678,12 +642,12 @@ const MatchOCR = ({ user }) => {
                               }
                             />
                           </div>
-                          <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">Gol Trasferta</label>
+                          <div className="form-group">
+                            <label className="form-label">Gol Trasferta</label>
                             <input
                               type="number"
                               min="0"
-                              className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 bg-white transition-all duration-200"
+                              className="form-input"
                               placeholder="0"
                               value={statisticaData.awayScore}
                               onChange={e =>
@@ -696,44 +660,34 @@ const MatchOCR = ({ user }) => {
                           </div>
                         </div>
                         
-                        <div>
-                          <label className="block text-sm font-semibold text-slate-700 mb-2">Data Partita</label>
-                          <div className="relative">
-                            <input
-                              type="date"
-                              className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 bg-white transition-all duration-200"
-                              value={statisticaData.date}
-                              onChange={e =>
-                                setStatisticaData(prev => ({
-                                  ...prev,
-                                  date: e.target.value,
-                                }))
-                              }
-                            />
-                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                              </svg>
-                            </div>
-                          </div>
+                        <div className="form-group">
+                          <label className="form-label">Data Partita</label>
+                          <input
+                            type="date"
+                            className="form-input"
+                            value={statisticaData.date}
+                            onChange={e =>
+                              setStatisticaData(prev => ({
+                                ...prev,
+                                date: e.target.value,
+                              }))
+                            }
+                          />
                         </div>
                       </div>
                     </div>
                   </div>
-                  {/* Statistics Card */}
-                  <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                    <h4 className="text-lg font-semibold text-slate-800 mb-6 flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      Statistiche Partita
-                    </h4>
+                  {/* Statistics Section */}
+                  <div className="space-y-6">
+                    <h4 className="text-lg font-semibold text-white mb-4">📈 Statistiche Partita</h4>
                     
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       {/* Home Team Stats */}
                       <div className="space-y-4">
-                        <div className="flex items-center mb-4">
+                        <h5 className="font-semibold text-white flex items-center">
                           <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                          <h5 className="font-semibold text-slate-700">Squadra Casa</h5>
-                        </div>
+                          Squadra Casa
+                        </h5>
                         <div className="space-y-3">
                           {[
                             { key: 'possession', label: 'Possesso Palla', suffix: '%', icon: '⚽' },
@@ -747,21 +701,21 @@ const MatchOCR = ({ user }) => {
                             <div key={stat.key} className="flex items-center justify-between">
                               <div className="flex items-center">
                                 <span className="text-lg mr-2">{stat.icon}</span>
-                                <span className="text-sm font-medium text-slate-600">{stat.label}</span>
+                                <span className="text-sm font-medium text-gray-300">{stat.label}</span>
                               </div>
                               <div className="flex items-center">
                                 <input
                                   type="number"
                                   min="0"
                                   max={stat.key === 'possession' ? 100 : undefined}
-                                  className="w-20 px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 bg-white text-center transition-all duration-200"
+                                  className="w-20 px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-400 bg-gray-700 text-white text-center"
                                   placeholder="0"
                                   value={statisticaData.teamStats[stat.key].home}
                                   onChange={e =>
                                     updateStatisticaStat(stat.key, 'home', e.target.value)
                                   }
                                 />
-                                {stat.suffix && <span className="text-xs text-slate-500 ml-1">{stat.suffix}</span>}
+                                {stat.suffix && <span className="text-xs text-gray-400 ml-1">{stat.suffix}</span>}
                               </div>
                             </div>
                           ))}
@@ -770,10 +724,10 @@ const MatchOCR = ({ user }) => {
                       
                       {/* Away Team Stats */}
                       <div className="space-y-4">
-                        <div className="flex items-center mb-4">
+                        <h5 className="font-semibold text-white flex items-center">
                           <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                          <h5 className="font-semibold text-slate-700">Squadra Trasferta</h5>
-                        </div>
+                          Squadra Trasferta
+                        </h5>
                         <div className="space-y-3">
                           {[
                             { key: 'possession', label: 'Possesso Palla', suffix: '%', icon: '⚽' },
@@ -787,21 +741,21 @@ const MatchOCR = ({ user }) => {
                             <div key={stat.key} className="flex items-center justify-between">
                               <div className="flex items-center">
                                 <span className="text-lg mr-2">{stat.icon}</span>
-                                <span className="text-sm font-medium text-slate-600">{stat.label}</span>
+                                <span className="text-sm font-medium text-gray-300">{stat.label}</span>
                               </div>
                               <div className="flex items-center">
                                 <input
                                   type="number"
                                   min="0"
                                   max={stat.key === 'possession' ? 100 : undefined}
-                                  className="w-20 px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-400 bg-white text-center transition-all duration-200"
+                                  className="w-20 px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 bg-gray-700 text-white text-center"
                                   placeholder="0"
                                   value={statisticaData.teamStats[stat.key].away}
                                   onChange={e =>
                                     updateStatisticaStat(stat.key, 'away', e.target.value)
                                   }
                                 />
-                                {stat.suffix && <span className="text-xs text-slate-500 ml-1">{stat.suffix}</span>}
+                                {stat.suffix && <span className="text-xs text-gray-400 ml-1">{stat.suffix}</span>}
                               </div>
                             </div>
                           ))}
@@ -810,8 +764,8 @@ const MatchOCR = ({ user }) => {
                     </div>
                     
                     {/* Additional Stats */}
-                    <div className="mt-6 pt-6 border-t border-slate-200">
-                      <h5 className="font-semibold text-slate-700 mb-4 flex items-center">
+                    <div className="mt-6 pt-6 border-t border-gray-600">
+                      <h5 className="font-semibold text-white mb-4 flex items-center">
                         <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
                         Statistiche Avanzate
                       </h5>
@@ -824,20 +778,20 @@ const MatchOCR = ({ user }) => {
                           { key: 'tackles', label: 'Tackle', icon: '⚔️' },
                           { key: 'saves', label: 'Parate', icon: '🧤' },
                         ].map(stat => (
-                          <div key={stat.key} className="bg-slate-50 rounded-lg p-4">
+                          <div key={stat.key} className="bg-gray-800 rounded-lg p-4 border border-gray-600">
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center">
                                 <span className="text-lg mr-2">{stat.icon}</span>
-                                <span className="text-sm font-medium text-slate-600">{stat.label}</span>
+                                <span className="text-sm font-medium text-gray-300">{stat.label}</span>
                               </div>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-xs text-slate-500 mb-1">Casa</label>
+                                <label className="block text-xs text-gray-400 mb-1">Casa</label>
                                 <input
                                   type="number"
                                   min="0"
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 bg-white text-sm transition-all duration-200"
+                                  className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-400 bg-gray-700 text-white text-sm"
                                   placeholder="0"
                                   value={statisticaData.teamStats[stat.key].home}
                                   onChange={e =>
@@ -846,11 +800,11 @@ const MatchOCR = ({ user }) => {
                                 />
                               </div>
                               <div>
-                                <label className="block text-xs text-slate-500 mb-1">Trasferta</label>
+                                <label className="block text-xs text-gray-400 mb-1">Trasferta</label>
                                 <input
                                   type="number"
                                   min="0"
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-400 bg-white text-sm transition-all duration-200"
+                                  className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 bg-gray-700 text-white text-sm"
                                   placeholder="0"
                                   value={statisticaData.teamStats[stat.key].away}
                                   onChange={e =>
@@ -869,14 +823,9 @@ const MatchOCR = ({ user }) => {
                   <div className="flex flex-col sm:flex-row gap-4 pt-6">
                     <button 
                       type="submit" 
-                      className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-100 transform hover:scale-105"
+                      className="btn btn-primary flex-1"
                     >
-                      <div className="flex items-center justify-center">
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Salva Statistiche
-                      </div>
+                      💾 Salva Statistiche
                     </button>
                     <button
                       type="button"
@@ -904,14 +853,9 @@ const MatchOCR = ({ user }) => {
                           },
                         })
                       }
-                      className="flex-1 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-slate-100 transform hover:scale-105"
+                      className="btn btn-secondary flex-1"
                     >
-                      <div className="flex items-center justify-center">
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                        </svg>
-                        Resetta Form
-                      </div>
+                      🔄 Resetta Form
                     </button>
                   </div>
                 </form>
@@ -989,17 +933,17 @@ const MatchOCR = ({ user }) => {
                   ? 'Modalità Manuale: ON'
                   : 'Modalità Manuale: OFF'}
               </button>
-            </div>
+          </div>
 
             {votiManualMode && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+              <div className="card">
                 <form onSubmit={handleVotiManualSubmit} className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <h4 className="text-lg font-semibold text-gray-900">Giocatori e Voti</h4>
+                  <div className="card-header">
+                    <h4 className="card-title">👥 Giocatori e Voti</h4>
                     <button
                       type="button"
                       onClick={addVotoGiocatore}
-                      className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="btn btn-primary"
                     >
                       ➕ Aggiungi Giocatore
                     </button>
@@ -1010,16 +954,14 @@ const MatchOCR = ({ user }) => {
                     {votiData.map((voto, index) => (
                       <div
                         key={index}
-                        className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+                        className="bg-gray-800 border border-gray-600 rounded-lg p-4"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Nome Giocatore</label>
+                          <div className="form-group">
+                            <label className="form-label">Nome Giocatore</label>
                             <input
-                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
-                                errors.voti?.[`name_${index}`] 
-                                  ? 'border-red-300 bg-red-50' 
-                                  : 'border-gray-300 bg-white'
+                              className={`form-input ${
+                                errors.voti?.[`name_${index}`] ? 'border-red-500' : ''
                               }`}
                               placeholder="Es. Lionel Messi"
                               value={voto.name}
@@ -1028,16 +970,14 @@ const MatchOCR = ({ user }) => {
                               }
                             />
                             {errors.voti?.[`name_${index}`] && (
-                              <p className="text-red-600 text-xs mt-1">{errors.voti[`name_${index}`]}</p>
+                              <p className="text-red-400 text-xs mt-1">{errors.voti[`name_${index}`]}</p>
                             )}
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Ruolo</label>
+                          <div className="form-group">
+                            <label className="form-label">Ruolo</label>
                             <input
-                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
-                                errors.voti?.[`role_${index}`] 
-                                  ? 'border-red-300 bg-red-50' 
-                                  : 'border-gray-300 bg-white'
+                              className={`form-input ${
+                                errors.voti?.[`role_${index}`] ? 'border-red-500' : ''
                               }`}
                               placeholder="Es. CF, CMF, CB"
                               value={voto.role}
@@ -1046,20 +986,18 @@ const MatchOCR = ({ user }) => {
                               }
                             />
                             {errors.voti?.[`role_${index}`] && (
-                              <p className="text-red-600 text-xs mt-1">{errors.voti[`role_${index}`]}</p>
+                              <p className="text-red-400 text-xs mt-1">{errors.voti[`role_${index}`]}</p>
                             )}
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Voto</label>
+                          <div className="form-group">
+                            <label className="form-label">Voto</label>
                             <input
                               type="number"
                               min="1"
                               max="10"
                               step="0.5"
-                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
-                                errors.voti?.[`rating_${index}`] 
-                                  ? 'border-red-300 bg-red-50' 
-                                  : 'border-gray-300 bg-white'
+                              className={`form-input ${
+                                errors.voti?.[`rating_${index}`] ? 'border-red-500' : ''
                               }`}
                               placeholder="7.5"
                               value={voto.rating}
@@ -1072,14 +1010,14 @@ const MatchOCR = ({ user }) => {
                               }
                             />
                             {errors.voti?.[`rating_${index}`] && (
-                              <p className="text-red-600 text-xs mt-1">{errors.voti[`rating_${index}`]}</p>
+                              <p className="text-red-400 text-xs mt-1">{errors.voti[`rating_${index}`]}</p>
                             )}
                           </div>
                           <div className="flex justify-end">
                             <button
                               type="button"
                               onClick={() => removeVotoGiocatore(index)}
-                              className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-3 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                              className="btn btn-destructive"
                             >
                               🗑️ Rimuovi
                             </button>
@@ -1090,17 +1028,17 @@ const MatchOCR = ({ user }) => {
                   </div>
 
                   {/* Bottoni Azione */}
-                  <div className="flex gap-3 pt-4 border-t border-gray-200">
+                  <div className="flex flex-col sm:flex-row gap-4 pt-6">
                     <button 
                       type="submit" 
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="btn btn-primary flex-1"
                     >
                       💾 Salva Voti
                     </button>
                     <button
                       type="button"
                       onClick={() => setVotiData([])}
-                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      className="btn btn-secondary flex-1"
                     >
                       🔄 Resetta
                     </button>
@@ -1158,7 +1096,7 @@ const MatchOCR = ({ user }) => {
                 )}
               </div>
             )}
-            <button
+              <button
               onClick={handleHeatmapUpload}
               disabled={!heatmapFile || heatmapUploading}
               className="btn btn-primary"
@@ -1166,8 +1104,8 @@ const MatchOCR = ({ user }) => {
               {heatmapUploading
                 ? '⏳ Caricamento...'
                 : '📸 Carica Mappa di Calore'}
-            </button>
-              </div>
+              </button>
+            </div>
 
           {/* Compilazione Manuale */}
           <div>
@@ -1185,11 +1123,11 @@ const MatchOCR = ({ user }) => {
             </div>
 
             {heatmapManualMode && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+              <div className="card">
                 <form onSubmit={handleHeatmapManualSubmit} className="space-y-6">
                   {/* Indicazione origine dati */}
                   {heatmapData.autoGenerated && (
-                    <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg">
+                    <div className="bg-blue-900 border border-blue-700 text-blue-200 p-4 rounded-lg">
                       <div className="flex items-center">
                         <span className="text-lg mr-2">🤖</span>
                         <div>
@@ -1199,20 +1137,20 @@ const MatchOCR = ({ user }) => {
                           </p>
                         </div>
                       </div>
-        </div>
-      )}
-
+                    </div>
+                  )}
+                  
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Zone di Calore</h4>
+                    <h4 className="text-lg font-semibold text-white mb-4">🔥 Zone di Calore</h4>
                     <div className="space-y-3">
                       {heatmapData.zones.map((zone, index) => (
                         <div
                           key={index}
-                          className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+                          className="bg-gray-800 border border-gray-600 rounded-lg p-4"
                         >
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                              <label className="block text-sm font-medium text-gray-300 mb-1">
                                 {zone.name}
                               </label>
                             </div>
@@ -1221,14 +1159,14 @@ const MatchOCR = ({ user }) => {
                                 type="number"
                                 min="0"
                                 max="100"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+                                className="form-input"
                                 placeholder="0"
                                 value={zone.percentage}
                                 onChange={e =>
                                   updateHeatmapZone(index, e.target.value)
                                 }
                               />
-                              <span className="text-gray-500 text-sm font-medium">%</span>
+                              <span className="text-gray-400 text-sm font-medium">%</span>
                             </div>
                           </div>
                         </div>
@@ -1237,17 +1175,17 @@ const MatchOCR = ({ user }) => {
                   </div>
 
                   {/* Bottoni Azione */}
-                  <div className="flex gap-3 pt-4 border-t border-gray-200">
+                  <div className="flex flex-col sm:flex-row gap-4 pt-6">
                     <button 
                       type="submit" 
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="btn btn-primary flex-1"
                     >
                       💾 Salva Heatmap
                     </button>
                     <button
                       type="button"
                       onClick={generateAutoHeatmap}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="btn btn-primary flex-1"
                     >
                       🤖 Genera Auto
                     </button>
@@ -1263,7 +1201,7 @@ const MatchOCR = ({ user }) => {
                           autoGenerated: false,
                         }))
                       }
-                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      className="btn btn-secondary flex-1"
                     >
                       🔄 Resetta
                     </button>

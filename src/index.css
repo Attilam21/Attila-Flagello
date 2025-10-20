@@ -477,6 +477,15 @@ body {
   background: #dc2626;
 }
 
+.btn-secondary {
+  background: #6b7280;
+  color: #ffffff;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
 /* Snackbar */
 .snackbar {
   position: fixed;
