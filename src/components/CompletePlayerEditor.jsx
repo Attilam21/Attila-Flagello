@@ -144,12 +144,14 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
     }
   };
 
-  const handleAddSkill = (type) => {
-    const skillName = prompt(`Inserisci il nome dell'abilità ${type === 'skills' ? 'giocatore' : 'comunicazione'}:`);
+  const handleAddSkill = type => {
+    const skillName = prompt(
+      `Inserisci il nome dell'abilità ${type === 'skills' ? 'giocatore' : 'comunicazione'}:`
+    );
     if (skillName && skillName.trim()) {
       setEditedPlayer(prev => ({
         ...prev,
-        [type]: [...prev[type], skillName.trim()]
+        [type]: [...prev[type], skillName.trim()],
       }));
     }
   };
@@ -157,7 +159,7 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
   const handleRemoveSkill = (type, index) => {
     setEditedPlayer(prev => ({
       ...prev,
-      [type]: prev[type].filter((_, i) => i !== index)
+      [type]: prev[type].filter((_, i) => i !== index),
     }));
   };
 
@@ -439,29 +441,33 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
   };
 
   if (!isOpen) return null;
-  
+
   // Mostra loading se editedPlayer non è ancora inizializzato
   if (!editedPlayer) {
     return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}>
-        <div style={{
-          backgroundColor: '#1F2937',
-          padding: '2rem',
-          borderRadius: '0.75rem',
-          color: 'white',
-          textAlign: 'center',
-        }}>
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: '#1F2937',
+            padding: '2rem',
+            borderRadius: '0.75rem',
+            color: 'white',
+            textAlign: 'center',
+          }}
+        >
           <div>Caricamento editor...</div>
         </div>
       </div>
@@ -680,11 +686,18 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
                 Abilità e Competenze
               </h3>
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '0.5rem',
+                  }}
+                >
                   <h4 style={{ color: '#ccc', margin: 0 }}>
                     Abilità Giocatore
                   </h4>
-                  <button 
+                  <button
                     onClick={() => handleAddSkill('skills')}
                     style={{
                       backgroundColor: '#3B82F6',
@@ -693,15 +706,20 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
                       borderRadius: '4px',
                       padding: '0.25rem 0.5rem',
                       fontSize: '0.75rem',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
                     }}
                   >
                     + Aggiungi
                   </button>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div
+                  style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}
+                >
                   {editedPlayer.skills.map((skill, index) => (
-                    <span key={index} style={{...styles.skillTag, position: 'relative'}}>
+                    <span
+                      key={index}
+                      style={{ ...styles.skillTag, position: 'relative' }}
+                    >
                       {skill}
                       <button
                         onClick={() => handleRemoveSkill('skills', index)}
@@ -719,7 +737,7 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center'
+                          justifyContent: 'center',
                         }}
                       >
                         ×
@@ -729,11 +747,18 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
                 </div>
               </div>
               <div style={{ marginTop: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '0.5rem',
+                  }}
+                >
                   <h4 style={{ color: '#ccc', margin: 0 }}>
                     Abilità di Comunicazione
                   </h4>
-                  <button 
+                  <button
                     onClick={() => handleAddSkill('communicationSkills')}
                     style={{
                       backgroundColor: '#3B82F6',
@@ -742,18 +767,25 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
                       borderRadius: '4px',
                       padding: '0.25rem 0.5rem',
                       fontSize: '0.75rem',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
                     }}
                   >
                     + Aggiungi
                   </button>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div
+                  style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}
+                >
                   {editedPlayer.communicationSkills.map((skill, index) => (
-                    <span key={index} style={{...styles.skillTag, position: 'relative'}}>
+                    <span
+                      key={index}
+                      style={{ ...styles.skillTag, position: 'relative' }}
+                    >
                       {skill}
                       <button
-                        onClick={() => handleRemoveSkill('communicationSkills', index)}
+                        onClick={() =>
+                          handleRemoveSkill('communicationSkills', index)
+                        }
                         style={{
                           position: 'absolute',
                           top: '-5px',
@@ -768,7 +800,7 @@ const CompletePlayerEditor = ({ player, onSave, onClose, isOpen }) => {
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center'
+                          justifyContent: 'center',
                         }}
                       >
                         ×

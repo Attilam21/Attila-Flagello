@@ -425,7 +425,7 @@ const PlayerManagement = ({ user }) => {
     if (!user) return;
     try {
       console.log('🎯 Saving player:', editedPlayer);
-      
+
       if (editedPlayer.id) {
         // Giocatore esistente - aggiorna
         console.log('🔄 Updating existing player:', editedPlayer.id);
@@ -435,7 +435,7 @@ const PlayerManagement = ({ user }) => {
         console.log('➕ Adding new player');
         await addPlayer(user.uid, editedPlayer);
       }
-      
+
       setShowCompleteEditor(false);
       setEditingPlayer(null);
       console.log('✅ Player saved successfully');
@@ -716,7 +716,9 @@ const PlayerManagement = ({ user }) => {
             <div style={styles.modalContent}>
               <div style={styles.modalHeader}>
                 <h2 style={styles.modalTitle}>
-                  {ocrResult.error ? '❌ Errore OCR' : '🔍 Risultato OCR Giocatore'}
+                  {ocrResult.error
+                    ? '❌ Errore OCR'
+                    : '🔍 Risultato OCR Giocatore'}
                 </h2>
                 <button
                   onClick={() => setShowOCRModal(false)}
@@ -754,11 +756,13 @@ const PlayerManagement = ({ user }) => {
                     <div style={{ marginBottom: '1rem' }}>
                       <strong>Statistiche:</strong>
                       <div style={{ marginTop: '0.5rem' }}>
-                        {Object.entries(ocrResult.stats).map(([stat, value]) => (
-                          <div key={stat} style={{ fontSize: '0.875rem' }}>
-                            {stat}: {value}
-                          </div>
-                        ))}
+                        {Object.entries(ocrResult.stats).map(
+                          ([stat, value]) => (
+                            <div key={stat} style={{ fontSize: '0.875rem' }}>
+                              {stat}: {value}
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
                   )}
@@ -778,7 +782,10 @@ const PlayerManagement = ({ user }) => {
         {/* Complete Player Editor Modal */}
         {showCompleteEditor && (
           <>
-            {console.log('🎯 Rendering CompletePlayerEditor with:', { showCompleteEditor, editingPlayer })}
+            {console.log('🎯 Rendering CompletePlayerEditor with:', {
+              showCompleteEditor,
+              editingPlayer,
+            })}
             <CompletePlayerEditor
               player={editingPlayer}
               onSave={handleSaveEditedPlayer}

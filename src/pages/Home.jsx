@@ -248,9 +248,24 @@ const Home = ({ user, onPageChange }) => {
             personalizzati.
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button onClick={handleNavigateToAnalisi} className="btn btn-primary">🎯 Analizza Partita</button>
-            <button onClick={handleNavigateToStatistiche} className="btn btn-secondary">📊 Statistiche IA</button>
-            <button onClick={handleNavigateToStatistiche} className="btn btn-secondary">💡 Consigli Tattici</button>
+            <button
+              onClick={handleNavigateToAnalisi}
+              className="btn btn-primary"
+            >
+              🎯 Analizza Partita
+            </button>
+            <button
+              onClick={handleNavigateToStatistiche}
+              className="btn btn-secondary"
+            >
+              📊 Statistiche IA
+            </button>
+            <button
+              onClick={handleNavigateToStatistiche}
+              className="btn btn-secondary"
+            >
+              💡 Consigli Tattici
+            </button>
           </div>
         </div>
       </div>
@@ -266,11 +281,21 @@ const Home = ({ user, onPageChange }) => {
             precompilati.
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button onClick={handleNavigateToRosa} className="btn btn-primary">➕ Aggiungi Giocatore</button>
-            <button onClick={handleNavigateToRosa} className="btn btn-secondary">
+            <button onClick={handleNavigateToRosa} className="btn btn-primary">
+              ➕ Aggiungi Giocatore
+            </button>
+            <button
+              onClick={handleNavigateToRosa}
+              className="btn btn-secondary"
+            >
               📸 Carica da Screenshot
             </button>
-            <button onClick={handleNavigateToRosa} className="btn btn-secondary">⚙️ Editor Formazione</button>
+            <button
+              onClick={handleNavigateToRosa}
+              className="btn btn-secondary"
+            >
+              ⚙️ Editor Formazione
+            </button>
           </div>
         </div>
       </div>

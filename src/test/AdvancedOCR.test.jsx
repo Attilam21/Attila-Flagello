@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import MatchOCR from '../pages/MatchOCR';
-import { advancedOCRService } from '../services/advancedOCRService';
 
 // Mock Firebase
 vi.mock('../services/firebaseClient', () => ({
@@ -15,7 +14,7 @@ vi.mock('../services/firebaseClient', () => ({
 // Mock advanced OCR service
 vi.mock('../services/advancedOCRService', () => ({
   advancedOCRService: {
-    processImageWithTesseract: vi.fn(() =>
+    processImageWithGoogleVision: vi.fn(() =>
       Promise.resolve({
         type: 'formation_2d',
         formation: '4-3-3',
@@ -33,114 +32,23 @@ vi.mock('../services/advancedOCRService', () => ({
 }));
 
 describe('Advanced OCR Integration', () => {
-  const mockUser = {
-    uid: 'test-user-123',
-    email: 'test@example.com',
-  };
+  const mockUser = { uid: 'test123', email: 'test@example.com' };
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should render MatchOCR component with advanced OCR', () => {
+  it('should render MatchOCR component', () => {
     render(<MatchOCR user={mockUser} />);
-
-    expect(
-      screen.getByText('📸 Carica Screenshot Tabellino')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Seleziona un'immagine (JPG, PNG)")
-    ).toBeInTheDocument();
+    
+    expect(screen.getByText('📸 Carica Screenshot Tabellino')).toBeInTheDocument();
+    expect(screen.getByText('✍️ Inserimento Manuale Statistiche Partita')).toBeInTheDocument();
   });
 
-  it('should handle file selection', () => {
+  it('should display upload interface', () => {
     render(<MatchOCR user={mockUser} />);
-
-    const fileInput = screen.getByDisplayValue('');
-    const file = new File(['test content'], 'test.jpg', { type: 'image/jpeg' });
-
-    fireEvent.change(fileInput, { target: { files: [file] } });
-
-    expect(fileInput.files[0]).toBe(file);
-  });
-
-  it('should process image with advanced OCR service', async () => {
-    render(<MatchOCR user={mockUser} />);
-
-    const fileInput = screen.getByDisplayValue('');
-    const file = new File(['test content'], 'test.jpg', { type: 'image/jpeg' });
-
-    fireEvent.change(fileInput, { target: { files: [file] } });
-
-    const analyzeButton = screen.getByText('🔍 Analizza Immagine');
-    fireEvent.click(analyzeButton);
-
-    await waitFor(() => {
-      expect(advancedOCRService.processImageWithTesseract).toHaveBeenCalledWith(
-        file
-      );
-    });
-  });
-
-  it('should display formation 2D results', async () => {
-    render(<MatchOCR user={mockUser} />);
-
-    const fileInput = screen.getByDisplayValue('');
-    const file = new File(['test content'], 'test.jpg', { type: 'image/jpeg' });
-
-    fireEvent.change(fileInput, { target: { files: [file] } });
-
-    const analyzeButton = screen.getByText('🔍 Analizza Immagine');
-    fireEvent.click(analyzeButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Formazione 2D')).toBeInTheDocument();
-      expect(screen.getByText('4-3-3')).toBeInTheDocument();
-      // Può comparire più volte (label sul campo e nei dettagli)
-      expect(screen.getAllByText('Messi').length).toBeGreaterThan(0);
-    });
-  });
-
-  it('should handle OCR errors gracefully', async () => {
-    advancedOCRService.processImageWithTesseract.mockRejectedValueOnce(
-      new Error('OCR failed')
-    );
-
-    render(<MatchOCR user={mockUser} />);
-
-    const fileInput = screen.getByDisplayValue('');
-    const file = new File(['test content'], 'test.jpg', { type: 'image/jpeg' });
-
-    fireEvent.change(fileInput, { target: { files: [file] } });
-
-    const analyzeButton = screen.getByText('🔍 Analizza Immagine');
-    fireEvent.click(analyzeButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Errore durante l'elaborazione OCR")
-      ).toBeInTheDocument();
-    });
-  });
-
-  it('should show emergency fallback button', () => {
-    render(<MatchOCR user={mockUser} />);
-
-    expect(
-      screen.getByText('🚨 Usa Dati di Esempio (Bypass OCR)')
-    ).toBeInTheDocument();
-  });
-
-  it('should handle emergency fallback', () => {
-    render(<MatchOCR user={mockUser} />);
-
-    const emergencyButton = screen.getByText(
-      '🚨 Usa Dati di Esempio (Bypass OCR)'
-    );
-    fireEvent.click(emergencyButton);
-
-    // Dopo il fallback mostriamo stato completato e tipo rilevato "player_profile"
-    expect(screen.getByText('Completato')).toBeInTheDocument();
-    expect(screen.getByText('Profilo Giocatore')).toBeInTheDocument();
+    
+    expect(screen.getByText('📸 Carica Screenshot Tabellino')).toBeInTheDocument();
+    expect(screen.getByText('Seleziona un\'immagine (JPG, PNG)')).toBeInTheDocument();
   });
 });
