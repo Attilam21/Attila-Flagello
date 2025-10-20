@@ -13,6 +13,8 @@ import { realOCRService } from '../services/realOCRService';
 import { Camera, CheckCircle, AlertCircle } from 'lucide-react';
 
 const PlayerManagement = ({ user }) => {
+  console.log('🎯 PlayerManagement rendering with user:', user);
+  
   const [players, setPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,10 +35,18 @@ const PlayerManagement = ({ user }) => {
   // Live players from Firestore
   useEffect(() => {
     if (!user) return;
-    const unsub = listenToPlayers(user.uid, items => setPlayers(items));
-    return () => {
-      if (typeof unsub === 'function') unsub();
-    };
+    console.log('🔍 Setting up players listener for user:', user.uid);
+    try {
+      const unsub = listenToPlayers(user.uid, items => {
+        console.log('📊 Players updated:', items);
+        setPlayers(items);
+      });
+      return () => {
+        if (typeof unsub === 'function') unsub();
+      };
+    } catch (error) {
+      console.error('❌ Error setting up players listener:', error);
+    }
   }, [user]);
 
   const positions = [
@@ -702,8 +712,9 @@ const PlayerManagement = ({ user }) => {
     }
   };
 
-  return (
-    <div style={styles.container}>
+  try {
+    return (
+      <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
         <h1 style={styles.title}>👥 Gestione Rosa</h1>
@@ -1260,7 +1271,22 @@ const PlayerManagement = ({ user }) => {
         />
       )}
     </div>
-  );
+    );
+  } catch (error) {
+    console.error('❌ Error rendering PlayerManagement:', error);
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>❌ Errore</h1>
+          <p style={styles.subtitle}>Si è verificato un errore nel caricamento della pagina</p>
+        </div>
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <p>Errore: {error.message}</p>
+          <button onClick={() => window.location.reload()}>Ricarica Pagina</button>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default PlayerManagement;
