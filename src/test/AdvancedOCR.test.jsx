@@ -94,7 +94,8 @@ describe('Advanced OCR Integration', () => {
     await waitFor(() => {
       expect(screen.getByText('Formazione 2D')).toBeInTheDocument();
       expect(screen.getByText('4-3-3')).toBeInTheDocument();
-      expect(screen.getByText('Messi')).toBeInTheDocument();
+      // Può comparire più volte (label sul campo e nei dettagli)
+      expect(screen.getAllByText('Messi').length).toBeGreaterThan(0);
     });
   });
 
@@ -136,8 +137,8 @@ describe('Advanced OCR Integration', () => {
     );
     fireEvent.click(emergencyButton);
 
-    expect(
-      screen.getByText('Dati di emergenza caricati (OCR bypassato)')
-    ).toBeInTheDocument();
+    // Dopo il fallback mostriamo stato completato e tipo rilevato "player_profile"
+    expect(screen.getByText('Completato')).toBeInTheDocument();
+    expect(screen.getByText('Profilo Giocatore')).toBeInTheDocument();
   });
 });
