@@ -40,15 +40,23 @@ describe('Advanced OCR Integration', () => {
 
   it('should render MatchOCR component', () => {
     render(<MatchOCR user={mockUser} />);
-    
-    expect(screen.getByText('📸 Carica Screenshot Tabellino')).toBeInTheDocument();
-    expect(screen.getByText('✍️ Inserimento Manuale Statistiche Partita')).toBeInTheDocument();
+
+    expect(
+      screen.getByText('📸 Carica Screenshot Tabellino')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('✍️ Inserimento Manuale Statistiche Partita')
+    ).toBeInTheDocument();
   });
 
   it('should display upload interface', () => {
     render(<MatchOCR user={mockUser} />);
-    
-    expect(screen.getByText('📸 Carica Screenshot Tabellino')).toBeInTheDocument();
-    expect(screen.getByText('Seleziona un\'immagine (JPG, PNG)')).toBeInTheDocument();
+
+    expect(
+      screen.getByText('📸 Carica Screenshot Tabellino')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Seleziona un'immagine (JPG, PNG)")
+    ).toBeInTheDocument();
   });
 });

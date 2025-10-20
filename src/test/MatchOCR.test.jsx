@@ -27,14 +27,20 @@ describe('MatchOCR', () => {
 
   it('renders upload form correctly', () => {
     render(<MatchOCR user={mockUser} />);
-    
-    expect(screen.getByText('📸 Carica Screenshot Tabellino')).toBeInTheDocument();
-    expect(screen.getByText('✍️ Inserimento Manuale Statistiche Partita')).toBeInTheDocument();
+
+    expect(
+      screen.getByText('📸 Carica Screenshot Tabellino')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('✍️ Inserimento Manuale Statistiche Partita')
+    ).toBeInTheDocument();
   });
 
   it('displays manual input section', () => {
     render(<MatchOCR user={mockUser} />);
-    
-    expect(screen.getByText('✍️ Inserimento Manuale Statistiche Partita')).toBeInTheDocument();
+
+    expect(
+      screen.getByText('✍️ Inserimento Manuale Statistiche Partita')
+    ).toBeInTheDocument();
   });
 });
