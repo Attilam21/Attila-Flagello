@@ -107,8 +107,10 @@ const MatchOCR = ({ user }) => {
       console.log('🔍 Starting OCR analysis...');
 
       // In test, usa il servizio OCR avanzato mockato per evitare Tesseract e I/O
-      const isTestEnv = (import.meta?.env?.MODE === 'test') ||
-        (typeof process !== 'undefined' && (process.env?.VITEST || process.env?.NODE_ENV === 'test'));
+      const isTestEnv =
+        import.meta?.env?.MODE === 'test' ||
+        (typeof process !== 'undefined' &&
+          (process.env?.VITEST || process.env?.NODE_ENV === 'test'));
       let result;
       if (isTestEnv) {
         console.log('🧪 Test mode detected - using advancedOCRService mock');
@@ -236,7 +238,7 @@ const MatchOCR = ({ user }) => {
         setOcrText('Dati di esempio caricati (OCR timeout)');
       } else {
         setUploadError(errorMessage);
-      setOcrStatus('error');
+        setOcrStatus('error');
         setOcrError(errorMessage);
       }
 
@@ -398,7 +400,14 @@ const MatchOCR = ({ user }) => {
           onChange={handleFileChange}
           style={styles.input}
         />
-        <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '-0.5rem', marginBottom: '0.75rem' }}>
+        <div
+          style={{
+            fontSize: '0.875rem',
+            color: '#6b7280',
+            marginTop: '-0.5rem',
+            marginBottom: '0.75rem',
+          }}
+        >
           Seleziona un'immagine (JPG, PNG)
         </div>
 
@@ -444,13 +453,13 @@ const MatchOCR = ({ user }) => {
               : '🔍 Analizza Immagine'}
           </button>
 
-        <button
-          onClick={handleUpload}
-          disabled={!file || uploading || ocrStatus === 'processing'}
+          <button
+            onClick={handleUpload}
+            disabled={!file || uploading || ocrStatus === 'processing'}
             className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {uploading ? '⏳ Caricamento...' : '🚀 Carica su Firebase'}
-        </button>
+          >
+            {uploading ? '⏳ Caricamento...' : '🚀 Carica su Firebase'}
+          </button>
         </div>
 
         {/* Pulsante di emergenza per bypassare OCR */}
@@ -568,7 +577,11 @@ const MatchOCR = ({ user }) => {
                   />
 
                   {/* Analisi AI della squadra */}
-                  {!(import.meta?.env?.MODE === 'test' || (typeof process !== 'undefined' && (process.env?.VITEST || process.env?.NODE_ENV === 'test')) ) && (
+                  {!(
+                    import.meta?.env?.MODE === 'test' ||
+                    (typeof process !== 'undefined' &&
+                      (process.env?.VITEST || process.env?.NODE_ENV === 'test'))
+                  ) && (
                     <div className="mt-6">
                       <h3 className="text-lg font-semibold text-gray-800 mb-4">
                         🧠 Analisi AI Squadra
