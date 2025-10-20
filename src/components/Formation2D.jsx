@@ -1,6 +1,40 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 
-const Formation2D = ({ formation, players, showDetails = false }) => {
+const Formation2D = ({ formation, players, showDetails = false, onPlayerMove, editable = false }) => {
+  const [draggedPlayer, setDraggedPlayer] = useState(null);
+  const [playerPositions, setPlayerPositions] = useState({});
+
+  // Funzioni per drag-and-drop
+  const handleDragStart = useCallback((e, player) => {
+    if (!editable) return;
+    setDraggedPlayer(player);
+    e.dataTransfer.effectAllowed = 'move';
+  }, [editable]);
+
+  const handleDragOver = useCallback((e) => {
+    if (!editable) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  }, [editable]);
+
+  const handleDrop = useCallback((e, newPosition) => {
+    if (!editable || !draggedPlayer) return;
+    e.preventDefault();
+    
+    const updatedPositions = {
+      ...playerPositions,
+      [draggedPlayer.id]: newPosition
+    };
+    
+    setPlayerPositions(updatedPositions);
+    
+    if (onPlayerMove) {
+      onPlayerMove(draggedPlayer.id, newPosition);
+    }
+    
+    setDraggedPlayer(null);
+  }, [editable, draggedPlayer, playerPositions, onPlayerMove]);
+
   const styles = {
     container: {
       backgroundColor: '#1F2937',
@@ -41,13 +75,29 @@ const Formation2D = ({ formation, players, showDetails = false }) => {
       fontSize: '0.75rem',
       fontWeight: '500',
       border: '1px solid #374151',
-      cursor: 'pointer',
+      cursor: editable ? 'grab' : 'pointer',
       transition: 'all 0.2s',
+      userSelect: 'none',
     },
     playerHover: {
       backgroundColor: '#10B981',
       color: 'white',
       transform: 'scale(1.05)',
+    },
+    playerDragging: {
+      backgroundColor: '#F59E0B',
+      color: 'white',
+      transform: 'scale(1.1)',
+      zIndex: 1000,
+      opacity: 0.8,
+    },
+    dropZone: {
+      position: 'absolute',
+      border: '2px dashed #10B981',
+      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+      borderRadius: '0.25rem',
+      minWidth: '60px',
+      minHeight: '30px',
     },
     playersList: {
       display: 'grid',

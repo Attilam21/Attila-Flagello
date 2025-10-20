@@ -29,8 +29,10 @@ ChartJS.register(
 const AdvancedStats = ({ user }) => {
   const [stats, setStats] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState('last30days');
+  const [selectedMatch, setSelectedMatch] = useState('all');
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [chartData, setChartData] = useState(null);
+  const [availableMatches, setAvailableMatches] = useState([]);
 
   useEffect(() => {
     loadStats();
@@ -574,17 +576,31 @@ const AdvancedStats = ({ user }) => {
 
       {/* Controls */}
       <div style={styles.controls}>
-        <select
-          style={styles.select}
-          value={selectedPeriod}
-          onChange={e => setSelectedPeriod(e.target.value)}
-        >
-          {periods.map(period => (
-            <option key={period.value} value={period.value}>
-              {period.label}
-            </option>
-          ))}
-        </select>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <select
+            style={styles.select}
+            value={selectedPeriod}
+            onChange={e => setSelectedPeriod(e.target.value)}
+          >
+            <option value="last7days">Ultimi 7 giorni</option>
+            <option value="last30days">Ultimi 30 giorni</option>
+            <option value="last90days">Ultimi 90 giorni</option>
+            <option value="all">Tutto il periodo</option>
+          </select>
+          
+          <select
+            style={styles.select}
+            value={selectedMatch}
+            onChange={e => setSelectedMatch(e.target.value)}
+          >
+            <option value="all">Tutte le partite</option>
+            {availableMatches.map(match => (
+              <option key={match.id} value={match.id}>
+                {match.opponent} - {match.result} ({match.date})
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Team Stats */}
