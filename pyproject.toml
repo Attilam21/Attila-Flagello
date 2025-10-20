@@ -9,7 +9,7 @@ description = "Progetto operativo per automazione agenti su Cursor"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-  { name = "Attila", email = "" }
+  { name = "Attila", email = "attilam21@example.com" }
 ]
 license = { text = "UNLICENSED" }
 keywords = ["cursor", "automation", "agents"]
