@@ -13,7 +13,9 @@ vi.mock('../services/firebaseClient', () => ({
   auth: { currentUser: null },
   listenToOCRResults: vi.fn().mockReturnValue(() => {}),
   listenToMatchStatus: vi.fn().mockReturnValue(() => {}),
+  listenToMatchHistory: vi.fn().mockReturnValue(() => {}),
   uploadMatchImage: vi.fn().mockResolvedValue('https://example.com/image.jpg'),
+  saveMatchStats: vi.fn().mockResolvedValue(),
 }));
 
 vi.mock('../services/ocrService', () => ({

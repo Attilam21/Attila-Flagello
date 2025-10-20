@@ -7,6 +7,8 @@ vi.mock('../services/firebaseClient', () => ({
   uploadMatchImage: vi.fn().mockResolvedValue('https://example.com/image.jpg'),
   listenToOCRResults: vi.fn().mockReturnValue(() => {}),
   listenToMatchStatus: vi.fn().mockReturnValue(() => {}),
+  listenToMatchHistory: vi.fn().mockReturnValue(() => {}),
+  saveMatchStats: vi.fn().mockResolvedValue(),
 }));
 
 // Mock OCR Service
