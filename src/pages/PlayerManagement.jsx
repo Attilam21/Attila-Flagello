@@ -19,6 +19,8 @@ const PlayerManagement = ({ user }) => {
   const [uploadStatus, setUploadStatus] = useState(null);
   const [ocrResult, setOcrResult] = useState(null);
   const [showOCRModal, setShowOCRModal] = useState(false);
+  const [playerImages, setPlayerImages] = useState([]);
+  const [currentImageType, setCurrentImageType] = useState('profile');
 
   // Carica giocatori esistenti
   useEffect(() => {
@@ -255,8 +257,14 @@ const PlayerManagement = ({ user }) => {
     // OCR Styles
     uploadSection: {
       display: 'flex',
-      alignItems: 'center',
+      flexDirection: 'column',
       gap: '0.5rem',
+    },
+
+    uploadButtons: {
+      display: 'flex',
+      gap: '0.5rem',
+      flexWrap: 'wrap',
     },
 
     modalOverlay: {
@@ -337,13 +345,13 @@ const PlayerManagement = ({ user }) => {
       border: '1px solid #E5E7EB',
     },
 
-    statsGrid: {
+    ocrStatsGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
       gap: '0.5rem',
     },
 
-    statItem: {
+    ocrStatItem: {
       display: 'flex',
       justifyContent: 'space-between',
       padding: '0.5rem',
@@ -351,12 +359,12 @@ const PlayerManagement = ({ user }) => {
       borderRadius: '0.375rem',
     },
 
-    statLabel: {
+    ocrStatLabel: {
       fontWeight: '500',
       color: '#374151',
     },
 
-    statValue: {
+    ocrStatValue: {
       fontWeight: 'bold',
       color: '#1F2937',
     },
@@ -486,6 +494,52 @@ const PlayerManagement = ({ user }) => {
       border: 'none',
       fontWeight: '500',
       cursor: 'pointer',
+    },
+
+    errorSection: {
+      textAlign: 'center',
+      padding: '2rem',
+    },
+
+    errorIcon: {
+      fontSize: '3rem',
+      marginBottom: '1rem',
+    },
+
+    errorTitle: {
+      fontSize: '1.25rem',
+      fontWeight: 'bold',
+      color: '#EF4444',
+      marginBottom: '1rem',
+    },
+
+    errorMessage: {
+      fontSize: '1rem',
+      color: '#6B7280',
+      marginBottom: '1.5rem',
+      lineHeight: '1.5',
+    },
+
+    errorTips: {
+      backgroundColor: '#F9FAFB',
+      borderRadius: '0.5rem',
+      padding: '1rem',
+      border: '1px solid #E5E7EB',
+      textAlign: 'left',
+    },
+
+    tipsTitle: {
+      fontSize: '1rem',
+      fontWeight: 'bold',
+      color: '#374151',
+      marginBottom: '0.5rem',
+    },
+
+    tipsList: {
+      margin: 0,
+      paddingLeft: '1.5rem',
+      color: '#6B7280',
+      lineHeight: '1.5',
     },
     playerHeader: {
       display: 'flex',
@@ -637,13 +691,23 @@ const PlayerManagement = ({ user }) => {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Reset input
+    event.target.value = '';
+
     setIsUploading(true);
     setUploadStatus('processing');
     setOcrResult(null);
 
     try {
       console.log('🔍 Processing player image with OCR...');
-      const result = await realOCRService.processImage(file);
+      
+      // Timeout di sicurezza per evitare caricamento infinito
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('OCR timeout - immagine troppo complessa')), 20000)
+      );
+      
+      const ocrPromise = realOCRService.processImage(file);
+      const result = await Promise.race([ocrPromise, timeoutPromise]);
       
       setOcrResult(result);
       setUploadStatus('success');
@@ -652,7 +716,21 @@ const PlayerManagement = ({ user }) => {
       console.log('✅ OCR completed:', result);
     } catch (error) {
       console.error('❌ OCR failed:', error);
+      
+      // Gestione errori più specifica
+      let errorMessage = 'Errore sconosciuto';
+      if (error.message.includes('timeout')) {
+        errorMessage = 'L\'immagine è troppo complessa. Prova con una foto più chiara e semplice.';
+      } else if (error.message.includes('network')) {
+        errorMessage = 'Errore di connessione. Riprova più tardi.';
+      } else if (error.message.includes('format')) {
+        errorMessage = 'Formato immagine non supportato. Usa JPG o PNG.';
+      } else {
+        errorMessage = 'Non è stato possibile analizzare l\'immagine. Prova con una foto più chiara.';
+      }
+      
       setUploadStatus('error');
+      setOcrResult({ error: errorMessage });
     } finally {
       setIsUploading(false);
     }
@@ -737,28 +815,82 @@ const PlayerManagement = ({ user }) => {
         </select>
         
         <div style={styles.uploadSection}>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            style={{ display: 'none' }}
-            id="player-image-upload"
-          />
-          <label
-            htmlFor="player-image-upload"
-            style={{
-              ...styles.addButton,
-              backgroundColor: '#10B981',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              cursor: isUploading ? 'not-allowed' : 'pointer',
-              opacity: isUploading ? 0.7 : 1
-            }}
-          >
-            <Camera size={20} />
-            {isUploading ? '⏳ Analizzando...' : '📸 Carica Screenshot Giocatore'}
-          </label>
+          <div style={styles.uploadButtons}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ display: 'none' }}
+              id="player-profile-upload"
+            />
+            <label
+              htmlFor="player-profile-upload"
+              style={{
+                ...styles.addButton,
+                backgroundColor: '#10B981',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                cursor: isUploading ? 'not-allowed' : 'pointer',
+                opacity: isUploading ? 0.7 : 1,
+                fontSize: '0.875rem',
+                padding: '0.5rem 1rem'
+              }}
+            >
+              <Camera size={16} />
+              {isUploading ? '⏳ Analizzando...' : '📸 Profilo Giocatore'}
+            </label>
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ display: 'none' }}
+              id="player-stats-upload"
+            />
+            <label
+              htmlFor="player-stats-upload"
+              style={{
+                ...styles.addButton,
+                backgroundColor: '#3B82F6',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                cursor: isUploading ? 'not-allowed' : 'pointer',
+                opacity: isUploading ? 0.7 : 1,
+                fontSize: '0.875rem',
+                padding: '0.5rem 1rem'
+              }}
+            >
+              <Camera size={16} />
+              📊 Statistiche
+            </label>
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ display: 'none' }}
+              id="player-abilities-upload"
+            />
+            <label
+              htmlFor="player-abilities-upload"
+              style={{
+                ...styles.addButton,
+                backgroundColor: '#8B5CF6',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                cursor: isUploading ? 'not-allowed' : 'pointer',
+                opacity: isUploading ? 0.7 : 1,
+                fontSize: '0.875rem',
+                padding: '0.5rem 1rem'
+              }}
+            >
+              <Camera size={16} />
+              🎯 Abilità
+            </label>
+          </div>
         </div>
         
         <button
@@ -960,7 +1092,9 @@ const PlayerManagement = ({ user }) => {
         <div style={styles.modalOverlay}>
           <div style={styles.modalContent}>
             <div style={styles.modalHeader}>
-              <h2 style={styles.modalTitle}>🔍 Risultato OCR Giocatore</h2>
+              <h2 style={styles.modalTitle}>
+                {ocrResult.error ? '❌ Errore OCR' : '🔍 Risultato OCR Giocatore'}
+              </h2>
               <button
                 onClick={() => setShowOCRModal(false)}
                 style={styles.closeButton}
@@ -969,73 +1103,93 @@ const PlayerManagement = ({ user }) => {
               </button>
             </div>
             
-            <div style={styles.ocrResults}>
-              <div style={styles.ocrSection}>
-                <h3 style={styles.ocrSectionTitle}>📊 Dati Estratti:</h3>
-                <div style={styles.ocrData}>
-                  <div style={styles.ocrItem}>
-                    <strong>Nome:</strong> {ocrResult.playerName || 'N/A'}
-                  </div>
-                  <div style={styles.ocrItem}>
-                    <strong>Rating:</strong> {ocrResult.rating || 'N/A'}
-                  </div>
-                  <div style={styles.ocrItem}>
-                    <strong>Posizione:</strong> {ocrResult.position || 'N/A'}
-                  </div>
-                  <div style={styles.ocrItem}>
-                    <strong>Età:</strong> {ocrResult.age || 'N/A'}
-                  </div>
-                  <div style={styles.ocrItem}>
-                    <strong>Nazionalità:</strong> {ocrResult.nationality || 'N/A'}
-                  </div>
-                  <div style={styles.ocrItem}>
-                    <strong>Squadra:</strong> {ocrResult.team || 'N/A'}
-                  </div>
+            {ocrResult.error ? (
+              <div style={styles.errorSection}>
+                <div style={styles.errorIcon}>⚠️</div>
+                <h3 style={styles.errorTitle}>Errore nell'analisi dell'immagine</h3>
+                <p style={styles.errorMessage}>{ocrResult.error}</p>
+                <div style={styles.errorTips}>
+                  <h4 style={styles.tipsTitle}>💡 Suggerimenti:</h4>
+                  <ul style={styles.tipsList}>
+                    <li>Assicurati che l'immagine sia ben illuminata</li>
+                    <li>Evita riflessi e ombre</li>
+                    <li>Usa immagini ad alta risoluzione</li>
+                    <li>Mantieni il testo orizzontale</li>
+                    <li>Prova con screenshot invece di foto</li>
+                  </ul>
                 </div>
               </div>
-
-              {ocrResult.stats && Object.keys(ocrResult.stats).length > 0 && (
+            ) : (
+              <div style={styles.ocrResults}>
                 <div style={styles.ocrSection}>
-                  <h3 style={styles.ocrSectionTitle}>⚽ Statistiche:</h3>
-                  <div style={styles.statsGrid}>
-                    {Object.entries(ocrResult.stats).map(([key, value]) => (
-                      <div key={key} style={styles.statItem}>
-                        <span style={styles.statLabel}>{key}:</span>
-                        <span style={styles.statValue}>{value}</span>
-                      </div>
-                    ))}
+                  <h3 style={styles.ocrSectionTitle}>📊 Dati Estratti:</h3>
+                  <div style={styles.ocrData}>
+                    <div style={styles.ocrItem}>
+                      <strong>Nome:</strong> {ocrResult.playerName || 'N/A'}
+                    </div>
+                    <div style={styles.ocrItem}>
+                      <strong>Rating:</strong> {ocrResult.rating || 'N/A'}
+                    </div>
+                    <div style={styles.ocrItem}>
+                      <strong>Posizione:</strong> {ocrResult.position || 'N/A'}
+                    </div>
+                    <div style={styles.ocrItem}>
+                      <strong>Età:</strong> {ocrResult.age || 'N/A'}
+                    </div>
+                    <div style={styles.ocrItem}>
+                      <strong>Nazionalità:</strong> {ocrResult.nationality || 'N/A'}
+                    </div>
+                    <div style={styles.ocrItem}>
+                      <strong>Squadra:</strong> {ocrResult.team || 'N/A'}
+                    </div>
                   </div>
                 </div>
-              )}
 
-              {ocrResult.abilities && ocrResult.abilities.length > 0 && (
-                <div style={styles.ocrSection}>
-                  <h3 style={styles.ocrSectionTitle}>🎯 Abilità:</h3>
-                  <div style={styles.abilitiesList}>
-                    {ocrResult.abilities.map((ability, index) => (
-                      <span key={index} style={styles.abilityTag}>
-                        {ability}
-                      </span>
-                    ))}
+                {ocrResult.stats && Object.keys(ocrResult.stats).length > 0 && (
+                  <div style={styles.ocrSection}>
+                    <h3 style={styles.ocrSectionTitle}>⚽ Statistiche:</h3>
+                    <div style={styles.ocrStatsGrid}>
+                      {Object.entries(ocrResult.stats).map(([key, value]) => (
+                        <div key={key} style={styles.ocrStatItem}>
+                          <span style={styles.ocrStatLabel}>{key}:</span>
+                          <span style={styles.ocrStatValue}>{value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+
+                {ocrResult.abilities && ocrResult.abilities.length > 0 && (
+                  <div style={styles.ocrSection}>
+                    <h3 style={styles.ocrSectionTitle}>🎯 Abilità:</h3>
+                    <div style={styles.abilitiesList}>
+                      {ocrResult.abilities.map((ability, index) => (
+                        <span key={index} style={styles.abilityTag}>
+                          {ability}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div style={styles.modalActions}>
               <button
                 onClick={() => setShowOCRModal(false)}
                 style={styles.cancelButton}
               >
-                Annulla
+                {ocrResult.error ? 'Chiudi' : 'Annulla'}
               </button>
-              <button
-                onClick={handleAddPlayerFromOCR}
-                style={styles.confirmButton}
-              >
-                <CheckCircle size={20} />
-                Aggiungi Giocatore
-              </button>
+              {!ocrResult.error && (
+                <button
+                  onClick={handleAddPlayerFromOCR}
+                  style={styles.confirmButton}
+                >
+                  <CheckCircle size={20} />
+                  Aggiungi Giocatore
+                </button>
+              )}
             </div>
           </div>
         </div>
