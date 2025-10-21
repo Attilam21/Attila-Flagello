@@ -127,9 +127,6 @@ function App() {
     case 'statistiche-avanzate':
       console.log('📊 Rendering Statistiche Avanzate page');
       return <StatisticheAvanzate onPageChange={handlePageChange} />;
-      case 'statistiche':
-        console.log('📊 Rendering Statistiche page');
-        return <div className="page-placeholder">📊 Statistiche Avanzate - In sviluppo</div>;
       case 'suggerimenti':
         console.log('💡 Rendering Suggerimenti page');
         return <div className="page-placeholder">💡 Suggerimenti Formazione - In sviluppo</div>;

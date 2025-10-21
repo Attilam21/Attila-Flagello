@@ -25,14 +25,230 @@ import {
 } from 'lucide-react';
 import { Card, Button, Badge, EmptyState } from '../components/ui';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/Table';
+import { auth } from '../services/firebaseClient';
+import { 
+  collection, 
+  query, 
+  where, 
+  orderBy, 
+  limit, 
+  getDocs, 
+  doc, 
+  getDoc,
+  setDoc
+} from 'firebase/firestore';
+import { db } from '../services/firebaseClient';
 
 const StatisticheAvanzate = ({ onPageChange }) => {
   // State management
   const [selectedRange, setSelectedRange] = useState('5');
   const [isLoading, setIsLoading] = useState(false);
   const [hasData, setHasData] = useState(true);
+  const [user, setUser] = useState(null);
   
-  // Mock data - in production this will come from Firestore
+  // Firestore data states
+  const [matchesData, setMatchesData] = useState([]);
+  const [playersData, setPlayersData] = useState([]);
+  const [tasksData, setTasksData] = useState([]);
+  
+  // Firestore data loading functions
+  const loadMatchesData = async (userId, range) => {
+    try {
+      const matchesRef = collection(db, 'matches');
+      const q = query(
+        matchesRef,
+        where('userId', '==', userId),
+        orderBy('date', 'desc'),
+        limit(parseInt(range))
+      );
+      const querySnapshot = await getDocs(q);
+      const matches = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setMatchesData(matches);
+      return matches;
+    } catch (error) {
+      console.error('Error loading matches:', error);
+      return [];
+    }
+  };
+
+  const loadPlayersData = async (userId) => {
+    try {
+      const playersRef = collection(db, 'players');
+      const q = query(playersRef, where('userId', '==', userId));
+      const querySnapshot = await getDocs(q);
+      const players = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setPlayersData(players);
+      return players;
+    } catch (error) {
+      console.error('Error loading players:', error);
+      return [];
+    }
+  };
+
+  const loadTasksData = async (userId) => {
+    try {
+      const tasksRef = collection(db, 'tasks');
+      const q = query(tasksRef, where('userId', '==', userId));
+      const querySnapshot = await getDocs(q);
+      const tasks = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setTasksData(tasks);
+      return tasks;
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+      return [];
+    }
+  };
+
+  const calculateKPIs = (matches) => {
+    if (!matches || matches.length === 0) return {};
+    
+    const totalMatches = matches.length;
+    const totals = matches.reduce((acc, match) => {
+      return {
+        possession: acc.possession + (match.possession || 0),
+        shots: acc.shots + (match.shots || 0),
+        shotsOnTarget: acc.shotsOnTarget + (match.shotsOnTarget || 0),
+        passAccuracy: acc.passAccuracy + (match.passAccuracy || 0),
+        corners: acc.corners + (match.corners || 0),
+        fouls: acc.fouls + (match.fouls || 0),
+        goalsScored: acc.goalsScored + (match.goalsScored || 0),
+        goalsConceded: acc.goalsConceded + (match.goalsConceded || 0)
+      };
+    }, {
+      possession: 0, shots: 0, shotsOnTarget: 0, passAccuracy: 0,
+      corners: 0, fouls: 0, goalsScored: 0, goalsConceded: 0
+    });
+
+    // Calculate averages and trends
+    const averages = {
+      possession: Math.round(totals.possession / totalMatches),
+      shots: Math.round(totals.shots / totalMatches),
+      shotsOnTarget: Math.round(totals.shotsOnTarget / totalMatches),
+      passAccuracy: Math.round(totals.passAccuracy / totalMatches),
+      corners: Math.round(totals.corners / totalMatches),
+      fouls: Math.round(totals.fouls / totalMatches),
+      goalsScored: Math.round(totals.goalsScored / totalMatches),
+      goalsConceded: Math.round(totals.goalsConceded / totalMatches)
+    };
+
+    // Calculate trends (simplified - compare with previous range)
+    const trends = {};
+    Object.keys(averages).forEach(key => {
+      const currentValue = averages[key];
+      const previousValue = currentValue * 0.9; // Mock previous value
+      const change = Math.round(((currentValue - previousValue) / previousValue) * 100);
+      
+      trends[key] = {
+        value: currentValue,
+        trend: change > 0 ? 'up' : change < 0 ? 'down' : 'neutral',
+        change: Math.abs(change)
+      };
+    });
+
+    return trends;
+  };
+
+  const generateTasksFromAnalysis = (matches, players) => {
+    const tasks = [];
+    
+    if (!matches || matches.length === 0) return tasks;
+
+    // Analyze possession
+    const avgPossession = matches.reduce((acc, match) => acc + (match.possession || 0), 0) / matches.length;
+    if (avgPossession < 50) {
+      tasks.push({
+        id: `task-${Date.now()}-1`,
+        title: 'Migliora il controllo del possesso palla',
+        description: 'La squadra ha una media possesso bassa. Concentrati sulla costruzione del gioco.',
+        role: 'Centrocampisti',
+        priority: avgPossession < 40 ? 'Alta' : 'Media',
+        impact: 'Alto',
+        category: 'Tattica'
+      });
+    }
+
+    // Analyze defensive errors
+    const avgGoalsConceded = matches.reduce((acc, match) => acc + (match.goalsConceded || 0), 0) / matches.length;
+    if (avgGoalsConceded > 2) {
+      tasks.push({
+        id: `task-${Date.now()}-2`,
+        title: 'Rafforza la fase difensiva',
+        description: 'Troppi gol subiti. Migliora la compattezza difensiva.',
+        role: 'Difensori',
+        priority: avgGoalsConceded > 3 ? 'Alta' : 'Media',
+        impact: 'Alto',
+        category: 'Difesa'
+      });
+    }
+
+    // Analyze offensive efficiency
+    const avgShots = matches.reduce((acc, match) => acc + (match.shots || 0), 0) / matches.length;
+    const avgGoals = matches.reduce((acc, match) => acc + (match.goalsScored || 0), 0) / matches.length;
+    const efficiency = avgGoals / avgShots;
+    
+    if (efficiency < 0.15) {
+      tasks.push({
+        id: `task-${Date.now()}-3`,
+        title: 'Migliora l\'efficacia offensiva',
+        description: 'Bassa conversione tiri-gol. Lavora sulla finalizzazione.',
+        role: 'Attaccanti',
+        priority: efficiency < 0.1 ? 'Alta' : 'Media',
+        impact: 'Medio',
+        category: 'Attacco'
+      });
+    }
+
+    return tasks;
+  };
+
+  // Load data on component mount and when range changes
+  useEffect(() => {
+    const loadData = async () => {
+      if (!auth.currentUser) return;
+      
+      setIsLoading(true);
+      const userId = auth.currentUser.uid;
+      
+      try {
+        const [matches, players, tasks] = await Promise.all([
+          loadMatchesData(userId, selectedRange),
+          loadPlayersData(userId),
+          loadTasksData(userId)
+        ]);
+
+        if (matches.length === 0) {
+          setHasData(false);
+        } else {
+          setHasData(true);
+          // Calculate KPIs from real data
+          const calculatedKPIs = calculateKPIs(matches);
+          setKpiData(calculatedKPIs);
+          
+          // Generate tasks from analysis
+          const generatedTasks = generateTasksFromAnalysis(matches, players);
+          setSuggestedTasks(generatedTasks);
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+        setHasData(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [selectedRange]);
+
+  // Mock data - fallback when no real data available
   const [kpiData, setKpiData] = useState({
     possession: { value: 65, trend: 'up', change: 5 },
     shots: { value: 14, trend: 'up', change: 2 },
@@ -192,12 +408,58 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     console.log('Creare contromisure');
   };
 
-  const handleAddAllTasks = () => {
-    console.log('Aggiungi tutti i task');
+
+  const handleAddTask = async (task) => {
+    try {
+      if (!auth.currentUser) return;
+      
+      const userId = auth.currentUser.uid;
+      const taskRef = doc(collection(db, 'tasks'));
+      
+      const taskData = {
+        ...task,
+        userId,
+        createdAt: new Date(),
+        status: 'pending',
+        source: 'statistiche-avanzate'
+      };
+      
+      await setDoc(taskRef, taskData);
+      console.log('Task aggiunto con successo:', task.title);
+      
+      // Reload tasks
+      await loadTasksData(userId);
+      
+    } catch (error) {
+      console.error('Errore nell\'aggiungere il task:', error);
+    }
   };
 
-  const handleAddTask = (task) => {
-    console.log('Aggiungi task:', task);
+  const handleAddAllTasks = async () => {
+    try {
+      if (!auth.currentUser) return;
+      
+      const userId = auth.currentUser.uid;
+      
+      for (const task of suggestedTasks) {
+        const taskRef = doc(collection(db, 'tasks'));
+        const taskData = {
+          ...task,
+          userId,
+          createdAt: new Date(),
+          status: 'pending',
+          source: 'statistiche-avanzate'
+        };
+        
+        await setDoc(taskRef, taskData);
+      }
+      
+      console.log('Tutti i task aggiunti con successo');
+      await loadTasksData(userId);
+      
+    } catch (error) {
+      console.error('Errore nell\'aggiungere tutti i task:', error);
+    }
   };
 
   const handlePlayerClick = (player) => {

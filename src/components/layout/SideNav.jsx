@@ -18,9 +18,8 @@ const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
   { id: 'rosa', label: 'Rosa', icon: Users },
   { id: 'carica-partita', label: 'Carica Ultima Partita', icon: Upload },
   { id: 'statistiche-avanzate', label: 'Statistiche Avanzate', icon: BarChart3 },
-    { id: 'statistiche', label: 'Statistiche Avanzate', icon: BarChart3 },
-    { id: 'suggerimenti', label: 'Suggerimenti Formazione', icon: Lightbulb },
-    { id: 'contromisure', label: 'Contromisure', icon: Shield },
+  { id: 'suggerimenti', label: 'Suggerimenti Formazione', icon: Lightbulb },
+  { id: 'contromisure', label: 'Contromisure', icon: Shield },
   ];
 
   return (
