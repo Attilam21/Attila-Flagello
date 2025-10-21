@@ -226,30 +226,30 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         }
       };
 
-      // Processa risultati per tipo
-      if (Array.isArray(geminiResults)) {
-        geminiResults.forEach((result) => {
-        if (result && !result.error) {
-          if (result.type === 'stats' && result.data) {
-            aggregatedData.stats = { ...aggregatedData.stats, ...result.data };
-            setOcrStatus(prev => ({ ...prev, [result.type]: 'completed' }));
-          } else if (result.type === 'ratings' && result.data) {
-            aggregatedData.ratings = [...aggregatedData.ratings, ...result.data];
-            setOcrStatus(prev => ({ ...prev, [result.type]: 'completed' }));
-          } else if (result.type === 'heatmapOffensive' && result.data) {
-            aggregatedData.heatmaps.offensive = result.data;
-            setOcrStatus(prev => ({ ...prev, [result.type]: 'completed' }));
-          } else if (result.type === 'heatmapDefensive' && result.data) {
-            aggregatedData.heatmaps.defensive = result.data;
-            setOcrStatus(prev => ({ ...prev, [result.type]: 'completed' }));
+      // Processa risultati per tipo (geminiResults è un oggetto, non un array)
+      if (geminiResults && typeof geminiResults === 'object') {
+        Object.entries(geminiResults).forEach(([type, result]) => {
+          if (result && !result.error) {
+            if (type === 'stats' && result.data) {
+              aggregatedData.stats = { ...aggregatedData.stats, ...result.data };
+              setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
+            } else if (type === 'ratings' && result.data) {
+              aggregatedData.ratings = [...aggregatedData.ratings, ...result.data];
+              setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
+            } else if (type === 'heatmapOffensive' && result.data) {
+              aggregatedData.heatmaps.offensive = result.data;
+              setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
+            } else if (type === 'heatmapDefensive' && result.data) {
+              aggregatedData.heatmaps.defensive = result.data;
+              setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
+            }
+          } else {
+            console.error(`❌ Errore Gemini per ${type}:`, result?.error);
+            setOcrStatus(prev => ({ ...prev, [type]: 'error' }));
           }
-        } else {
-          console.error(`❌ Errore Gemini per ${result.type}:`, result?.error);
-          setOcrStatus(prev => ({ ...prev, [result.type]: 'error' }));
-        }
-      });
+        });
       } else {
-        console.error('❌ geminiResults non è un array:', geminiResults);
+        console.error('❌ geminiResults non è un oggetto valido:', geminiResults);
       }
 
       console.log('🤖 Gemini: Dati aggregati:', aggregatedData);
