@@ -36,6 +36,10 @@ service cloud.firestore {
       match /ocr/{docId} {
         allow read, write: if isOwner(userId);
       }
+
+      match /data/{docId} {
+        allow read, write: if isOwner(userId);
+      }
     }
 
     // Dashboard stats and analytics per user

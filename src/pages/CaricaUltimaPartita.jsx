@@ -355,6 +355,14 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     };
   };
 
+  // Handler per test demo
+  const handleDemoTest = () => {
+    const demoData = generateDemoData();
+    setMatchData(demoData);
+    setActiveSection('analysis');
+    alert('✅ Dati demo caricati! Ora puoi testare l\'interfaccia completa.');
+  };
+
   // Renderizza uploader immagini
   const renderImageUploader = () => {
     const imageTypes = [
@@ -455,17 +463,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
           </button>
           
           <button 
-            onClick={() => {
-              const fallbackData = {
-                stats: { possesso: 65, tiri: 15, tiriInPorta: 8 },
-                ratings: [
-                  { player: "Giocatore 1", rating: 7.5, notes: "Dati demo", isProfiled: false }
-                ],
-                heatmaps: { offensive: null, defensive: null }
-              };
-              setMatchData(fallbackData);
-              setActiveSection('analysis');
-            }}
+            onClick={handleDemoTest}
             className="btn btn-secondary"
           >
             <Zap size={16} />
