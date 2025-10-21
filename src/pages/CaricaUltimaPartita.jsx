@@ -27,6 +27,9 @@ import {
 } from 'lucide-react';
 import { Card, Button, Badge, EmptyState } from '../components/ui';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/Table';
+import { auth, storage, db } from '../services/firebaseClient';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc, doc, onSnapshot } from 'firebase/firestore';
 
 const CaricaUltimaPartita = ({ onPageChange }) => {
   console.log('📸 CaricaUltimaPartita component rendering');
@@ -49,6 +52,11 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     analysis: null,
     kpis: {}
   });
+
+  // Stati per OCR
+  const [ocrResults, setOcrResults] = useState({});
+  const [ocrStatus, setOcrStatus] = useState({});
+  const [processingImages, setProcessingImages] = useState([]);
 
   // Stati per le sezioni
   const [activeSection, setActiveSection] = useState('upload');
@@ -135,8 +143,12 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   ]);
 
   // Handler per upload immagini
-  const handleImageUpload = (type, file) => {
+  const handleImageUpload = async (type, file) => {
     if (!file) return;
+    if (!auth.currentUser) {
+      alert('Devi essere loggato per caricare immagini');
+      return;
+    }
 
     // Validazione file
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -152,28 +164,51 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       return;
     }
 
-    setUploadImages(prev => ({
-      ...prev,
-      [type]: file
-    }));
+    try {
+      setIsProcessing(true);
+      setUploadProgress(prev => ({ ...prev, [type]: 0 }));
 
-    // Simula progresso upload
-    setUploadProgress(prev => ({
-      ...prev,
-      [type]: 0
-    }));
+      // Genera nome file unico
+      const timestamp = Date.now();
+      const fileName = `${type}_${timestamp}_${file.name}`;
+      const userId = auth.currentUser.uid;
 
-    // Simula upload progress
-    const progressInterval = setInterval(() => {
-      setUploadProgress(prev => {
-        const current = prev[type] || 0;
-        if (current >= 100) {
-          clearInterval(progressInterval);
-          return prev;
-        }
-        return { ...prev, [type]: current + 10 };
-      });
-    }, 200);
+      // Path per Firebase Storage: uploads/{userId}/{fileName}
+      const storageRef = ref(storage, `uploads/${userId}/${fileName}`);
+
+      // Upload file
+      const uploadTask = uploadBytes(storageRef, file);
+
+      // Simula progresso (in realtà Firebase non fornisce progress callback per uploadBytes)
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          const current = prev[type] || 0;
+          if (current >= 90) {
+            clearInterval(progressInterval);
+            return { ...prev, [type]: 90 };
+          }
+          return { ...prev, [type]: current + 10 };
+        });
+      }, 200);
+
+      await uploadTask;
+
+      // Completa progresso
+      setUploadProgress(prev => ({ ...prev, [type]: 100 }));
+      setUploadImages(prev => ({ ...prev, [type]: file }));
+
+      // Aggiungi alla lista di immagini in processing
+      setProcessingImages(prev => [...prev, { type, fileName, userId }]);
+
+      console.log(`✅ Image uploaded successfully: ${fileName}`);
+
+    } catch (error) {
+      console.error('❌ Error uploading image:', error);
+      alert('Errore durante l\'upload dell\'immagine');
+      setUploadProgress(prev => ({ ...prev, [type]: 0 }));
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   // Handler per rimuovere immagine
@@ -197,42 +232,213 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       return;
     }
 
+    if (!auth.currentUser) {
+      alert('Devi essere loggato per elaborare le immagini');
+      return;
+    }
+
     setIsProcessing(true);
     
     try {
-      // Simula elaborazione OCR
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      const userId = auth.currentUser.uid;
       
-      // Qui integreremo con la Function Vision /api/ocr
       console.log('🔄 Processing OCR with images:', uploadImages);
+      console.log('📋 Processing images:', processingImages);
       
-      // Simula dati estratti
-      setMatchData({
-        stats: {
-          possesso: 58,
-          tiri: 12,
-          tiriInPorta: 7,
-          precisionePassaggi: 84,
-          corner: 5,
-          falli: 8,
-          golFatti: 2,
-          golSubiti: 1
-        },
-        ratings: [
-          { player: "Jude Bellingham", rating: 8.5, notes: "Eccellente controllo del gioco" },
-          { player: "Vinicius Jr.", rating: 8.2, notes: "Ottima prestazione offensiva" },
-          { player: "Luka Modric", rating: 7.8, notes: "Regia precisa e controllata" }
-        ]
+      // Inizializza stati OCR per ogni immagine
+      const initialOcrStatus = {};
+      processingImages.forEach(img => {
+        initialOcrStatus[img.type] = 'processing';
       });
-
-      setActiveSection('analysis');
+      setOcrStatus(initialOcrStatus);
+      
+      // Setup listener per risultati OCR
+      const ocrListener = onSnapshot(
+        doc(db, 'matches', userId, 'ocr', 'latest'),
+        (doc) => {
+          if (doc.exists()) {
+            const data = doc.data();
+            console.log('📊 OCR Result received:', data);
+            
+            if (data.status === 'done' && data.text) {
+              // Parse OCR text e aggiorna stato
+              const parsedData = parseOcrText(data.text, data.filePath);
+              setOcrResults(prev => ({
+                ...prev,
+                [data.filePath]: parsedData
+              }));
+              
+              // Aggiorna stato OCR
+              setOcrStatus(prev => ({
+                ...prev,
+                [data.filePath]: 'completed'
+              }));
+            } else if (data.status === 'error') {
+              console.error('❌ OCR Error:', data.error);
+              setOcrStatus(prev => ({
+                ...prev,
+                [data.filePath]: 'error'
+              }));
+            }
+          }
+        },
+        (error) => {
+          console.error('❌ OCR Listener Error:', error);
+        }
+      );
+      
+      // Aspetta che tutte le immagini siano processate
+      const maxWaitTime = 60000; // 60 secondi
+      const startTime = Date.now();
+      
+      const checkCompletion = () => {
+        const allProcessed = processingImages.every(img => 
+          ocrStatus[img.type] === 'completed' || ocrStatus[img.type] === 'error'
+        );
+        
+        if (allProcessed || Date.now() - startTime > maxWaitTime) {
+          // Cleanup listener
+          ocrListener();
+          
+          // Aggrega tutti i risultati OCR
+          const aggregatedData = aggregateOcrResults();
+          setMatchData(aggregatedData);
+          
+          setActiveSection('analysis');
+          setIsProcessing(false);
+        } else {
+          // Continua a controllare
+          setTimeout(checkCompletion, 1000);
+        }
+      };
+      
+      // Inizia controllo completamento
+      setTimeout(checkCompletion, 2000);
       
     } catch (error) {
       console.error('❌ Errore elaborazione OCR:', error);
       alert('Errore durante l\'elaborazione. Riprova.');
-    } finally {
       setIsProcessing(false);
     }
+  };
+
+  // Funzione per parsare il testo OCR
+  const parseOcrText = (text, filePath) => {
+    console.log('🔍 Parsing OCR text for:', filePath);
+    console.log('📄 OCR Text:', text);
+    
+    // Estrai tipo di immagine dal filePath
+    const imageType = filePath.includes('stats') ? 'stats' : 
+                     filePath.includes('ratings') ? 'ratings' :
+                     filePath.includes('heatmapOffensive') ? 'heatmapOffensive' :
+                     filePath.includes('heatmapDefensive') ? 'heatmapDefensive' : 'unknown';
+    
+    switch (imageType) {
+      case 'stats':
+        return parseStatsFromOcr(text);
+      case 'ratings':
+        return parseRatingsFromOcr(text);
+      case 'heatmapOffensive':
+      case 'heatmapDefensive':
+        return parseHeatmapFromOcr(text);
+      default:
+        return { rawText: text };
+    }
+  };
+
+  // Parser per statistiche partita
+  const parseStatsFromOcr = (text) => {
+    const stats = {};
+    
+    // Regex per estrarre numeri dalle statistiche
+    const patterns = {
+      possesso: /possesso[:\s]*(\d+)/i,
+      tiri: /tiri[:\s]*(\d+)/i,
+      tiriInPorta: /tiri\s+in\s+porta[:\s]*(\d+)/i,
+      precisionePassaggi: /precisione\s+passaggi[:\s]*(\d+)/i,
+      corner: /corner[:\s]*(\d+)/i,
+      falli: /falli[:\s]*(\d+)/i,
+      golFatti: /gol\s+fatti[:\s]*(\d+)/i,
+      golSubiti: /gol\s+subiti[:\s]*(\d+)/i
+    };
+    
+    Object.entries(patterns).forEach(([key, pattern]) => {
+      const match = text.match(pattern);
+      if (match) {
+        stats[key] = parseInt(match[1]);
+      }
+    });
+    
+    console.log('📊 Parsed stats:', stats);
+    return { stats };
+  };
+
+  // Parser per ratings giocatori
+  const parseRatingsFromOcr = (text) => {
+    const ratings = [];
+    
+    // Regex per estrarre giocatori e rating
+    const playerPattern = /([A-Za-z\s]+?)\s+(\d+\.?\d*)/g;
+    let match;
+    
+    while ((match = playerPattern.exec(text)) !== null) {
+      const playerName = match[1].trim();
+      const rating = parseFloat(match[2]);
+      
+      if (playerName.length > 2 && rating > 0 && rating <= 10) {
+        ratings.push({
+          player: playerName,
+          rating: rating,
+          notes: `Estratto da OCR`
+        });
+      }
+    }
+    
+    console.log('⭐ Parsed ratings:', ratings);
+    return { ratings };
+  };
+
+  // Parser per heatmap
+  const parseHeatmapFromOcr = (text) => {
+    // Per ora restituisce dati mock, in futuro si può implementare parsing specifico
+    return {
+      type: 'heatmap',
+      zones: ['center', 'left', 'right'],
+      intensities: [0.7, 0.5, 0.6]
+    };
+  };
+
+  // Funzione per aggregare tutti i risultati OCR
+  const aggregateOcrResults = () => {
+    console.log('🔄 Aggregating OCR results:', ocrResults);
+    
+    const aggregated = {
+      stats: {},
+      ratings: [],
+      heatmaps: {
+        offensive: null,
+        defensive: null
+      }
+    };
+    
+    Object.entries(ocrResults).forEach(([filePath, data]) => {
+      if (data.stats) {
+        aggregated.stats = { ...aggregated.stats, ...data.stats };
+      }
+      if (data.ratings) {
+        aggregated.ratings = [...aggregated.ratings, ...data.ratings];
+      }
+      if (data.type === 'heatmap') {
+        if (filePath.includes('heatmapOffensive')) {
+          aggregated.heatmaps.offensive = data;
+        } else if (filePath.includes('heatmapDefensive')) {
+          aggregated.heatmaps.defensive = data;
+        }
+      }
+    });
+    
+    console.log('📋 Final aggregated data:', aggregated);
+    return aggregated;
   };
 
   // Handler per salvataggio
