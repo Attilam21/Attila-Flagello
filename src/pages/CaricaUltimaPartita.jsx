@@ -448,25 +448,54 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   const parseStatsFromOcr = (text) => {
     const stats = {};
     
-    // Regex per estrarre numeri dalle statistiche (più flessibili)
+    // Regex migliorati basati sui dati OCR reali
     const patterns = {
-      possesso: /possesso[:\s]*(\d+)/i,
-      tiri: /tiri[:\s]*(\d+)/i,
-      tiriInPorta: /(tiri\s+in\s+porta|tiri\s+porta)[:\s]*(\d+)/i,
-      precisionePassaggi: /(precisione\s+passaggi|passaggi\s+riusciti)[:\s]*(\d+)/i,
-      corner: /(corner|calci\s+d'angolo)[:\s]*(\d+)/i,
-      falli: /(falli|infrazioni)[:\s]*(\d+)/i,
-      golFatti: /(gol\s+fatti|reti\s+segnate)[:\s]*(\d+)/i,
-      golSubiti: /(gol\s+subiti|reti\s+subite)[:\s]*(\d+)/i
+      // Possesso di palla - cerca "49%" o "81 29 49%"
+      possesso: /(\d+)%|possesso[:\s]*(\d+)/i,
+      
+      // Tiri totali - cerca "81" prima di "29"
+      tiri: /(\d+)\s+\d+\s+\d+%|tiri[:\s]*(\d+)/i,
+      
+      // Tiri in porta - cerca "29" dopo "81"
+      tiriInPorta: /(\d+)\s+(\d+)\s+\d+%|tiri[:\s]*(\d+)/i,
+      
+      // Passaggi - cerca "137"
+      passaggi: /passaggi[:\s]*(\d+)|(\d+)\s+passaggi/i,
+      
+      // Passaggi riusciti - cerca "100"
+      passaggiRiusciti: /passaggi\s+riusciti[:\s]*(\d+)|(\d+)\s+passaggi\s+riusciti/i,
+      
+      // Calci d'angolo - cerca "16"
+      corner: /calci\s+d'angolo[:\s]*(\d+)|(\d+)\s+calci\s+d'angolo/i,
+      
+      // Contrasti - cerca "5"
+      contrasti: /contrasti[:\s]*(\d+)|(\d+)\s+contrasti/i,
+      
+      // Parate - cerca "3"
+      parate: /parate[:\s]*(\d+)|(\d+)\s+parate/i,
+      
+      // Falli - cerca "0"
+      falli: /falli[:\s]*(\d+)|(\d+)\s+falli/i
     };
     
     Object.entries(patterns).forEach(([key, pattern]) => {
       const match = text.match(pattern);
       if (match) {
-        // Usa il secondo gruppo se presente (per pattern con parentesi multiple)
-        stats[key] = parseInt(match[2] || match[1]);
+        // Usa il primo gruppo numerico trovato
+        const value = parseInt(match[1] || match[2]);
+        if (!isNaN(value)) {
+          stats[key] = value;
+        }
       }
     });
+    
+    // Parsing specifico per il formato "81 29 49%"
+    const numbersMatch = text.match(/(\d+)\s+(\d+)\s+(\d+)%/);
+    if (numbersMatch) {
+      stats.tiri = parseInt(numbersMatch[1]);
+      stats.tiriInPorta = parseInt(numbersMatch[2]);
+      stats.possesso = parseInt(numbersMatch[3]);
+    }
     
     console.log('📊 Parsed stats:', stats);
     return { stats };
@@ -476,19 +505,27 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   const parseRatingsFromOcr = (text) => {
     const ratings = [];
     
-    // Regex per estrarre giocatori e rating
-    const playerPattern = /([A-Za-z\s]+?)\s+(\d+\.?\d*)/g;
+    // Regex migliorato per estrarre giocatori e rating
+    // Gestisce nomi come "Petr Čech 6.5", "Alessandro Del Piero 8.5"
+    const playerPattern = /([A-Za-zÀ-ÿ\s\.'\-]+?)\s+(\d+\.?\d*)/g;
     let match;
     
     while ((match = playerPattern.exec(text)) !== null) {
       const playerName = match[1].trim();
       const rating = parseFloat(match[2]);
       
-      if (playerName.length > 2 && rating > 0 && rating <= 10) {
+      // Filtra nomi validi e rating realistici
+      if (playerName.length > 2 && 
+          playerName.length < 30 && 
+          rating >= 0 && 
+          rating <= 10 && 
+          !playerName.match(/^\d+$/)) { // Esclude solo numeri
+        
         ratings.push({
           player: playerName,
           rating: rating,
-          notes: `Estratto da OCR`
+          notes: `Estratto da OCR`,
+          isProfiled: false // Default, sarà aggiornato se trovato nella rosa
         });
       }
     }
