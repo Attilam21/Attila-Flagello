@@ -92,7 +92,7 @@ const Rosa = ({ onPageChange }) => {
         <div className="rosa-actions">
           <button className="btn btn-secondary" onClick={handleAddPlayerOCR}>
             <Camera size={16} />
-            Aggiungi tramite OCR
+            Carica foto o screen giocatore
           </button>
           <button className="btn btn-secondary" onClick={handleAddPlayerManual}>
             <UserPlus size={16} />
