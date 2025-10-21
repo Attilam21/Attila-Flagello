@@ -254,7 +254,14 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       
     } catch (error) {
       console.error('❌ Errore elaborazione Gemini:', error);
-      alert('Errore durante l\'elaborazione con Gemini. Riprova.');
+      
+      // Messaggio specifico per API non abilitata
+      if (error.message.includes('Generative Language API non abilitata')) {
+        alert('⚠️ Generative Language API non abilitata!\n\nVai su: https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853\n\nClicca "ENABLE" per abilitare l\'API, poi riprova.');
+      } else {
+        alert('Errore durante l\'elaborazione con Gemini. Riprova.');
+      }
+      
       setIsProcessing(false);
     }
   };
@@ -271,7 +278,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         source: 'gemini-ai'
       };
 
-      await setDoc(doc(db, 'matches', userId, 'latest'), matchDoc);
+      const matchDocRef = doc(collection(db, 'matches', userId, 'data'));
+      await setDoc(matchDocRef, matchDoc);
       console.log('💾 Match data saved to Firestore');
     } catch (error) {
       console.error('❌ Error saving match data:', error);

@@ -1,9 +1,13 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Configurazione Gemini
-const genAI = new GoogleGenerativeAI(
-  import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI'
-);
+// Configurazione Gemini con fallback per API non abilitata
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI';
+
+if (!API_KEY) {
+  console.warn('⚠️ VITE_GEMINI_API_KEY is not set. Gemini AI will not be available.');
+}
+
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
@@ -14,6 +18,11 @@ const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
  * @returns {Promise<Object>} - Dati strutturati estratti
  */
 export const analyzeImageWithGemini = async (imageFile, imageType) => {
+  // Verifica se l'API key è configurata
+  if (!API_KEY) {
+    throw new Error('Gemini API Key is not configured. Please set VITE_GEMINI_API_KEY in your .env.local file.');
+  }
+
   try {
     console.log('🤖 Gemini: Analizzando immagine', imageType, imageFile.name);
 
@@ -56,6 +65,12 @@ export const analyzeImageWithGemini = async (imageFile, imageType) => {
     
   } catch (error) {
     console.error('❌ Gemini Error:', error);
+    
+    // Gestione specifica per API non abilitata
+    if (error.message.includes('403') || error.message.includes('SERVICE_DISABLED')) {
+      throw new Error(`Generative Language API non abilitata. Vai su https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853 per abilitarla.`);
+    }
+    
     throw new Error(`Errore nell'analisi con Gemini: ${error.message}`);
   }
 };
