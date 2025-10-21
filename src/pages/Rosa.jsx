@@ -35,6 +35,7 @@ const Rosa = ({ onPageChange }) => {
   };
 
   const handleAddPlayerManual = () => {
+    console.log('handleAddPlayerManual called, setting showManualModal to true');
     setShowManualModal(true);
   };
 
@@ -355,18 +356,6 @@ const Rosa = ({ onPageChange }) => {
         </div>
       </div>
 
-      {/* Modals placeholder */}
-      {showOCRWizard && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>🔍 Wizard OCR</h3>
-            <p>Wizard a 3 step per estrazione dati giocatore</p>
-            <button className="btn btn-secondary" onClick={() => setShowOCRWizard(false)}>
-              Chiudi
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Manual Player Modal */}
       <ManualPlayerModal 

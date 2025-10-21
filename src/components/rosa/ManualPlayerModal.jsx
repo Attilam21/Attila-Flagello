@@ -1,5 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Save, User, BarChart3, Zap, Shield, Target, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+
+// TogglePill Component
+const TogglePill = ({ selected, children, onClick, disabled }) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-pressed={!!selected}
+      className={[
+        "px-3 py-1.5 rounded-full text-sm transition outline-none",
+        disabled
+          ? "bg-white/5 text-white/30 cursor-not-allowed"
+          : selected
+            ? "bg-emerald-500 text-[#0b1223] font-semibold shadow"
+            : "bg-white/10 hover:bg-white/20 text-white",
+        "focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+      ].join(" ")}
+    >
+      {children}
+    </button>
+  );
+};
 
 const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const [currentTab, setCurrentTab] = useState('general');
@@ -69,13 +92,27 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState({});
 
+
   const tabs = [
     { id: 'general', label: 'Dati Generali', icon: User },
-    { id: 'stats', label: 'Statistiche', icon: BarChart3 },
-    { id: 'style', label: 'Stile/Abilità', icon: Zap },
-    { id: 'position', label: 'Competenze Posizione', icon: Target },
-    { id: 'media', label: 'Media', icon: Upload }
+    { id: 'stats', label: 'Attributi', icon: BarChart3 },
+    { id: 'booster', label: 'Booster', icon: Zap },
+    { id: 'abilities', label: 'Abilità giocatore', icon: Shield },
+    { id: 'stiliIA', label: 'Stili di gioco IA', icon: Target },
+    { id: 'position', label: 'Posizioni & Competenza', icon: Target },
+    { id: 'media', label: 'Carica immagine giocatore', icon: Upload }
   ];
+
+  // Blocca lo scroll della pagina dietro al modal
+  useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => { 
+        document.body.style.overflow = prev; 
+      };
+    }
+  }, [isOpen]);
 
   const ruoli = [
     { value: 'PT', label: 'Portiere' },
@@ -183,7 +220,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const renderGeneralTab = () => (
     <div className="tab-content">
       <div className="form-section">
-        <h4>📋 Informazioni Base</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">📋 Informazioni Base</h4>
         <div className="form-grid">
           <div className="form-group">
             <label className="form-label">Nome Giocatore *</label>
@@ -224,7 +261,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
       </div>
 
       <div className="form-section">
-        <h4>🎴 Carta Giocatore</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">🎴 Carta Giocatore</h4>
         <div className="form-grid">
           <div className="form-group">
             <label className="form-label">Rarità</label>
@@ -309,7 +346,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
       </div>
 
       <div className="form-section">
-        <h4>👤 Anagrafica</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">👤 Anagrafica</h4>
         <div className="form-grid">
           <div className="form-group">
             <label className="form-label">Età *</label>
@@ -378,7 +415,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
     <div className="tab-content">
       <div className="stats-container">
         <div className="stats-section">
-          <h4>⚽ Attacco</h4>
+          <h4 className="text-lg font-semibold text-white mb-4">⚽ Attacco</h4>
           <div className="stats-grid">
             {[
               { key: 'comportamentoOffensivo', label: 'Comportamento Offensivo' },
@@ -408,7 +445,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
         </div>
 
         <div className="stats-section">
-          <h4>🛡️ Difesa</h4>
+          <h4 className="text-lg font-semibold text-white mb-4">🛡️ Difesa</h4>
           <div className="stats-grid">
             {[
               { key: 'comportamentoDifensivo', label: 'Comportamento Difensivo' },
@@ -432,7 +469,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
         </div>
 
         <div className="stats-section">
-          <h4>🏃‍♂️ Fisico</h4>
+          <h4 className="text-lg font-semibold text-white mb-4">🏃‍♂️ Fisico</h4>
           <div className="stats-grid">
             {[
               { key: 'velocita', label: 'Velocità' },
@@ -459,7 +496,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
         </div>
 
         <div className="stats-section">
-          <h4>🥅 Portiere</h4>
+          <h4 className="text-lg font-semibold text-white mb-4">🥅 Portiere</h4>
           <div className="stats-grid">
             {[
               { key: 'portiere', label: 'Portiere' },
@@ -486,52 +523,69 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
     </div>
   );
 
-  const renderStyleTab = () => (
+  const renderBoosterTab = () => (
     <div className="tab-content">
       <div className="form-section">
-        <h4>🤖 Stili IA</h4>
-        <div className="chips-container">
-          {stiliIA.map(stile => (
-            <button
-              key={stile}
-              className={`chip ${playerData.stiliIA.includes(stile) ? 'active' : ''}`}
-              onClick={() => handleArrayChange('stiliIA', stile, 
-                playerData.stiliIA.includes(stile) ? 'remove' : 'add')}
-            >
-              {stile}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="form-section">
-        <h4>⚡ Booster</h4>
-        <div className="chips-container">
+        <h4 className="text-lg font-semibold text-white mb-4">⚡ Booster</h4>
+        <p className="section-description mb-6">
+          Seleziona i booster attivi per questo giocatore.
+        </p>
+        <div className="flex flex-wrap gap-2">
           {boosterList.map(booster => (
-            <button
+            <TogglePill
               key={booster}
-              className={`chip ${playerData.booster.includes(booster) ? 'active' : ''}`}
+              selected={playerData.booster.includes(booster)}
               onClick={() => handleArrayChange('booster', booster,
                 playerData.booster.includes(booster) ? 'remove' : 'add')}
             >
               {booster}
-            </button>
+            </TogglePill>
           ))}
         </div>
       </div>
+    </div>
+  );
 
+  const renderAbilitiesTab = () => (
+    <div className="tab-content">
       <div className="form-section">
-        <h4>🎯 Abilità</h4>
-        <div className="chips-container">
+        <h4 className="text-lg font-semibold text-white mb-4">🎯 Abilità Giocatore</h4>
+        <p className="section-description mb-6">
+          Seleziona le abilità speciali di questo giocatore.
+        </p>
+        <div className="flex flex-wrap gap-2">
           {abilitaList.map(abilita => (
-            <button
+            <TogglePill
               key={abilita}
-              className={`chip ${playerData.abilita.includes(abilita) ? 'active' : ''}`}
+              selected={playerData.abilita.includes(abilita)}
               onClick={() => handleArrayChange('abilita', abilita,
                 playerData.abilita.includes(abilita) ? 'remove' : 'add')}
             >
               {abilita}
-            </button>
+            </TogglePill>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStiliIATab = () => (
+    <div className="tab-content">
+      <div className="form-section">
+        <h4 className="text-lg font-semibold text-white mb-4">🤖 Stili di Gioco IA</h4>
+        <p className="section-description mb-6">
+          Seleziona gli stili di gioco IA per questo giocatore.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {stiliIA.map(stile => (
+            <TogglePill
+              key={stile}
+              selected={playerData.stiliIA.includes(stile)}
+              onClick={() => handleArrayChange('stiliIA', stile, 
+                playerData.stiliIA.includes(stile) ? 'remove' : 'add')}
+            >
+              {stile}
+            </TogglePill>
           ))}
         </div>
       </div>
@@ -541,7 +595,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const renderPositionTab = () => (
     <div className="tab-content">
       <div className="form-section">
-        <h4>📍 Competenze Posizione</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">📍 Competenze Posizione</h4>
         <p className="section-description">
           Aggiungi le posizioni in cui il giocatore può giocare e il relativo livello di competenza.
         </p>
@@ -608,14 +662,14 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const renderMediaTab = () => (
     <div className="tab-content">
       <div className="form-section">
-        <h4>📸 Immagini Giocatore</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">📸 Immagini Giocatore</h4>
         <p className="section-description">
           Carica le immagini del giocatore per una migliore visualizzazione.
         </p>
         
         <div className="media-grid">
           <div className="media-upload">
-            <h5>🃏 Carta Giocatore</h5>
+            <h5 className="text-base font-semibold text-white mb-2">🃏 Carta Giocatore</h5>
             <div className="upload-area">
               <input
                 type="file"
@@ -638,7 +692,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
           </div>
 
           <div className="media-upload">
-            <h5>⚡ Abilità e Booster</h5>
+            <h5 className="text-base font-semibold text-white mb-2">⚡ Abilità e Booster</h5>
             <div className="upload-area">
               <input
                 type="file"
@@ -661,7 +715,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
           </div>
 
           <div className="media-upload">
-            <h5>🤖 Stili IA</h5>
+            <h5 className="text-base font-semibold text-white mb-2">🤖 Stili IA</h5>
             <div className="upload-area">
               <input
                 type="file"
@@ -690,60 +744,90 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="manual-modal">
-        <div className="modal-header">
-          <h2>✏️ Inserimento Manuale Giocatore</h2>
-          <button className="close-btn" onClick={onClose}>
-            <X size={24} />
-          </button>
+    <div className="fixed inset-0 z-[120] bg-black/70">
+      <div className="w-full h-full bg-[#0b1223] text-white flex overflow-hidden">
+        {/* Sidebar */}
+        <div className="w-80 bg-[#0b1223] border-r border-white/10 text-white flex flex-col">
+          <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+            <h3 className="font-bold text-lg">Sezioni</h3>
+            <button 
+              onClick={onClose} 
+              className="text-white/70 hover:text-white text-3xl leading-none transition-colors"
+              aria-label="Chiudi"
+            >
+              ×
+            </button>
+          </div>
+          <div className="flex-1 p-4 overflow-y-auto">
+            <div className="space-y-2">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setCurrentTab(tab.id)}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    currentTab === tab.id
+                      ? "bg-emerald-500 text-[#0b1223] font-semibold"
+                      : "bg-white/5 hover:bg-white/10 text-white"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="modal-tabs">
-          {tabs.map(tab => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                className={`tab ${currentTab === tab.id ? 'active' : ''}`}
-                onClick={() => setCurrentTab(tab.id)}
+        {/* Main Content */}
+        <div className="flex-1 bg-[#0f172a] text-white flex flex-col">
+          {/* Header */}
+          <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-[#0f172a]">
+            <div>
+              <h2 className="text-2xl font-bold">Inserimento Manuale Giocatore</h2>
+              <p className="text-white/60 text-sm">Compila i campi. La logica di salvataggio rimane invariata.</p>
+            </div>
+          </div>
+
+          {/* Content Area */}
+          <div className="flex-1 overflow-y-auto px-6 py-6">
+            <div className="max-w-7xl mx-auto">
+              {currentTab === 'general' && renderGeneralTab()}
+              {currentTab === 'stats' && renderStatsTab()}
+              {currentTab === 'booster' && renderBoosterTab()}
+              {currentTab === 'abilities' && renderAbilitiesTab()}
+              {currentTab === 'stiliIA' && renderStiliIATab()}
+              {currentTab === 'position' && renderPositionTab()}
+              {currentTab === 'media' && renderMediaTab()}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 py-4 border-t border-white/10 bg-[#0f172a]">
+            <div className="max-w-6xl mx-auto flex justify-end gap-3">
+              <button 
+                onClick={onClose} 
+                className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium"
               >
-                <Icon size={18} />
-                {tab.label}
+                Annulla
               </button>
-            );
-          })}
-        </div>
-
-        <div className="modal-content">
-          {currentTab === 'general' && renderGeneralTab()}
-          {currentTab === 'stats' && renderStatsTab()}
-          {currentTab === 'style' && renderStyleTab()}
-          {currentTab === 'position' && renderPositionTab()}
-          {currentTab === 'media' && renderMediaTab()}
-        </div>
-
-        <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>
-            Annulla
-          </button>
-          <button 
-            className="btn btn-primary" 
-            onClick={handleSave}
-            disabled={isSaving}
-          >
-            {isSaving ? (
-              <>
-                <div className="loading-spinner-small"></div>
-                Salvando...
-              </>
-            ) : (
-              <>
-                <Save size={16} />
-                Salva Giocatore
-              </>
-            )}
-          </button>
+              <button 
+                onClick={handleSave} 
+                disabled={isSaving}
+                className="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 font-semibold flex items-center gap-2"
+              >
+                {isSaving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <Save size={16} />
+                    Salva Giocatore
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

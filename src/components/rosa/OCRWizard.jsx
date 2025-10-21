@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Upload, CheckCircle, AlertCircle, ArrowRight, ArrowLeft, Camera, FileText, Zap } from 'lucide-react';
-import { uploadMatchImage } from '../../services/firebaseClient';
+// import { uploadMatchImage } from '../../services/firebaseClient';
 
 const OCRWizard = ({ isOpen, onClose, onPlayerAdded }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -16,6 +16,15 @@ const OCRWizard = ({ isOpen, onClose, onPlayerAdded }) => {
   });
   const [extractedData, setExtractedData] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Blocca lo scroll della pagina dietro al modal
+  useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = prev; };
+    }
+  }, [isOpen]);
 
   // Dati mock per test (sarà sostituito con Google Vision)
   const mockExtractedData = {
@@ -140,33 +149,46 @@ const OCRWizard = ({ isOpen, onClose, onPlayerAdded }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="ocr-wizard-modal">
-        <div className="wizard-header">
-          <h2>🔍 Wizard OCR - Estrazione Giocatore</h2>
-          <button className="close-btn" onClick={onClose}>
-            <X size={24} />
+    <div className="fixed inset-0 z-[120] bg-black/70">
+      <div className="w-full h-full bg-[#0b1223] text-white flex flex-col overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-[#0f172a]">
+          <h2 className="text-2xl font-bold">🔍 Wizard OCR - Estrazione Giocatore</h2>
+          <button 
+            className="text-white/70 hover:text-white text-3xl leading-none transition-colors"
+            onClick={onClose}
+            aria-label="Chiudi"
+          >
+            ×
           </button>
         </div>
 
-        <div className="wizard-progress">
-          <div className="progress-steps">
-            <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
-              <div className="step-number">1</div>
-              <div className="step-label">Caricamento</div>
+        {/* Progress Steps */}
+        <div className="px-6 py-4 border-b border-white/10 bg-[#0f172a]">
+          <div className="flex justify-center gap-8">
+            <div className={`flex flex-col items-center gap-2 ${currentStep >= 1 ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${currentStep >= 1 ? 'bg-emerald-500 text-[#0b1223]' : 'bg-white/10 text-white'}`}>
+                1
+              </div>
+              <div className={`text-sm font-medium ${currentStep >= 1 ? 'text-white' : 'text-white/60'}`}>Caricamento</div>
             </div>
-            <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
-              <div className="step-number">2</div>
-              <div className="step-label">Revisione</div>
+            <div className={`flex flex-col items-center gap-2 ${currentStep >= 2 ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${currentStep >= 2 ? 'bg-emerald-500 text-[#0b1223]' : 'bg-white/10 text-white'}`}>
+                2
+              </div>
+              <div className={`text-sm font-medium ${currentStep >= 2 ? 'text-white' : 'text-white/60'}`}>Revisione</div>
             </div>
-            <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-              <div className="step-number">3</div>
-              <div className="step-label">Conferma</div>
+            <div className={`flex flex-col items-center gap-2 ${currentStep >= 3 ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${currentStep >= 3 ? 'bg-emerald-500 text-[#0b1223]' : 'bg-white/10 text-white'}`}>
+                3
+              </div>
+              <div className={`text-sm font-medium ${currentStep >= 3 ? 'text-white' : 'text-white/60'}`}>Conferma</div>
             </div>
           </div>
         </div>
 
-        <div className="wizard-content">
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto px-6 py-6">
+          <div className="max-w-7xl mx-auto">
           {/* STEP 1: Caricamento Immagini */}
           {currentStep === 1 && (
             <div className="step-content">
@@ -481,6 +503,7 @@ const OCRWizard = ({ isOpen, onClose, onPlayerAdded }) => {
               </div>
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>
