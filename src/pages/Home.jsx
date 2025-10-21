@@ -7,7 +7,7 @@ const Home = ({ user, onPageChange }) => {
   const [lastMatch, setLastMatch] = useState({
     result: 'W',
     score: '2-1',
-    opponent: 'Real Madrid',
+    opponent: 'Barcelona',
     opponentLogo: '⚽',
     date: '2024-01-15',
     mode: 'Divisione 1',
@@ -88,6 +88,32 @@ const Home = ({ user, onPageChange }) => {
             <div className="match-details">
               <span className="match-date">{lastMatch.date}</span>
               <span className="match-mode">{lastMatch.mode}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Bar per il Cliente */}
+        <div className="client-progress-section">
+          <div className="client-info">
+            <div className="client-avatar">
+              {user?.email?.charAt(0).toUpperCase()}
+            </div>
+            <div className="client-details">
+              <h3 className="client-name">{user?.email || 'Cliente'}</h3>
+              <p className="client-status">Coach eFootballLab</p>
+            </div>
+          </div>
+          <div className="progress-section">
+            <div className="progress-header">
+              <span className="progress-label">Progresso Coach</span>
+              <span className="progress-percentage">75%</span>
+            </div>
+            <div className="progress-bar-large">
+              <div className="progress-fill-large" style={{ width: '75%' }}></div>
+            </div>
+            <div className="progress-details">
+              <span className="progress-text">Livello: Intermedio</span>
+              <span className="progress-next">Prossimo: Avanzato</span>
             </div>
           </div>
         </div>

@@ -762,6 +762,127 @@ body {
   flex-wrap: wrap;
 }
 
+/* Client Progress Section */
+.client-progress-section {
+  background: #374151;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.client-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.client-avatar {
+  width: 48px;
+  height: 48px;
+  background: #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.client-details {
+  flex: 1;
+}
+
+.client-name {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.client-status {
+  color: #9ca3af;
+  font-size: 14px;
+  margin: 0;
+}
+
+.progress-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progress-label {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.progress-percentage {
+  color: #10b981;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.progress-bar-large {
+  width: 100%;
+  height: 12px;
+  background: #4b5563;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill-large {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-fill-large::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progress-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-text {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.progress-next {
+  color: #10b981;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 /* KPI Strip */
 .kpi-strip {
   display: grid;
