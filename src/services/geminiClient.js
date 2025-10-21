@@ -1,10 +1,14 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Configurazione Gemini con fallback per API non abilitata
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI';
+const API_KEY =
+  import.meta.env.VITE_GEMINI_API_KEY ||
+  'AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI';
 
 if (!API_KEY) {
-  console.warn('⚠️ VITE_GEMINI_API_KEY is not set. Gemini AI will not be available.');
+  console.warn(
+    '⚠️ VITE_GEMINI_API_KEY is not set. Gemini AI will not be available.'
+  );
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -20,7 +24,9 @@ const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 export const analyzeImageWithGemini = async (imageFile, imageType) => {
   // Verifica se l'API key è configurata
   if (!API_KEY) {
-    throw new Error('Gemini API Key is not configured. Please set VITE_GEMINI_API_KEY in your .env.local file.');
+    throw new Error(
+      'Gemini API Key is not configured. Please set VITE_GEMINI_API_KEY in your .env.local file.'
+    );
   }
 
   try {
@@ -28,10 +34,10 @@ export const analyzeImageWithGemini = async (imageFile, imageType) => {
 
     // Converti file in base64
     const base64 = await fileToBase64(imageFile);
-    
+
     // Prompt specifico per tipo di immagine
     const prompt = getPromptForImageType(imageType);
-    
+
     // Configurazione per l'analisi
     const generationConfig = {
       temperature: 0.1, // Bassa temperatura per risultati consistenti
@@ -53,24 +59,28 @@ export const analyzeImageWithGemini = async (imageFile, imageType) => {
 
     const response = await result.response;
     const text = response.text();
-    
+
     console.log('🤖 Gemini: Risposta raw:', text);
-    
+
     // Parsa la risposta JSON
     const parsedData = parseGeminiResponse(text, imageType);
-    
+
     console.log('🤖 Gemini: Dati parsati:', parsedData);
-    
+
     return parsedData;
-    
   } catch (error) {
     console.error('❌ Gemini Error:', error);
-    
+
     // Gestione specifica per API non abilitata
-    if (error.message.includes('403') || error.message.includes('SERVICE_DISABLED')) {
-      throw new Error(`Generative Language API non abilitata. Vai su https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853 per abilitarla.`);
+    if (
+      error.message.includes('403') ||
+      error.message.includes('SERVICE_DISABLED')
+    ) {
+      throw new Error(
+        `Generative Language API non abilitata. Vai su https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853 per abilitarla.`
+      );
     }
-    
+
     throw new Error(`Errore nell'analisi con Gemini: ${error.message}`);
   }
 };
@@ -78,7 +88,7 @@ export const analyzeImageWithGemini = async (imageFile, imageType) => {
 /**
  * Converte un file in base64
  */
-const fileToBase64 = (file) => {
+const fileToBase64 = file => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -93,7 +103,7 @@ const fileToBase64 = (file) => {
 /**
  * Ottiene il prompt specifico per il tipo di immagine
  */
-const getPromptForImageType = (imageType) => {
+const getPromptForImageType = imageType => {
   const basePrompt = `Analizza questa immagine di una partita di calcio e estrai le informazioni richieste. 
   Rispondi SOLO con un JSON valido, senza testo aggiuntivo.`;
 
@@ -203,23 +213,22 @@ const parseGeminiResponse = (text, imageType) => {
 
     const jsonString = jsonMatch[0];
     const parsed = JSON.parse(jsonString);
-    
+
     // Validazione del risultato
     if (!parsed || typeof parsed !== 'object') {
       throw new Error('JSON non valido');
     }
 
     return parsed;
-    
   } catch (error) {
     console.error('❌ Errore parsing Gemini response:', error);
     console.error('📄 Testo ricevuto:', text);
-    
+
     // Fallback: restituisci struttura base
     return {
       error: error.message,
       rawText: text,
-      type: imageType
+      type: imageType,
     };
   }
 };
@@ -227,11 +236,11 @@ const parseGeminiResponse = (text, imageType) => {
 /**
  * Analizza multiple immagini in batch
  */
-export const analyzeBatchWithGemini = async (images) => {
+export const analyzeBatchWithGemini = async images => {
   console.log('🤖 Gemini: Analisi batch di', images.length, 'immagini');
-  
+
   const results = {};
-  
+
   for (const [type, file] of Object.entries(images)) {
     if (file) {
       try {
@@ -243,7 +252,7 @@ export const analyzeBatchWithGemini = async (images) => {
       }
     }
   }
-  
+
   return results;
 };
 

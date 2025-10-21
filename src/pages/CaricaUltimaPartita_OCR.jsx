@@ -1607,35 +1607,45 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     try {
       // Validazione robusta dell'input
       if (!Array.isArray(ratings)) {
-        console.warn('⚠️ generatePlayersFromRatings received invalid ratings:', ratings);
+        console.warn(
+          '⚠️ generatePlayersFromRatings received invalid ratings:',
+          ratings
+        );
         return [];
       }
 
-      return ratings.map((rating, index) => {
-        // Validazione di ogni rating
-        if (!rating || typeof rating !== 'object') {
-          console.warn('⚠️ Invalid rating object at index', index, ':', rating);
-          return null;
-        }
+      return ratings
+        .map((rating, index) => {
+          // Validazione di ogni rating
+          if (!rating || typeof rating !== 'object') {
+            console.warn(
+              '⚠️ Invalid rating object at index',
+              index,
+              ':',
+              rating
+            );
+            return null;
+          }
 
-        return {
-          name: rating.player || `Player ${index + 1}`,
-          role: 'N/A', // Non disponibile da OCR
-          rating: typeof rating.rating === 'number' ? rating.rating : 0,
-          goals: 0, // Non disponibile da OCR
-          assists: 0, // Non disponibile da OCR
-          participation: 0, // Non disponibile da OCR
-          form:
-            rating.rating >= 7.5
-              ? 'Excellent'
-              : rating.rating >= 6.5
-                ? 'Good'
-                : 'Average',
-          mvp: rating.rating >= 8.0,
-          growth: false,
-          isProfiled: Boolean(rating.isProfiled),
-        };
-      }).filter(player => player !== null); // Rimuove oggetti null
+          return {
+            name: rating.player || `Player ${index + 1}`,
+            role: 'N/A', // Non disponibile da OCR
+            rating: typeof rating.rating === 'number' ? rating.rating : 0,
+            goals: 0, // Non disponibile da OCR
+            assists: 0, // Non disponibile da OCR
+            participation: 0, // Non disponibile da OCR
+            form:
+              rating.rating >= 7.5
+                ? 'Excellent'
+                : rating.rating >= 6.5
+                  ? 'Good'
+                  : 'Average',
+            mvp: rating.rating >= 8.0,
+            growth: false,
+            isProfiled: Boolean(rating.isProfiled),
+          };
+        })
+        .filter(player => player !== null); // Rimuove oggetti null
     } catch (error) {
       console.error('❌ Error in generatePlayersFromRatings:', error);
       return [];

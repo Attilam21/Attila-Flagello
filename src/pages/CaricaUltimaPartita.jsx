@@ -51,7 +51,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     stats: null,
     ratings: null,
     heatmapOffensive: null,
-    heatmapDefensive: null
+    heatmapDefensive: null,
   });
 
   const [uploadProgress, setUploadProgress] = useState({});
@@ -60,7 +60,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     stats: {},
     ratings: [],
     analysis: null,
-    kpis: {}
+    kpis: {},
   });
 
   // Stati per OCR
@@ -106,8 +106,9 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB
-      alert('L\'immagine è troppo grande (max 5MB)');
+    if (file.size > 5 * 1024 * 1024) {
+      // 5MB
+      alert("L'immagine è troppo grande (max 5MB)");
       return;
     }
 
@@ -115,9 +116,9 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       const userId = auth.currentUser.uid;
       const fileName = `${type}_${Date.now()}_${file.name}`;
       const storageRef = ref(storage, `uploads/${userId}/${fileName}`);
-      
+
       console.log('📤 Uploading image:', fileName);
-      
+
       // Simula progresso upload
       setUploadProgress(prev => ({ ...prev, [type]: 0 }));
       const progressInterval = setInterval(() => {
@@ -131,22 +132,21 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       }, 200);
 
       await uploadBytes(storageRef, file);
-      
+
       clearInterval(progressInterval);
       setUploadProgress(prev => ({ ...prev, [type]: 100 }));
-      
+
       console.log('✅ Image uploaded successfully:', fileName);
-      
+
       setUploadImages(prev => ({
         ...prev,
-        [type]: file
+        [type]: file,
       }));
 
       setProcessingImages(prev => [...prev, { type, file, fileName }]);
-      
     } catch (error) {
       console.error('❌ Error uploading image:', error);
-      alert('Errore durante l\'upload dell\'immagine');
+      alert("Errore durante l'upload dell'immagine");
       setUploadProgress(prev => ({ ...prev, [type]: 0 }));
     } finally {
       setTimeout(() => {
@@ -155,18 +155,18 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     }
   };
 
-  const handleRemoveImage = (type) => {
+  const handleRemoveImage = type => {
     setUploadImages(prev => ({
       ...prev,
-      [type]: null
+      [type]: null,
     }));
     setUploadProgress(prev => ({
       ...prev,
-      [type]: 0
+      [type]: 0,
     }));
     setOcrStatus(prev => ({
       ...prev,
-      [type]: 'idle'
+      [type]: 'idle',
     }));
     setOcrResults(prev => {
       const newResults = { ...prev };
@@ -177,8 +177,10 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
   // Handler per elaborazione con Gemini AI - VERSIONE MIGLIORATA
   const handleProcessOCR = async () => {
-    const uploadedCount = Object.values(uploadImages).filter(img => img !== null).length;
-    
+    const uploadedCount = Object.values(uploadImages).filter(
+      img => img !== null
+    ).length;
+
     if (uploadedCount < 4) {
       alert('Carica tutte e 4 le immagini prima di procedere');
       return;
@@ -190,7 +192,11 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     }
 
     setIsProcessing(true);
-    console.log('🤖 Avvio elaborazione con Gemini AI per', uploadedCount, 'immagini');
+    console.log(
+      '🤖 Avvio elaborazione con Gemini AI per',
+      uploadedCount,
+      'immagini'
+    );
 
     try {
       const userId = auth.currentUser.uid;
@@ -222,8 +228,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         ratings: [],
         heatmaps: {
           offensive: null,
-          defensive: null
-        }
+          defensive: null,
+        },
       };
 
       // Processa risultati per tipo (geminiResults è un oggetto, non un array)
@@ -231,10 +237,16 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         Object.entries(geminiResults).forEach(([type, result]) => {
           if (result && !result.error) {
             if (type === 'stats' && result.data) {
-              aggregatedData.stats = { ...aggregatedData.stats, ...result.data };
+              aggregatedData.stats = {
+                ...aggregatedData.stats,
+                ...result.data,
+              };
               setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
             } else if (type === 'ratings' && result.data) {
-              aggregatedData.ratings = [...aggregatedData.ratings, ...result.data];
+              aggregatedData.ratings = [
+                ...aggregatedData.ratings,
+                ...result.data,
+              ];
               setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
             } else if (type === 'heatmapOffensive' && result.data) {
               aggregatedData.heatmaps.offensive = result.data;
@@ -249,17 +261,26 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
           }
         });
       } else {
-        console.error('❌ geminiResults non è un oggetto valido:', geminiResults);
+        console.error(
+          '❌ geminiResults non è un oggetto valido:',
+          geminiResults
+        );
       }
 
       console.log('🤖 Gemini: Dati aggregati:', aggregatedData);
-      
+
       // Aggiorna i voti con informazioni di profilazione
       if (aggregatedData.ratings && aggregatedData.ratings.length > 0) {
-        aggregatedData.ratings = await updateRatingsWithProfiling(userId, aggregatedData.ratings);
-        console.log('👥 Ratings updated with profiling info:', aggregatedData.ratings);
+        aggregatedData.ratings = await updateRatingsWithProfiling(
+          userId,
+          aggregatedData.ratings
+        );
+        console.log(
+          '👥 Ratings updated with profiling info:',
+          aggregatedData.ratings
+        );
       }
-      
+
       // Aggiorna matchData
       setMatchData(aggregatedData);
       setActiveSection('analysis');
@@ -267,27 +288,30 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
       // Salva i risultati in Firestore per persistenza
       await saveMatchDataToFirestore(aggregatedData, userId);
-      
+
       console.log('✅ Elaborazione Gemini completata con successo!');
-      
-            } catch (error) {
-              console.error('❌ Errore elaborazione Gemini:', error);
-              
-              // Messaggio specifico per API non abilitata
-              if (error.message.includes('Generative Language API non abilitata')) {
-                alert('⚠️ Generative Language API non abilitata!\n\nVai su: https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853\n\nClicca "ENABLE" per abilitare l\'API, poi riprova.');
-              } else {
-                alert('Errore durante l\'elaborazione con Gemini. Riprova.');
-              }
-              
-              // Genera dati demo come fallback
-              const demoData = generateDemoData();
-              setMatchData(demoData);
-              setActiveSection('analysis');
-              alert('⚠️ API non disponibile. Mostro dati demo per testare l\'interfaccia.');
-              
-              setIsProcessing(false);
-            }
+    } catch (error) {
+      console.error('❌ Errore elaborazione Gemini:', error);
+
+      // Messaggio specifico per API non abilitata
+      if (error.message.includes('Generative Language API non abilitata')) {
+        alert(
+          '⚠️ Generative Language API non abilitata!\n\nVai su: https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853\n\nClicca "ENABLE" per abilitare l\'API, poi riprova.'
+        );
+      } else {
+        alert("Errore durante l'elaborazione con Gemini. Riprova.");
+      }
+
+      // Genera dati demo come fallback
+      const demoData = generateDemoData();
+      setMatchData(demoData);
+      setActiveSection('analysis');
+      alert(
+        "⚠️ API non disponibile. Mostro dati demo per testare l'interfaccia."
+      );
+
+      setIsProcessing(false);
+    }
   };
 
   // Salva i dati della partita in Firestore
@@ -299,7 +323,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         ratings: data.ratings,
         heatmaps: data.heatmaps,
         createdAt: new Date(),
-        source: 'gemini-ai'
+        source: 'gemini-ai',
       };
 
       const matchDocRef = doc(collection(db, 'matches', userId, 'data'));
@@ -308,7 +332,6 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
       // Aggiorna anche la Dashboard con i dati dell'ultima partita
       await updateDashboardStats(userId, data.stats);
-      
     } catch (error) {
       console.error('❌ Error saving match data:', error);
     }
@@ -333,7 +356,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
           golSubiti: stats.golSubiti || 0,
         },
         lastUpdated: new Date(),
-        source: 'gemini-ai'
+        source: 'gemini-ai',
       };
 
       await setDoc(dashboardRef, dashboardDoc);
@@ -360,19 +383,23 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   const updateRatingsWithProfiling = async (userId, ratings) => {
     try {
       const updatedRatings = await Promise.all(
-        ratings.map(async (rating) => {
+        ratings.map(async rating => {
           const isProfiled = await checkPlayerProfiled(userId, rating.player);
           return {
             ...rating,
             isProfiled,
-            badge: isProfiled ? 'Profilato' : 'Non profilato'
+            badge: isProfiled ? 'Profilato' : 'Non profilato',
           };
         })
       );
       return updatedRatings;
     } catch (error) {
       console.error('❌ Error updating ratings with profiling:', error);
-      return ratings.map(rating => ({ ...rating, isProfiled: false, badge: 'Non profilato' }));
+      return ratings.map(rating => ({
+        ...rating,
+        isProfiled: false,
+        badge: 'Non profilato',
+      }));
     }
   };
 
@@ -393,16 +420,52 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         golSubiti: 1,
       },
       ratings: [
-        { player: 'Buffon', rating: 7.5, role: 'Portiere', isProfiled: true, badge: 'Profilato' },
-        { player: 'Cannavaro', rating: 8.2, role: 'Difensore', isProfiled: true, badge: 'Profilato' },
-        { player: 'Pirlo', rating: 9.0, role: 'Centrocampista', isProfiled: false, badge: 'Non profilato' },
-        { player: 'Totti', rating: 8.8, role: 'Attaccante', isProfiled: true, badge: 'Profilato' },
-        { player: 'Del Piero', rating: 8.5, role: 'Attaccante', isProfiled: false, badge: 'Non profilato' },
+        {
+          player: 'Buffon',
+          rating: 7.5,
+          role: 'Portiere',
+          isProfiled: true,
+          badge: 'Profilato',
+        },
+        {
+          player: 'Cannavaro',
+          rating: 8.2,
+          role: 'Difensore',
+          isProfiled: true,
+          badge: 'Profilato',
+        },
+        {
+          player: 'Pirlo',
+          rating: 9.0,
+          role: 'Centrocampista',
+          isProfiled: false,
+          badge: 'Non profilato',
+        },
+        {
+          player: 'Totti',
+          rating: 8.8,
+          role: 'Attaccante',
+          isProfiled: true,
+          badge: 'Profilato',
+        },
+        {
+          player: 'Del Piero',
+          rating: 8.5,
+          role: 'Attaccante',
+          isProfiled: false,
+          badge: 'Non profilato',
+        },
       ],
       heatmaps: {
-        offensive: { description: 'Attività concentrata sulla fascia destra', zones: ['fascia destra', 'area di rigore'] },
-        defensive: { description: 'Pressa alta e recuperi in centrocampo', zones: ['centrocampo', 'area di rigore'] }
-      }
+        offensive: {
+          description: 'Attività concentrata sulla fascia destra',
+          zones: ['fascia destra', 'area di rigore'],
+        },
+        defensive: {
+          description: 'Pressa alta e recuperi in centrocampo',
+          zones: ['centrocampo', 'area di rigore'],
+        },
+      },
     };
   };
 
@@ -411,7 +474,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     const demoData = generateDemoData();
     setMatchData(demoData);
     setActiveSection('analysis');
-    alert('✅ Dati demo caricati! Ora puoi testare l\'interfaccia completa.');
+    alert("✅ Dati demo caricati! Ora puoi testare l'interfaccia completa.");
   };
 
   // Renderizza uploader immagini
@@ -420,7 +483,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       { key: 'stats', label: 'Statistiche Partita', icon: BarChart3 },
       { key: 'ratings', label: 'Voti Giocatori', icon: Users },
       { key: 'heatmapOffensive', label: 'Heatmap Offensiva', icon: Target },
-      { key: 'heatmapDefensive', label: 'Heatmap Difensiva', icon: Shield }
+      { key: 'heatmapDefensive', label: 'Heatmap Difensiva', icon: Shield },
     ];
 
     return (
@@ -442,22 +505,24 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
                 <Icon size={20} />
                 <span>{label}</span>
               </div>
-              
+
               {uploadImages[key] ? (
                 <div className="upload-preview">
-                  <img 
-                    src={URL.createObjectURL(uploadImages[key])} 
+                  <img
+                    src={URL.createObjectURL(uploadImages[key])}
                     alt={label}
                     className="preview-image"
                   />
                   <div className="upload-actions">
-                    <button 
-                      onClick={() => document.getElementById(`file-${key}`).click()}
+                    <button
+                      onClick={() =>
+                        document.getElementById(`file-${key}`).click()
+                      }
                       className="btn btn-secondary btn-sm"
                     >
                       Sostituisci
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleRemoveImage(key)}
                       className="btn btn-danger btn-sm"
                     >
@@ -466,15 +531,15 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
                   </div>
                   {uploadProgress[key] > 0 && (
                     <div className="upload-progress">
-                      <div 
-                        className="progress-bar" 
+                      <div
+                        className="progress-bar"
                         style={{ width: `${uploadProgress[key]}%` }}
                       />
                     </div>
                   )}
                 </div>
               ) : (
-                <div 
+                <div
                   className="upload-area"
                   onClick={() => document.getElementById(`file-${key}`).click()}
                 >
@@ -482,12 +547,12 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
                   <span>Clicca per caricare</span>
                 </div>
               )}
-              
+
               <input
                 id={`file-${key}`}
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleImageUpload(key, e.target.files[0])}
+                onChange={e => handleImageUpload(key, e.target.files[0])}
                 style={{ display: 'none' }}
               />
             </div>
@@ -495,9 +560,12 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         </div>
 
         <div className="upload-actions">
-          <button 
+          <button
             onClick={handleProcessOCR}
-            disabled={isProcessing || Object.values(uploadImages).filter(img => img !== null).length < 4}
+            disabled={
+              isProcessing ||
+              Object.values(uploadImages).filter(img => img !== null).length < 4
+            }
             className="btn btn-primary"
           >
             {isProcessing ? (
@@ -512,11 +580,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
               </>
             )}
           </button>
-          
-          <button 
-            onClick={handleDemoTest}
-            className="btn btn-secondary"
-          >
+
+          <button onClick={handleDemoTest} className="btn btn-secondary">
             <Zap size={16} />
             Test (Dati Demo)
           </button>
@@ -660,8 +725,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
           <div className="ai-summary">
             <h3>Giudizio Sintetico</h3>
             <p>
-              Partita analizzata con successo utilizzando Gemini AI. 
-              I dati sono stati estratti e strutturati automaticamente.
+              Partita analizzata con successo utilizzando Gemini AI. I dati sono
+              stati estratti e strutturati automaticamente.
             </p>
           </div>
 
@@ -755,9 +820,14 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
                     <span className="rating">{player.rating}</span>
                   </TableCell>
                   <TableCell>
-                    <Badge 
-                      variant={player.form === 'Excellent' ? 'success' : 
-                              player.form === 'Good' ? 'warning' : 'secondary'}
+                    <Badge
+                      variant={
+                        player.form === 'Excellent'
+                          ? 'success'
+                          : player.form === 'Good'
+                            ? 'warning'
+                            : 'secondary'
+                      }
                     >
                       {player.form}
                     </Badge>
@@ -777,35 +847,45 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     try {
       // Validazione robusta dell'input
       if (!Array.isArray(ratings)) {
-        console.warn('⚠️ generatePlayersFromRatings received invalid ratings:', ratings);
+        console.warn(
+          '⚠️ generatePlayersFromRatings received invalid ratings:',
+          ratings
+        );
         return [];
       }
 
-      return ratings.map((rating, index) => {
-        // Validazione di ogni rating
-        if (!rating || typeof rating !== 'object') {
-          console.warn('⚠️ Invalid rating object at index', index, ':', rating);
-          return null;
-        }
+      return ratings
+        .map((rating, index) => {
+          // Validazione di ogni rating
+          if (!rating || typeof rating !== 'object') {
+            console.warn(
+              '⚠️ Invalid rating object at index',
+              index,
+              ':',
+              rating
+            );
+            return null;
+          }
 
-        return {
-          name: rating.player || `Player ${index + 1}`,
-          role: 'N/A', // Non disponibile da OCR
-          rating: typeof rating.rating === 'number' ? rating.rating : 0,
-          goals: 0, // Non disponibile da OCR
-          assists: 0, // Non disponibile da OCR
-          participation: 0, // Non disponibile da OCR
-          form:
-            rating.rating >= 7.5
-              ? 'Excellent'
-              : rating.rating >= 6.5
-                ? 'Good'
-                : 'Average',
-          mvp: rating.rating >= 8.0,
-          growth: false,
-          isProfiled: Boolean(rating.isProfiled),
-        };
-      }).filter(player => player !== null); // Rimuove oggetti null
+          return {
+            name: rating.player || `Player ${index + 1}`,
+            role: 'N/A', // Non disponibile da OCR
+            rating: typeof rating.rating === 'number' ? rating.rating : 0,
+            goals: 0, // Non disponibile da OCR
+            assists: 0, // Non disponibile da OCR
+            participation: 0, // Non disponibile da OCR
+            form:
+              rating.rating >= 7.5
+                ? 'Excellent'
+                : rating.rating >= 6.5
+                  ? 'Good'
+                  : 'Average',
+            mvp: rating.rating >= 8.0,
+            growth: false,
+            isProfiled: Boolean(rating.isProfiled),
+          };
+        })
+        .filter(player => player !== null); // Rimuove oggetti null
     } catch (error) {
       console.error('❌ Error in generatePlayersFromRatings:', error);
       return [];
@@ -828,7 +908,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         <div className="page-content">
           {/* Sezione Upload - sempre visibile */}
           {renderImageUploader()}
-          
+
           {/* Sezioni di analisi - visibili dopo l'elaborazione o per demo */}
           {(activeSection === 'analysis' || showAllSections) && (
             <>
@@ -837,17 +917,18 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
               {renderBestPlayers()}
             </>
           )}
-          
+
           {/* Sezione vuota se nessuna immagine caricata */}
-          {!showAllSections && Object.values(uploadImages).every(img => img === null) && (
-            <div className="empty-state">
-              <EmptyState
-                icon={Upload}
-                title="Carica le 4 immagini per iniziare"
-                description="Seleziona le immagini della partita per iniziare l'analisi completa con Gemini AI"
-              />
-            </div>
-          )}
+          {!showAllSections &&
+            Object.values(uploadImages).every(img => img === null) && (
+              <div className="empty-state">
+                <EmptyState
+                  icon={Upload}
+                  title="Carica le 4 immagini per iniziare"
+                  description="Seleziona le immagini della partita per iniziare l'analisi completa con Gemini AI"
+                />
+              </div>
+            )}
         </div>
       </div>
     </ErrorBoundary>
