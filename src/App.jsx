@@ -103,39 +103,7 @@ function App() {
   // Se non autenticato, mostra Login
   if (!user) {
     console.log('🔑 Showing login screen...');
-    return (
-      <div>
-        <Login onLogin={handleLogin} />
-        {/* Pulsante di test per bypassare Firebase */}
-        <div
-          style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            zIndex: 1000,
-          }}
-        >
-          <button
-            onClick={() => {
-              console.log('🧪 Test login bypass');
-              setUser({ email: 'test@example.com', uid: 'test123' });
-              setLoading(false);
-            }}
-            style={{
-              padding: '8px 16px',
-              background: '#10B981',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '12px',
-            }}
-          >
-            🧪 Test Login
-          </button>
-        </div>
-      </div>
-    );
+    return <Login onLogin={handleLogin} />;
   }
 
   console.log('🏠 Showing main app with user:', user.email);

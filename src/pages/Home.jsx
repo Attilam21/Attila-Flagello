@@ -145,24 +145,6 @@ const Home = ({ user, onPageChange }) => {
         </div>
       </div>
 
-      {/* Test Logout Button */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">🧪 Test</h3>
-        </div>
-        <div style={{ padding: '16px' }}>
-          <button 
-            onClick={() => {
-              console.log('🧪 Test logout');
-              window.location.reload();
-            }}
-            className="btn btn-destructive"
-          >
-            🔄 Ricarica per vedere Login
-          </button>
-        </div>
-      </div>
-
       {/* Quick Actions */}
       <div className="card">
         <div className="card-header">
