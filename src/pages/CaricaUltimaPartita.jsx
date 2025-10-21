@@ -64,6 +64,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
   // Stati per OCR
   const [ocrResults, setOcrResults] = useState({});
+  const [ocrStatus, setOcrStatus] = useState({});
   const [processingImages, setProcessingImages] = useState([]);
 
   // Ref per gestire listener OCR
