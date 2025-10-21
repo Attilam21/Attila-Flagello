@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Upload, 
   Camera, 
@@ -58,10 +58,17 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   const [ocrStatus, setOcrStatus] = useState({});
   const [processingImages, setProcessingImages] = useState([]);
 
+  // Ref per gestire listener OCR
+  const ocrListenerRef = useRef(null);
+
   // Cleanup generale al dismount del componente
   useEffect(() => {
     return () => {
       // Cleanup di tutti i listener e timeout attivi
+      if (ocrListenerRef.current) {
+        ocrListenerRef.current();
+        ocrListenerRef.current = null;
+      }
       console.log('🧹 CaricaUltimaPartita cleanup on unmount');
     };
   }, []);
@@ -230,6 +237,23 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       ...prev,
       [type]: 0
     }));
+    
+    // Reset stato OCR per questa immagine
+    setOcrStatus(prev => ({
+      ...prev,
+      [type]: 'idle'
+    }));
+    
+    // Rimuovi risultati OCR per questa immagine
+    setOcrResults(prev => {
+      const newResults = { ...prev };
+      Object.keys(newResults).forEach(key => {
+        if (key.includes(type)) {
+          delete newResults[key];
+        }
+      });
+      return newResults;
+    });
   };
 
   // Handler per elaborazione OCR
@@ -263,6 +287,13 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       });
       setOcrStatus(initialOcrStatus);
       
+      // Cleanup listener precedente se esiste
+      if (ocrListenerRef.current) {
+        console.log('🧹 Cleaning up previous OCR listener');
+        ocrListenerRef.current();
+        ocrListenerRef.current = null;
+      }
+
       // Setup listener per risultati OCR - ascolta tutta la collection
       const unsubscribeOCR = onSnapshot(
         collection(db, 'matches', userId, 'ocr'),
@@ -312,6 +343,9 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
           console.error('❌ OCR Listener Error:', error);
         }
       );
+
+      // Salva riferimento al listener per cleanup
+      ocrListenerRef.current = unsubscribeOCR;
       
       // Aspetta che tutte le immagini siano processate
       const maxWaitTime = 60000; // 60 secondi
@@ -332,7 +366,10 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         
         if (allProcessed || Date.now() - startTime > maxWaitTime) {
           // Cleanup listener e timeout
-          unsubscribeOCR();
+          if (ocrListenerRef.current) {
+            ocrListenerRef.current();
+            ocrListenerRef.current = null;
+          }
           if (completionTimeoutId) {
             clearTimeout(completionTimeoutId);
           }
@@ -356,8 +393,9 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       console.error('❌ Errore elaborazione OCR:', error);
       
       // Cleanup in caso di errore
-      if (typeof unsubscribeOCR === 'function') {
-        unsubscribeOCR();
+      if (ocrListenerRef.current) {
+        ocrListenerRef.current();
+        ocrListenerRef.current = null;
       }
       if (completionTimeoutId) {
         clearTimeout(completionTimeoutId);
