@@ -159,7 +159,7 @@ const Home = ({ user, onPageChange }) => {
             <Eye size={20} />
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">TiP%</div>
+            <div className="kpi-label">Precisione Tiri</div>
             <div className="kpi-value">{generalKpis.shotsOnTarget}%</div>
           </div>
         </div>
@@ -179,7 +179,7 @@ const Home = ({ user, onPageChange }) => {
             <TrendingUp size={20} />
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Streak</div>
+            <div className="kpi-label">Serie</div>
             <div className="kpi-value">{generalKpis.currentStreak}</div>
           </div>
         </div>
@@ -199,7 +199,7 @@ const Home = ({ user, onPageChange }) => {
             <Shield size={20} />
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Clean Sheets</div>
+            <div className="kpi-label">Porta Inviolata</div>
             <div className="kpi-value">{generalKpis.cleanSheets}</div>
           </div>
         </div>
@@ -344,11 +344,11 @@ const Home = ({ user, onPageChange }) => {
       {/* Grafici Performance */}
       <div className="performance-charts">
         <div className="chart-section">
-          <h3>📈 Performance Trends</h3>
+          <h3>📈 Trend Performance</h3>
           <div className="charts-grid">
             <div className="chart-card">
               <div className="chart-header">
-                <h4>Winrate Trend</h4>
+                <h4>Trend Vittorie</h4>
                 <div className="chart-trend positive">
                   <TrendingUp size={16} />
                   +3.2%
