@@ -39,6 +39,8 @@ import {
   getDoc,
   setDoc,
   getDocs,
+  query,
+  where,
 } from 'firebase/firestore';
 
 const CaricaUltimaPartita = ({ onPageChange }) => {
@@ -242,6 +244,12 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
       console.log('🤖 Gemini: Dati aggregati:', aggregatedData);
       
+      // Aggiorna i voti con informazioni di profilazione
+      if (aggregatedData.ratings && aggregatedData.ratings.length > 0) {
+        aggregatedData.ratings = await updateRatingsWithProfiling(userId, aggregatedData.ratings);
+        console.log('👥 Ratings updated with profiling info:', aggregatedData.ratings);
+      }
+      
       // Aggiorna matchData
       setMatchData(aggregatedData);
       setActiveSection('analysis');
@@ -325,6 +333,39 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     }
   };
 
+  // Verifica se un giocatore è nella rosa (profilato)
+  const checkPlayerProfiled = async (userId, playerName) => {
+    try {
+      const playersRef = collection(db, 'users', userId, 'players');
+      const q = query(playersRef, where('name', '==', playerName));
+      const querySnapshot = await getDocs(q);
+      return !querySnapshot.empty;
+    } catch (error) {
+      console.error('❌ Error checking player profiled:', error);
+      return false;
+    }
+  };
+
+  // Aggiorna i voti con informazioni di profilazione
+  const updateRatingsWithProfiling = async (userId, ratings) => {
+    try {
+      const updatedRatings = await Promise.all(
+        ratings.map(async (rating) => {
+          const isProfiled = await checkPlayerProfiled(userId, rating.player);
+          return {
+            ...rating,
+            isProfiled,
+            badge: isProfiled ? 'Profilato' : 'Non profilato'
+          };
+        })
+      );
+      return updatedRatings;
+    } catch (error) {
+      console.error('❌ Error updating ratings with profiling:', error);
+      return ratings.map(rating => ({ ...rating, isProfiled: false, badge: 'Non profilato' }));
+    }
+  };
+
   // Genera dati demo per testare l'interfaccia quando l'API non è disponibile
   const generateDemoData = () => {
     return {
@@ -342,11 +383,11 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         golSubiti: 1,
       },
       ratings: [
-        { player: 'Buffon', rating: 7.5, role: 'Portiere' },
-        { player: 'Cannavaro', rating: 8.2, role: 'Difensore' },
-        { player: 'Pirlo', rating: 9.0, role: 'Centrocampista' },
-        { player: 'Totti', rating: 8.8, role: 'Attaccante' },
-        { player: 'Del Piero', rating: 8.5, role: 'Attaccante' },
+        { player: 'Buffon', rating: 7.5, role: 'Portiere', isProfiled: true, badge: 'Profilato' },
+        { player: 'Cannavaro', rating: 8.2, role: 'Difensore', isProfiled: true, badge: 'Profilato' },
+        { player: 'Pirlo', rating: 9.0, role: 'Centrocampista', isProfiled: false, badge: 'Non profilato' },
+        { player: 'Totti', rating: 8.8, role: 'Attaccante', isProfiled: true, badge: 'Profilato' },
+        { player: 'Del Piero', rating: 8.5, role: 'Attaccante', isProfiled: false, badge: 'Non profilato' },
       ],
       heatmaps: {
         offensive: { description: 'Attività concentrata sulla fascia destra', zones: ['fascia destra', 'area di rigore'] },
