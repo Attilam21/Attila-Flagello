@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Camera, UserPlus, Save, Users, Target, BarChart3 } from 'lucide-react';
 import { auth } from '../services/firebaseClient';
 import { listenToPlayers, addPlayer, updatePlayer, deletePlayerById } from '../services/firebaseClient';
+import OCRWizard from '../components/rosa/OCRWizard';
 
 const Rosa = ({ onPageChange }) => {
   const [players, setPlayers] = useState([]);
@@ -34,6 +35,13 @@ const Rosa = ({ onPageChange }) => {
 
   const handleAddPlayerManual = () => {
     setShowManualModal(true);
+  };
+
+  const handlePlayerAdded = (playerData) => {
+    console.log('🎯 Giocatore aggiunto tramite OCR:', playerData);
+    // Qui salveremo il giocatore su Firestore
+    // addPlayer(user.uid, playerData);
+    setShowOCRWizard(false);
   };
 
   const handleSave = async () => {
@@ -363,6 +371,13 @@ const Rosa = ({ onPageChange }) => {
           </div>
         </div>
       )}
+
+      {/* OCR Wizard Modal */}
+      <OCRWizard 
+        isOpen={showOCRWizard}
+        onClose={() => setShowOCRWizard(false)}
+        onPlayerAdded={handlePlayerAdded}
+      />
     </div>
   );
 };
