@@ -3,6 +3,7 @@ import { Plus, Camera, UserPlus, Save, Users, Target, BarChart3 } from 'lucide-r
 import { auth } from '../services/firebaseClient';
 import { listenToPlayers, addPlayer, updatePlayer, deletePlayerById } from '../services/firebaseClient';
 import OCRWizard from '../components/rosa/OCRWizard';
+import ManualPlayerModal from '../components/rosa/ManualPlayerModal';
 
 const Rosa = ({ onPageChange }) => {
   const [players, setPlayers] = useState([]);
@@ -42,6 +43,13 @@ const Rosa = ({ onPageChange }) => {
     // Qui salveremo il giocatore su Firestore
     // addPlayer(user.uid, playerData);
     setShowOCRWizard(false);
+  };
+
+  const handlePlayerSaved = (playerData) => {
+    console.log('💾 Giocatore salvato manualmente:', playerData);
+    // Qui salveremo il giocatore su Firestore
+    // addPlayer(user.uid, playerData);
+    setShowManualModal(false);
   };
 
   const handleSave = async () => {
@@ -328,8 +336,8 @@ const Rosa = ({ onPageChange }) => {
                   <span>92%</span>
                 </div>
               </div>
-            </div>
-          </div>
+        </div>
+      </div>
 
           <div className="tactical-warnings">
             <h4>⚠️ Avvisi Tattici</h4>
@@ -360,17 +368,12 @@ const Rosa = ({ onPageChange }) => {
         </div>
       )}
 
-      {showManualModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>✏️ Inserimento Manuale</h3>
-            <p>Modal per inserimento manuale giocatore</p>
-            <button className="btn btn-secondary" onClick={() => setShowManualModal(false)}>
-              Chiudi
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Manual Player Modal */}
+      <ManualPlayerModal 
+        isOpen={showManualModal}
+        onClose={() => setShowManualModal(false)}
+        onPlayerSaved={handlePlayerSaved}
+      />
 
       {/* OCR Wizard Modal */}
       <OCRWizard 
