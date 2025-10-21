@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Gemini AI - eFootballLab</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0b1223;
+            color: white;
+        }
+        .test-container {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .upload-area {
+            border: 2px dashed #64748b;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .upload-area:hover {
+            border-color: #10b981;
+        }
+        .result {
+            background: #374151;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #059669;
+        }
+        button:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 Test Gemini AI - eFootballLab</h1>
+    
+    <div class="test-container">
+        <h2>Test Analisi Immagini</h2>
+        <p>Carica un'immagine per testare l'analisi con Gemini AI</p>
+        
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <p>📸 Clicca per caricare un'immagine</p>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+        </div>
+        
+        <div id="imagePreview" style="display: none;">
+            <h3>Anteprima Immagine:</h3>
+            <img id="previewImg" style="max-width: 100%; height: auto; border-radius: 8px;">
+        </div>
+        
+        <div id="controls" style="display: none;">
+            <button onclick="analyzeWithGemini()" id="analyzeBtn">🤖 Analizza con Gemini AI</button>
+            <button onclick="clearTest()">🗑️ Pulisci</button>
+        </div>
+        
+        <div id="result" style="display: none;">
+            <h3>Risultato Analisi:</h3>
+            <div id="resultContent" class="result"></div>
+        </div>
+        
+        <div id="loading" style="display: none;">
+            <p>🔄 Analizzando con Gemini AI...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from 'https://esm.run/@google/generative-ai';
+        
+        // Configurazione Gemini
+        const genAI = new GoogleGenerativeAI('AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI');
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        
+        let selectedFile = null;
+        
+        window.handleFileSelect = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                showImagePreview(file);
+                document.getElementById('controls').style.display = 'block';
+            }
+        };
+        
+        function showImagePreview(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        window.analyzeWithGemini = async function() {
+            if (!selectedFile) return;
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('result').style.display = 'none';
+            
+            try {
+                // Converti file in base64
+                const base64 = await fileToBase64(selectedFile);
+                
+                const prompt = `Analizza questa immagine di una partita di calcio e estrai le informazioni visibili.
+                
+                Cerca:
+                - Statistiche della partita (possesso, tiri, passaggi, etc.)
+                - Voti dei giocatori (nomi e numeri)
+                - Zone di attività (heatmap)
+                - Qualsiasi testo o numero visibile
+                
+                Rispondi in formato JSON strutturato.`;
+                
+                const result = await model.generateContent([
+                    prompt,
+                    {
+                        inlineData: {
+                            data: base64,
+                            mimeType: selectedFile.type,
+                        },
+                    },
+                ]);
+                
+                const response = await result.response;
+                const text = response.text();
+                
+                document.getElementById('resultContent').textContent = text;
+                document.getElementById('result').style.display = 'block';
+                
+            } catch (error) {
+                document.getElementById('resultContent').textContent = `Errore: ${error.message}`;
+                document.getElementById('result').style.display = 'block';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('analyzeBtn').disabled = false;
+            }
+        };
+        
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        window.clearTest = function() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('controls').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
+        };
+    </script>
+</body>
+</html>
