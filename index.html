@@ -1,12 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html lang="it" class="notranslate">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>eFootballLab</title>
+    <style>
+      /* Disabilita Google Translate completamente */
+      .notranslate {
+        -webkit-translate: no !important;
+        -moz-translate: no !important;
+        -ms-translate: no !important;
+        -o-translate: no !important;
+        translate: no !important;
+      }
+      body {
+        -webkit-translate: no !important;
+        -moz-translate: no !important;
+        -ms-translate: no !important;
+        -o-translate: no !important;
+        translate: no !important;
+      }
+      /* Nasconde elementi Google Translate */
+      .goog-te-banner-frame, .goog-te-gadget {
+        display: none !important;
+      }
+    </style>
   </head>
-  <body>
+  <body class="notranslate">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

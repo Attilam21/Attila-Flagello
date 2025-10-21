@@ -4029,6 +4029,7 @@ select.form-select option {
   padding: 32px;
   max-width: 400px;
   width: 100%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .error-content h2 {
