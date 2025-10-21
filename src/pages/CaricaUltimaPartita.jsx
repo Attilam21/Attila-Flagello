@@ -207,8 +207,14 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
       // Analizza tutte le immagini con Gemini
       console.log('🤖 Gemini: Analizzando immagini...');
-      const geminiResults = await analyzeBatchWithGemini(uploadImages);
-      console.log('🤖 Gemini: Risultati completi:', geminiResults);
+      let geminiResults;
+      try {
+        geminiResults = await analyzeBatchWithGemini(uploadImages);
+        console.log('🤖 Gemini: Risultati completi:', geminiResults);
+      } catch (geminiError) {
+        console.error('❌ Errore Gemini batch:', geminiError);
+        throw geminiError; // Rilancia per essere gestito dal catch principale
+      }
 
       // Aggrega i risultati
       const aggregatedData = {
@@ -221,7 +227,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       };
 
       // Processa risultati per tipo
-      geminiResults.forEach((result) => {
+      if (Array.isArray(geminiResults)) {
+        geminiResults.forEach((result) => {
         if (result && !result.error) {
           if (result.type === 'stats' && result.data) {
             aggregatedData.stats = { ...aggregatedData.stats, ...result.data };
@@ -241,6 +248,9 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
           setOcrStatus(prev => ({ ...prev, [result.type]: 'error' }));
         }
       });
+      } else {
+        console.error('❌ geminiResults non è un array:', geminiResults);
+      }
 
       console.log('🤖 Gemini: Dati aggregati:', aggregatedData);
       
