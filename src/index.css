@@ -1458,6 +1458,529 @@ body {
   color: #9ca3af;
 }
 
+/* Rosa Page Styles */
+.rosa-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rosa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.rosa-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rosa-title h1 {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.player-count {
+  background: #374151;
+  color: #9ca3af;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.rosa-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.rosa-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 24px;
+  min-height: 600px;
+}
+
+/* Player List Section */
+.player-list-section {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-header h3 {
+  color: #ffffff;
+  font-size: 18px;
+  margin: 0 0 16px 0;
+}
+
+.player-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  background: #374151;
+  color: #9ca3af;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.tab:hover {
+  background: #4b5563;
+}
+
+.player-list-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.player-card {
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.player-card:hover {
+  border-color: #10b981;
+  transform: translateY(-2px);
+}
+
+.player-info {
+  flex: 1;
+}
+
+.player-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.player-role {
+  color: #10b981;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.player-rating {
+  color: #f59e0b;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.player-status {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.player-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: #4b5563;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 16px;
+}
+
+.btn-icon:hover {
+  background: #10b981;
+  transform: scale(1.1);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+}
+
+.empty-state svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+/* Pitch Section */
+.pitch-section {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formation-selector {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.formation-select {
+  background: #374151;
+  color: #ffffff;
+  border: 1px solid #4b5563;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.pitch-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pitch-field {
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 3/2;
+  background: #10b981;
+  border-radius: 12px;
+  position: relative;
+  border: 3px solid #ffffff;
+}
+
+.pitch-area {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.goal-area {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 20%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #ffffff;
+}
+
+.goal-area.top {
+  top: 0;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+}
+
+.goal-area.bottom {
+  bottom: 0;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.field-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 40%;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+}
+
+.center-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.player-tokens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.player-token {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #3b82f6;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: move;
+  transition: all 0.2s;
+  transform: translate(-50%, -50%);
+}
+
+.player-token:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  z-index: 10;
+}
+
+.token-content {
+  text-align: center;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.token-name {
+  font-size: 8px;
+  line-height: 1;
+}
+
+.token-role {
+  font-size: 7px;
+  opacity: 0.8;
+}
+
+.token-rating {
+  font-size: 8px;
+  color: #f59e0b;
+}
+
+/* Analysis Section */
+.analysis-section {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tactical-indices {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.index-card {
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.index-label {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.index-value {
+  color: #10b981;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.index-bar {
+  width: 100%;
+  height: 8px;
+  background: #4b5563;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.index-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.index-fill.attack {
+  background: #ef4444;
+}
+
+.index-fill.defense {
+  background: #3b82f6;
+}
+
+.index-fill.transition {
+  background: #f59e0b;
+}
+
+.tactical-charts {
+  margin-bottom: 24px;
+}
+
+.chart-container {
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.chart-container h4 {
+  color: #ffffff;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+}
+
+.radar-chart {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4b5563;
+  border-radius: 8px;
+}
+
+.radar-placeholder {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bar-item span:first-child {
+  color: #ffffff;
+  font-size: 14px;
+  width: 80px;
+}
+
+.bar {
+  flex: 1;
+  height: 8px;
+  background: #4b5563;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.bar-item span:last-child {
+  color: #10b981;
+  font-size: 14px;
+  font-weight: bold;
+  width: 40px;
+  text-align: right;
+}
+
+.tactical-warnings {
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.tactical-warnings h4 {
+  color: #ffffff;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+}
+
+.warnings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.warning-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f59e0b;
+  font-size: 14px;
+}
+
+.warning-icon {
+  font-size: 16px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-content h3 {
+  color: #ffffff;
+  font-size: 20px;
+  margin: 0 0 16px 0;
+}
+
 /* Error Boundary */
 .error-boundary {
   min-height: 100vh;

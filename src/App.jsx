@@ -4,6 +4,7 @@ import { auth } from './services/firebaseClient';
 import SideNav from './components/layout/SideNav';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import Rosa from './pages/Rosa';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
@@ -117,7 +118,7 @@ function App() {
         return <Home user={user} onPageChange={handlePageChange} />;
       case 'rosa':
         console.log('👥 Rendering Rosa page');
-        return <div className="page-placeholder">👥 Rosa - In sviluppo</div>;
+        return <Rosa onPageChange={handlePageChange} />;
       case 'carica-partita':
         console.log('📸 Rendering Carica Partita page');
         return <div className="page-placeholder">📸 Carica Ultima Partita - In sviluppo</div>;
