@@ -1962,6 +1962,7 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding-left: 250px; /* Leave space for sidebar */
 }
 
 /* OCR Wizard styles */
@@ -2456,6 +2457,8 @@ body {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1001;
 }
 
 .modal-header {
@@ -2508,6 +2511,37 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix dropdown visibility in modal */
+.manual-modal .form-select {
+  position: relative;
+  z-index: 1002;
+}
+
+.manual-modal .form-select:focus {
+  z-index: 1003;
+}
+
+/* Ensure dropdown options are visible above modal */
+.manual-modal select.form-select option {
+  background: #1f2937 !important;
+  color: #f9fafb !important;
+  padding: 0.5rem !important;
+  border: 1px solid #374151 !important;
+  z-index: 1004 !important;
+}
+
+/* Force dropdown to render above everything */
+.manual-modal select.form-select {
+  z-index: 1002 !important;
+  position: relative !important;
+}
+
+.manual-modal select.form-select:focus {
+  z-index: 1003 !important;
 }
 
 .tab-content {
@@ -2573,6 +2607,35 @@ body {
   outline: none;
   border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Fix dropdown z-index issues */
+.form-select {
+  position: relative;
+  z-index: 10;
+}
+
+.form-select:focus {
+  z-index: 20;
+}
+
+/* Ensure dropdown options are visible */
+select.form-select option {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 0.5rem;
+  border: none;
+}
+
+/* Fix modal content z-index */
+.modal-content {
+  position: relative;
+  z-index: 1;
+}
+
+.tab-content {
+  position: relative;
+  z-index: 1;
 }
 
 .form-input.error {
@@ -2775,6 +2838,33 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* CRITICAL: Force dropdown above all elements */
+.manual-modal select {
+  z-index: 1002 !important;
+  position: relative !important;
+}
+
+.manual-modal select:focus {
+  z-index: 1003 !important;
+}
+
+.manual-modal select option {
+  z-index: 1004 !important;
+  position: relative !important;
+}
+
+/* Ensure sidebar stays visible above modal */
+.sidebar {
+  z-index: 1005 !important;
+  position: relative !important;
+}
+
+/* Modal overlay should not cover sidebar */
+.modal-overlay {
+  left: 250px; /* Start after sidebar */
+  width: calc(100% - 250px); /* Adjust width to not cover sidebar */
 }
 
 .modal-content {
