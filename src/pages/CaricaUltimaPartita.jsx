@@ -219,24 +219,24 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       };
 
       // Processa risultati per tipo
-      Object.entries(geminiResults).forEach(([type, result]) => {
+      geminiResults.forEach((result) => {
         if (result && !result.error) {
-          if (type === 'stats' && result.stats) {
-            aggregatedData.stats = { ...aggregatedData.stats, ...result.stats };
-            setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
-          } else if (type === 'ratings' && result.ratings) {
-            aggregatedData.ratings = [...aggregatedData.ratings, ...result.ratings];
-            setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
-          } else if (type === 'heatmapOffensive' && result.type === 'heatmap') {
-            aggregatedData.heatmaps.offensive = result;
-            setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
-          } else if (type === 'heatmapDefensive' && result.type === 'heatmap') {
-            aggregatedData.heatmaps.defensive = result;
-            setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
+          if (result.type === 'stats' && result.data) {
+            aggregatedData.stats = { ...aggregatedData.stats, ...result.data };
+            setOcrStatus(prev => ({ ...prev, [result.type]: 'completed' }));
+          } else if (result.type === 'ratings' && result.data) {
+            aggregatedData.ratings = [...aggregatedData.ratings, ...result.data];
+            setOcrStatus(prev => ({ ...prev, [result.type]: 'completed' }));
+          } else if (result.type === 'heatmapOffensive' && result.data) {
+            aggregatedData.heatmaps.offensive = result.data;
+            setOcrStatus(prev => ({ ...prev, [result.type]: 'completed' }));
+          } else if (result.type === 'heatmapDefensive' && result.data) {
+            aggregatedData.heatmaps.defensive = result.data;
+            setOcrStatus(prev => ({ ...prev, [result.type]: 'completed' }));
           }
         } else {
-          console.error(`❌ Errore Gemini per ${type}:`, result?.error);
-          setOcrStatus(prev => ({ ...prev, [type]: 'error' }));
+          console.error(`❌ Errore Gemini per ${result.type}:`, result?.error);
+          setOcrStatus(prev => ({ ...prev, [result.type]: 'error' }));
         }
       });
 
