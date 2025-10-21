@@ -115,6 +115,21 @@ function App() {
       case 'home':
         console.log('🏠 Rendering Home page');
         return <Home user={user} onPageChange={handlePageChange} />;
+      case 'rosa':
+        console.log('👥 Rendering Rosa page');
+        return <div className="page-placeholder">👥 Rosa - In sviluppo</div>;
+      case 'carica-partita':
+        console.log('📸 Rendering Carica Partita page');
+        return <div className="page-placeholder">📸 Carica Ultima Partita - In sviluppo</div>;
+      case 'statistiche':
+        console.log('📊 Rendering Statistiche page');
+        return <div className="page-placeholder">📊 Statistiche Avanzate - In sviluppo</div>;
+      case 'suggerimenti':
+        console.log('💡 Rendering Suggerimenti page');
+        return <div className="page-placeholder">💡 Suggerimenti Formazione - In sviluppo</div>;
+      case 'contromisure':
+        console.log('🛡️ Rendering Contromisure page');
+        return <div className="page-placeholder">🛡️ Contromisure - In sviluppo</div>;
       default:
         console.log('🏠 Rendering default Home page');
         return <Home user={user} onPageChange={handlePageChange} />;

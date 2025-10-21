@@ -7,16 +7,19 @@ import {
   LogOut,
   Camera,
   Brain,
+  Upload,
+  Lightbulb,
+  Shield,
 } from 'lucide-react';
 
 const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
   const navItems = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'dashboard', label: 'Home', icon: BarChart3 },
+    { id: 'home', label: 'Casa', icon: Home },
     { id: 'rosa', label: 'Rosa', icon: Users },
-    { id: 'matchocr', label: 'Analisi Partite', icon: Camera },
+    { id: 'carica-partita', label: 'Carica Ultima Partita', icon: Upload },
     { id: 'statistiche', label: 'Statistiche Avanzate', icon: BarChart3 },
-    { id: 'avversario', label: 'Analisi Avversari', icon: Target },
+    { id: 'suggerimenti', label: 'Suggerimenti Formazione', icon: Lightbulb },
+    { id: 'contromisure', label: 'Contromisure', icon: Shield },
   ];
 
   return (

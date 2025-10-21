@@ -631,6 +631,20 @@ body {
   color: #9ca3af;
 }
 
+/* Page Placeholder */
+.page-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 24px;
+  color: #9ca3af;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  margin: 24px;
+}
+
 /* Error Boundary */
 .error-boundary {
   min-height: 100vh;
