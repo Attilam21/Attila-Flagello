@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Target, Eye, Clock, Brain, Zap, TrendingUp, Users, Shield, BarChart3, Upload, MessageSquare, CheckCircle, ArrowRight, Star } from 'lucide-react';
+import { Trophy, Target, Eye, Clock, Brain, Zap, TrendingUp, Users, Shield, BarChart3, Upload, MessageSquare, CheckCircle, ArrowRight, Star, Activity, TrendingDown } from 'lucide-react';
 
 const Home = ({ user, onPageChange }) => {
   console.log('🏠 Home component rendering with user:', user?.email);
 
-  const [isFirstAccess, setIsFirstAccess] = useState(false);
   const [lastMatch, setLastMatch] = useState({
     result: 'W',
     score: '2-1',
@@ -55,13 +54,12 @@ const Home = ({ user, onPageChange }) => {
     players: 11
   });
 
-  useEffect(() => {
-    // Simula controllo primo accesso
-    const hasData = localStorage.getItem('eFootballLab_data');
-    if (!hasData) {
-      setIsFirstAccess(true);
-    }
-  }, []);
+  // Dati per i grafici
+  const [performanceData, setPerformanceData] = useState({
+    winrate: [65, 70, 68, 75, 72, 78, 75],
+    possession: [52, 55, 58, 60, 58, 62, 58],
+    goals: [1.2, 1.8, 2.1, 2.3, 2.0, 2.5, 2.1]
+  });
 
   const handleTaskToggle = (taskId) => {
     setAiTasks(prev => prev.map(task => 
@@ -72,47 +70,6 @@ const Home = ({ user, onPageChange }) => {
   const handleKpiClick = (kpi) => {
     onPageChange('statistiche');
   };
-
-  if (isFirstAccess) {
-    return (
-      <div className="first-access-container">
-        <div className="first-access-header">
-          <h1 className="first-access-title">🏆 Benvenuto in eFootballLab</h1>
-          <p className="first-access-subtitle">Completa questi passaggi per iniziare</p>
-        </div>
-
-        <div className="progress-container">
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: '0%' }}></div>
-          </div>
-          <span className="progress-text">0% Completato</span>
-        </div>
-
-        <div className="cta-grid">
-          <div className="cta-card" onClick={() => onPageChange('rosa')}>
-            <div className="cta-icon">👥</div>
-            <h3>Profilazione Rosa</h3>
-            <p>Carica i tuoi giocatori via OCR o inserimento manuale</p>
-            <button className="cta-button">Inizia</button>
-          </div>
-
-          <div className="cta-card" onClick={() => onPageChange('carica-partita')}>
-            <div className="cta-icon">📸</div>
-            <h3>Carica Statistiche Match</h3>
-            <p>Analizza le tue partite con l'OCR</p>
-            <button className="cta-button">Carica</button>
-          </div>
-
-          <div className="cta-card" onClick={() => onPageChange('suggerimenti')}>
-            <div className="cta-icon">🤖</div>
-            <h3>Apri Chat Coach</h3>
-            <p>Inizia a ricevere consigli personalizzati</p>
-            <button className="cta-button">Chat</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="dashboard-container">
@@ -380,6 +337,124 @@ const Home = ({ user, onPageChange }) => {
               <div className="index-fill" style={{ width: `${miniRosa.transition}%` }}></div>
             </div>
             <span className="index-value">{miniRosa.transition}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Grafici Performance */}
+      <div className="performance-charts">
+        <div className="chart-section">
+          <h3>📈 Performance Trends</h3>
+          <div className="charts-grid">
+            <div className="chart-card">
+              <div className="chart-header">
+                <h4>Winrate Trend</h4>
+                <div className="chart-trend positive">
+                  <TrendingUp size={16} />
+                  +3.2%
+                </div>
+              </div>
+              <div className="simple-chart">
+                <div className="chart-bars">
+                  {performanceData.winrate.map((value, index) => (
+                    <div key={index} className="chart-bar-container">
+                      <div 
+                        className="chart-bar" 
+                        style={{ height: `${value}%` }}
+                        title={`${value}%`}
+                      ></div>
+                      <span className="chart-label">{['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'][index]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="chart-card">
+              <div className="chart-header">
+                <h4>Possesso Palla</h4>
+                <div className="chart-trend positive">
+                  <TrendingUp size={16} />
+                  +6%
+                </div>
+              </div>
+              <div className="simple-chart">
+                <div className="chart-bars">
+                  {performanceData.possession.map((value, index) => (
+                    <div key={index} className="chart-bar-container">
+                      <div 
+                        className="chart-bar possession" 
+                        style={{ height: `${value}%` }}
+                        title={`${value}%`}
+                      ></div>
+                      <span className="chart-label">{['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'][index]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="chart-card">
+              <div className="chart-header">
+                <h4>Gol per Partita</h4>
+                <div className="chart-trend positive">
+                  <TrendingUp size={16} />
+                  +0.9
+                </div>
+              </div>
+              <div className="simple-chart">
+                <div className="chart-bars">
+                  {performanceData.goals.map((value, index) => (
+                    <div key={index} className="chart-bar-container">
+                      <div 
+                        className="chart-bar goals" 
+                        style={{ height: `${value * 20}%` }}
+                        title={`${value}`}
+                      ></div>
+                      <span className="chart-label">{['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'][index]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="chart-section">
+          <h3>🎯 Analisi Dettagliata</h3>
+          <div className="analysis-grid">
+            <div className="analysis-card">
+              <div className="analysis-icon">
+                <Activity size={24} />
+              </div>
+              <div className="analysis-content">
+                <h4>Forma Attuale</h4>
+                <div className="analysis-value excellent">Eccellente</div>
+                <div className="analysis-detail">3 vittorie consecutive</div>
+              </div>
+            </div>
+
+            <div className="analysis-card">
+              <div className="analysis-icon">
+                <Target size={24} />
+              </div>
+              <div className="analysis-content">
+                <h4>Precisione Tiri</h4>
+                <div className="analysis-value good">67%</div>
+                <div className="analysis-detail">+5% rispetto alla media</div>
+              </div>
+            </div>
+
+            <div className="analysis-card">
+              <div className="analysis-icon">
+                <Shield size={24} />
+              </div>
+              <div className="analysis-content">
+                <h4>Difesa</h4>
+                <div className="analysis-value good">0.8 gol/subiti</div>
+                <div className="analysis-detail">Miglioramento costante</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
