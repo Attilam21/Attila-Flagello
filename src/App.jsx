@@ -4,6 +4,7 @@ import { auth } from './services/firebaseClient';
 import SideNav from './components/layout/SideNav';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -13,22 +14,40 @@ function App() {
   useEffect(() => {
     console.log('🚀 App starting, setting up auth listener...');
 
-    const timeoutId = setTimeout(() => {
-      console.log('⏰ Auth timeout, setting loading to false');
-      setLoading(false);
-    }, 5000);
+    let timeoutId;
+    let unsubscribe;
 
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      console.log('🔐 Auth state changed:', user ? `Logged in as ${user.email}` : 'Logged out');
-      clearTimeout(timeoutId);
-      setUser(user);
+    try {
+      timeoutId = setTimeout(() => {
+        console.log('⏰ Auth timeout, setting loading to false');
+        setLoading(false);
+      }, 5000);
+
+      unsubscribe = onAuthStateChanged(auth, user => {
+        console.log('🔐 Auth state changed:', user ? `Logged in as ${user.email}` : 'Logged out');
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        setUser(user);
+        setLoading(false);
+      });
+    } catch (error) {
+      console.error('❌ Error setting up auth listener:', error);
       setLoading(false);
-    });
+    }
 
     return () => {
       console.log('🧹 Cleaning up auth listener');
-      clearTimeout(timeoutId);
-      unsubscribe();
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      if (typeof unsubscribe === 'function') {
+        try {
+          unsubscribe();
+        } catch (error) {
+          console.error('❌ Error during cleanup:', error);
+        }
+      }
     };
   }, []);
 
@@ -135,15 +154,17 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <SideNav
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-        user={user}
-        onLogout={handleLogout}
-      />
-      <main className="main-content">{renderPage()}</main>
-    </div>
+    <ErrorBoundary>
+      <div className="app-container">
+        <SideNav
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+          user={user}
+          onLogout={handleLogout}
+        />
+        <main className="main-content">{renderPage()}</main>
+      </div>
+    </ErrorBoundary>
   );
 }
 

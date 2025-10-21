@@ -23,3 +23,4 @@ const CardFooter = ({ className, ...props }) => (
 );
 
 export { Card, CardHeader, CardContent, CardFooter };
+export default Card;
