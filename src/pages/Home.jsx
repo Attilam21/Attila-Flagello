@@ -1,11 +1,28 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Target, Eye, Clock, Brain, Zap, TrendingUp, Users, Shield, BarChart3, Upload, MessageSquare, CheckCircle, ArrowRight, Star, Activity, TrendingDown } from 'lucide-react';
+import {
+  Trophy,
+  Target,
+  Eye,
+  Clock,
+  Brain,
+  Zap,
+  TrendingUp,
+  Users,
+  Shield,
+  BarChart3,
+  Upload,
+  MessageSquare,
+  CheckCircle,
+  ArrowRight,
+  Star,
+  Activity,
+  TrendingDown,
+} from 'lucide-react';
 import { auth, db } from '../services/firebaseClient';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 
 const Home = ({ user, onPageChange }) => {
   console.log('🏠 Home component rendering with user:', user?.email);
-
 
   const [generalKpis, setGeneralKpis] = useState({
     winrate: 75,
@@ -16,7 +33,7 @@ const Home = ({ user, onPageChange }) => {
     avgPossession: 58,
     currentStreak: 3,
     avgRating: 8.2,
-    cleanSheets: 8
+    cleanSheets: 8,
   });
 
   // Stati per i dati reali da Firestore
@@ -27,38 +44,58 @@ const Home = ({ user, onPageChange }) => {
     currentStep: 1,
     totalSteps: 5,
     progress: 20,
-    nextAction: 'Completa la tua Rosa'
+    nextAction: 'Completa la tua Rosa',
   });
 
   const [recentMatches, setRecentMatches] = useState(['W', 'W', 'D', 'W', 'L']);
 
   const [aiTasks, setAiTasks] = useState([
-    { id: 1, priority: 'high', impact: 'Alto', text: 'Migliora il possesso palla', done: false },
-    { id: 2, priority: 'medium', impact: 'Medio', text: 'Analizza formazione avversario', done: false },
-    { id: 3, priority: 'low', impact: 'Basso', text: 'Aggiorna statistiche giocatori', done: false }
+    {
+      id: 1,
+      priority: 'high',
+      impact: 'Alto',
+      text: 'Migliora il possesso palla',
+      done: false,
+    },
+    {
+      id: 2,
+      priority: 'medium',
+      impact: 'Medio',
+      text: 'Analizza formazione avversario',
+      done: false,
+    },
+    {
+      id: 3,
+      priority: 'low',
+      impact: 'Basso',
+      text: 'Aggiorna statistiche giocatori',
+      done: false,
+    },
   ]);
 
   const [miniRosa, setMiniRosa] = useState({
     attack: 85,
     defense: 78,
     transition: 82,
-    players: 11
+    players: 11,
   });
 
   // Dati per i grafici
   const [performanceData, setPerformanceData] = useState({
     winrate: [65, 70, 68, 75, 72, 78, 75],
     possession: [52, 55, 58, 60, 58, 62, 58],
-    goals: [1.2, 1.8, 2.1, 2.3, 2.0, 2.5, 2.1]
+    goals: [1.2, 1.8, 2.1, 2.3, 2.0, 2.5, 2.1],
   });
 
-  const handleTaskToggle = (taskId) => {
-    setAiTasks(prev => prev.map(task => 
-      task.id === taskId ? { ...task, done: !task.done } : task
-    ));
+  const handleTaskToggle = taskId => {
+    setAiTasks(prev =>
+      prev.map(task =>
+        task.id === taskId ? { ...task, done: !task.done } : task
+      )
+    );
   };
 
-  const handleKpiClick = (kpi) => {
+  const handleKpiClick = kpi => {
     onPageChange('statistiche');
   };
 
@@ -69,28 +106,42 @@ const Home = ({ user, onPageChange }) => {
       return;
     }
 
-    console.log('🏠 Loading real stats from Firestore for user:', auth.currentUser.uid);
-    
+    console.log(
+      '🏠 Loading real stats from Firestore for user:',
+      auth.currentUser.uid
+    );
+
     const loadRealStats = async () => {
       try {
-        const statsRef = doc(db, 'dashboard', auth.currentUser.uid, 'stats', 'general');
+        const statsRef = doc(
+          db,
+          'dashboard',
+          auth.currentUser.uid,
+          'stats',
+          'general'
+        );
         const statsSnap = await getDoc(statsRef);
-        
+
         if (statsSnap.exists()) {
           const statsData = statsSnap.data();
           console.log('📊 Real stats loaded:', statsData);
           setRealStats(statsData);
-          
+
           // Aggiorna i KPI con i dati reali se disponibili
           if (statsData.lastMatch && typeof statsData.lastMatch === 'object') {
             try {
               setGeneralKpis(prev => {
                 const newKpis = {
                   ...prev,
-                  avgPossession: statsData.lastMatch.possesso || prev.avgPossession,
-                  shotsOnTarget: statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
+                  avgPossession:
+                    statsData.lastMatch.possesso || prev.avgPossession,
+                  shotsOnTarget:
+                    statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
                 };
-                console.log('✅ Dashboard KPI updated with real data:', newKpis);
+                console.log(
+                  '✅ Dashboard KPI updated with real data:',
+                  newKpis
+                );
                 return newKpis;
               });
             } catch (error) {
@@ -110,47 +161,65 @@ const Home = ({ user, onPageChange }) => {
     loadRealStats();
 
     // Setup listener real-time per aggiornamenti con gestione errori robusta
-    const statsRef = doc(db, 'dashboard', auth.currentUser.uid, 'stats', 'general');
-    const unsubscribe = onSnapshot(statsRef, (snap) => {
-      try {
-        if (snap.exists()) {
-          const statsData = snap.data();
-          console.log('📊 Real-time stats update:', statsData);
-          setRealStats(statsData);
-          
-          // Aggiorna KPI in tempo reale con validazione
-          if (statsData.lastMatch && typeof statsData.lastMatch === 'object') {
-            try {
-              setGeneralKpis(prev => {
-                const newKpis = {
-                  ...prev,
-                  avgPossession: statsData.lastMatch.possesso || prev.avgPossession,
-                  shotsOnTarget: statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
-                };
-                console.log('✅ Dashboard KPI updated in real-time:', newKpis);
-                return newKpis;
-              });
-            } catch (error) {
-              console.error('❌ Error updating KPI in real-time:', error);
+    const statsRef = doc(
+      db,
+      'dashboard',
+      auth.currentUser.uid,
+      'stats',
+      'general'
+    );
+    const unsubscribe = onSnapshot(
+      statsRef,
+      snap => {
+        try {
+          if (snap.exists()) {
+            const statsData = snap.data();
+            console.log('📊 Real-time stats update:', statsData);
+            setRealStats(statsData);
+
+            // Aggiorna KPI in tempo reale con validazione
+            if (
+              statsData.lastMatch &&
+              typeof statsData.lastMatch === 'object'
+            ) {
+              try {
+                setGeneralKpis(prev => {
+                  const newKpis = {
+                    ...prev,
+                    avgPossession:
+                      statsData.lastMatch.possesso || prev.avgPossession,
+                    shotsOnTarget:
+                      statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
+                  };
+                  console.log(
+                    '✅ Dashboard KPI updated in real-time:',
+                    newKpis
+                  );
+                  return newKpis;
+                });
+              } catch (error) {
+                console.error('❌ Error updating KPI in real-time:', error);
+              }
             }
           }
+        } catch (error) {
+          console.error('❌ Error processing real-time stats update:', error);
+          // Non bloccare l'app per errori di parsing
         }
-      } catch (error) {
-        console.error('❌ Error processing real-time stats update:', error);
-        // Non bloccare l'app per errori di parsing
+      },
+      error => {
+        console.error('❌ Real-time stats listener error:', error);
+
+        // Se è un errore di permessi, disabilita il listener per evitare loop
+        if (error.code === 'permission-denied') {
+          console.log('🚫 Permission denied, disabling real-time listener');
+          return;
+        }
+
+        // Per altri errori, continua a provare
+        console.log('🔄 Will retry listener setup...');
       }
-    }, (error) => {
-      console.error('❌ Real-time stats listener error:', error);
-      
-      // Se è un errore di permessi, disabilita il listener per evitare loop
-      if (error.code === 'permission-denied') {
-        console.log('🚫 Permission denied, disabling real-time listener');
-        return;
-      }
-      
-      // Per altri errori, continua a provare
-      console.log('🔄 Will retry listener setup...');
-    });
+    );
 
     return () => {
       unsubscribe();
@@ -178,7 +247,10 @@ const Home = ({ user, onPageChange }) => {
               <span className="progress-percentage">75%</span>
             </div>
             <div className="progress-bar-large">
-              <div className="progress-fill-large" style={{ width: '75%' }}></div>
+              <div
+                className="progress-fill-large"
+                style={{ width: '75%' }}
+              ></div>
             </div>
             <div className="progress-details">
               <span className="progress-text">Livello: Intermedio</span>
@@ -186,7 +258,6 @@ const Home = ({ user, onPageChange }) => {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* KPI Strip - Statistiche Generali */}
@@ -207,7 +278,9 @@ const Home = ({ user, onPageChange }) => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Gol</div>
-            <div className="kpi-value">{generalKpis.goalsFor}-{generalKpis.goalsAgainst}</div>
+            <div className="kpi-value">
+              {generalKpis.goalsFor}-{generalKpis.goalsAgainst}
+            </div>
             <div className="kpi-diff">+{generalKpis.goalDiff}</div>
           </div>
         </div>
@@ -217,7 +290,9 @@ const Home = ({ user, onPageChange }) => {
             <Eye size={20} />
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Tiri in Porta {realStats?.lastMatch ? '📊' : '📋'}</div>
+            <div className="kpi-label">
+              Tiri in Porta {realStats?.lastMatch ? '📊' : '📋'}
+            </div>
             <div className="kpi-value">{generalKpis.shotsOnTarget || 0}</div>
           </div>
         </div>
@@ -227,7 +302,9 @@ const Home = ({ user, onPageChange }) => {
             <Clock size={20} />
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Possesso {realStats?.lastMatch ? '📊' : '📋'}</div>
+            <div className="kpi-label">
+              Possesso {realStats?.lastMatch ? '📊' : '📋'}
+            </div>
             <div className="kpi-value">{generalKpis.avgPossession || 0}%</div>
           </div>
         </div>
@@ -272,7 +349,7 @@ const Home = ({ user, onPageChange }) => {
             <span>Step {coachProgress.currentStep}/5</span>
           </div>
         </div>
-        
+
         <div className="progress-steps">
           <div className="step active" onClick={() => onPageChange('rosa')}>
             <div className="step-number">1</div>
@@ -307,7 +384,7 @@ const Home = ({ user, onPageChange }) => {
         <h3>⚽ Ultimi 5 Match</h3>
         <div className="match-results">
           {recentMatches.map((result, index) => (
-            <button 
+            <button
               key={index}
               className={`match-result-btn ${result === 'W' ? 'win' : result === 'D' ? 'draw' : 'loss'}`}
               onClick={() => onPageChange('statistiche')}
@@ -325,23 +402,35 @@ const Home = ({ user, onPageChange }) => {
       <div className="ai-tasks">
         <div className="tasks-header">
           <h3>🤖 Task IA - Top 3</h3>
-          <button className="btn btn-secondary" onClick={() => onPageChange('suggerimenti')}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => onPageChange('suggerimenti')}
+          >
             Vedi tutti
           </button>
         </div>
         <div className="tasks-list">
           {aiTasks.map(task => (
-            <div key={task.id} className={`task-item ${task.done ? 'completed' : ''}`}>
-              <button 
+            <div
+              key={task.id}
+              className={`task-item ${task.done ? 'completed' : ''}`}
+            >
+              <button
                 className="task-toggle"
                 onClick={() => handleTaskToggle(task.id)}
               >
-                {task.done ? <CheckCircle size={16} /> : <div className="task-circle" />}
+                {task.done ? (
+                  <CheckCircle size={16} />
+                ) : (
+                  <div className="task-circle" />
+                )}
               </button>
               <div className="task-content">
                 <div className="task-text">{task.text}</div>
                 <div className="task-meta">
-                  <span className={`priority ${task.priority}`}>{task.impact} impatto</span>
+                  <span className={`priority ${task.priority}`}>
+                    {task.impact} impatto
+                  </span>
                 </div>
               </div>
             </div>
@@ -353,11 +442,14 @@ const Home = ({ user, onPageChange }) => {
       <div className="mini-rosa">
         <div className="mini-rosa-header">
           <h3>👥 Mini-Rosa & Modulo</h3>
-          <button className="btn btn-primary" onClick={() => onPageChange('rosa')}>
+          <button
+            className="btn btn-primary"
+            onClick={() => onPageChange('rosa')}
+          >
             Gestisci Rosa
           </button>
         </div>
-        
+
         <div className="formation-preview">
           <div className="formation-field">
             <div className="player-dot">GK</div>
@@ -378,21 +470,30 @@ const Home = ({ user, onPageChange }) => {
           <div className="index-item">
             <span className="index-label">Attacco</span>
             <div className="index-bar">
-              <div className="index-fill" style={{ width: `${miniRosa.attack}%` }}></div>
+              <div
+                className="index-fill"
+                style={{ width: `${miniRosa.attack}%` }}
+              ></div>
             </div>
             <span className="index-value">{miniRosa.attack}</span>
           </div>
           <div className="index-item">
             <span className="index-label">Difesa</span>
             <div className="index-bar">
-              <div className="index-fill" style={{ width: `${miniRosa.defense}%` }}></div>
+              <div
+                className="index-fill"
+                style={{ width: `${miniRosa.defense}%` }}
+              ></div>
             </div>
             <span className="index-value">{miniRosa.defense}</span>
           </div>
           <div className="index-item">
             <span className="index-label">Transizione</span>
             <div className="index-bar">
-              <div className="index-fill" style={{ width: `${miniRosa.transition}%` }}></div>
+              <div
+                className="index-fill"
+                style={{ width: `${miniRosa.transition}%` }}
+              ></div>
             </div>
             <span className="index-value">{miniRosa.transition}</span>
           </div>
@@ -416,12 +517,18 @@ const Home = ({ user, onPageChange }) => {
                 <div className="chart-bars">
                   {performanceData.winrate.map((value, index) => (
                     <div key={index} className="chart-bar-container">
-                      <div 
-                        className="chart-bar" 
+                      <div
+                        className="chart-bar"
                         style={{ height: `${value}%` }}
                         title={`${value}%`}
                       ></div>
-                      <span className="chart-label">{['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'][index]}</span>
+                      <span className="chart-label">
+                        {
+                          ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'][
+                            index
+                          ]
+                        }
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -440,12 +547,18 @@ const Home = ({ user, onPageChange }) => {
                 <div className="chart-bars">
                   {performanceData.possession.map((value, index) => (
                     <div key={index} className="chart-bar-container">
-                      <div 
-                        className="chart-bar possession" 
+                      <div
+                        className="chart-bar possession"
                         style={{ height: `${value}%` }}
                         title={`${value}%`}
                       ></div>
-                      <span className="chart-label">{['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'][index]}</span>
+                      <span className="chart-label">
+                        {
+                          ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'][
+                            index
+                          ]
+                        }
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -464,12 +577,18 @@ const Home = ({ user, onPageChange }) => {
                 <div className="chart-bars">
                   {performanceData.goals.map((value, index) => (
                     <div key={index} className="chart-bar-container">
-                      <div 
-                        className="chart-bar goals" 
+                      <div
+                        className="chart-bar goals"
                         style={{ height: `${value * 20}%` }}
                         title={`${value}`}
                       ></div>
-                      <span className="chart-label">{['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'][index]}</span>
+                      <span className="chart-label">
+                        {
+                          ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'][
+                            index
+                          ]
+                        }
+                      </span>
                     </div>
                   ))}
                 </div>

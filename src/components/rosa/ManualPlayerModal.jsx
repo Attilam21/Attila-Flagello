@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react';
-import { X, Save, User, BarChart3, Zap, Shield, Target, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  X,
+  Save,
+  User,
+  BarChart3,
+  Zap,
+  Shield,
+  Target,
+  Upload,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
 
 // TogglePill Component
 const TogglePill = ({ selected, children, onClick, disabled }) => {
@@ -10,14 +21,14 @@ const TogglePill = ({ selected, children, onClick, disabled }) => {
       disabled={disabled}
       aria-pressed={!!selected}
       className={[
-        "px-3 py-1.5 rounded-full text-sm transition outline-none",
+        'px-3 py-1.5 rounded-full text-sm transition outline-none',
         disabled
-          ? "bg-white/5 text-white/30 cursor-not-allowed"
+          ? 'bg-white/5 text-white/30 cursor-not-allowed'
           : selected
-            ? "bg-emerald-500 text-[#0b1223] font-semibold shadow"
-            : "bg-white/10 hover:bg-white/20 text-white",
-        "focus-visible:ring-2 focus-visible:ring-emerald-400/80"
-      ].join(" ")}
+            ? 'bg-emerald-500 text-[#0b1223] font-semibold shadow'
+            : 'bg-white/10 hover:bg-white/20 text-white',
+        'focus-visible:ring-2 focus-visible:ring-emerald-400/80',
+      ].join(' ')}
     >
       {children}
     </button>
@@ -38,14 +49,14 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
       potenziale: 0,
       livelloMassimo: 1,
       condizione: 'A',
-      valoreGiocatore: '1★'
+      valoreGiocatore: '1★',
     },
     anagrafica: {
       eta: 0,
       altezza: 0,
       peso: 0,
       club: '',
-      nazionalita: ''
+      nazionalita: '',
     },
     // Statistiche
     statistiche: {
@@ -74,7 +85,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
       presaPT: 0,
       parataPT: 0,
       riflessiPT: 0,
-      estensionePT: 0
+      estensionePT: 0,
     },
     // Competenze Posizione
     competenzePosizione: [],
@@ -85,13 +96,12 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
     media: {
       imgCarta: null,
       imgAbilitaBooster: null,
-      imgAbilitaIA: null
-    }
+      imgAbilitaIA: null,
+    },
   });
 
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState({});
-
 
   const tabs = [
     { id: 'general', label: 'Dati Generali', icon: User },
@@ -100,16 +110,16 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
     { id: 'abilities', label: 'Abilità giocatore', icon: Shield },
     { id: 'stiliIA', label: 'Stili di gioco IA', icon: Target },
     { id: 'position', label: 'Posizioni & Competenza', icon: Target },
-    { id: 'media', label: 'Carica immagine giocatore', icon: Upload }
+    { id: 'media', label: 'Carica immagine giocatore', icon: Upload },
   ];
 
   // Blocca lo scroll della pagina dietro al modal
   useEffect(() => {
     if (isOpen) {
       const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => { 
-        document.body.style.overflow = prev; 
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
       };
     }
   }, [isOpen]);
@@ -125,30 +135,54 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
     { value: 'TRQ', label: 'Trequartista' },
     { value: 'AS', label: 'Ala Sinistra' },
     { value: 'AD', label: 'Ala Destra' },
-    { value: 'ATT', label: 'Attaccante' }
+    { value: 'ATT', label: 'Attaccante' },
   ];
 
   const rarita = [
     { value: 'Standard', label: 'Standard' },
     { value: 'In evidenza', label: 'In evidenza' },
     { value: 'Leggenda', label: 'Leggenda' },
-    { value: 'Epica', label: 'Epica' }
+    { value: 'Epica', label: 'Epica' },
   ];
 
   const stiliIA = [
-    'Funambolo', 'Inserimento', 'Marcatore', 'Regista', 'Ala', 'Centrocampista',
-    'Difensore', 'Portiere', 'Attaccante', 'Trequartista', 'Terzino'
+    'Funambolo',
+    'Inserimento',
+    'Marcatore',
+    'Regista',
+    'Ala',
+    'Centrocampista',
+    'Difensore',
+    'Portiere',
+    'Attaccante',
+    'Trequartista',
+    'Terzino',
   ];
 
   const abilitaList = [
-    'Passaggio filtrante', 'Intercettatore', 'Tiro a giro', 'Colpo di testa',
-    'Crossing', 'Dribbling', 'Finalizzazione', 'Passaggio lungo',
-    'Controllo palla', 'Accelerazione', 'Resistenza', 'Equilibrio'
+    'Passaggio filtrante',
+    'Intercettatore',
+    'Tiro a giro',
+    'Colpo di testa',
+    'Crossing',
+    'Dribbling',
+    'Finalizzazione',
+    'Passaggio lungo',
+    'Controllo palla',
+    'Accelerazione',
+    'Resistenza',
+    'Equilibrio',
   ];
 
   const boosterList = [
-    'Tiro +2', 'Passaggio +1', 'Velocità +3', 'Difesa +2',
-    'Resistenza +1', 'Finalizzazione +2', 'Crossing +1', 'Dribbling +2'
+    'Tiro +2',
+    'Passaggio +1',
+    'Velocità +3',
+    'Difesa +2',
+    'Resistenza +1',
+    'Finalizzazione +2',
+    'Crossing +1',
+    'Dribbling +2',
   ];
 
   const handleInputChange = (section, field, value) => {
@@ -156,30 +190,31 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
       ...prev,
       [section]: {
         ...prev[section],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const handleArrayChange = (field, value, action) => {
     setPlayerData(prev => ({
       ...prev,
-      [field]: action === 'add' 
-        ? [...prev[field], value]
-        : prev[field].filter(item => item !== value)
+      [field]:
+        action === 'add'
+          ? [...prev[field], value]
+          : prev[field].filter(item => item !== value),
     }));
   };
 
   const handleImageUpload = (type, file) => {
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = e => {
         setPlayerData(prev => ({
           ...prev,
           media: {
             ...prev.media,
-            [type]: e.target.result
-          }
+            [type]: e.target.result,
+          },
         }));
       };
       reader.readAsDataURL(file);
@@ -190,7 +225,10 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
     const newErrors = {};
 
     if (!playerData.nome.trim()) newErrors.nome = 'Nome obbligatorio';
-    if (playerData.carta.complessivamente < 1 || playerData.carta.complessivamente > 100) {
+    if (
+      playerData.carta.complessivamente < 1 ||
+      playerData.carta.complessivamente > 100
+    ) {
       newErrors.complessivamente = 'Rating deve essere tra 1 e 100';
     }
     if (playerData.anagrafica.eta < 16 || playerData.anagrafica.eta > 50) {
@@ -220,7 +258,9 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const renderGeneralTab = () => (
     <div className="tab-content">
       <div className="form-section">
-        <h4 className="text-lg font-semibold text-white mb-4">📋 Informazioni Base</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">
+          📋 Informazioni Base
+        </h4>
         <div className="form-grid">
           <div className="form-group">
             <label className="form-label">Nome Giocatore *</label>
@@ -228,7 +268,9 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               type="text"
               className={`form-input ${errors.nome ? 'error' : ''}`}
               value={playerData.nome}
-              onChange={(e) => setPlayerData(prev => ({ ...prev, nome: e.target.value }))}
+              onChange={e =>
+                setPlayerData(prev => ({ ...prev, nome: e.target.value }))
+              }
               placeholder="Es. Jude Bellingham"
             />
             {errors.nome && <span className="error-text">{errors.nome}</span>}
@@ -239,10 +281,17 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
             <select
               className="form-select"
               value={playerData.ruoloPrimario}
-              onChange={(e) => setPlayerData(prev => ({ ...prev, ruoloPrimario: e.target.value }))}
+              onChange={e =>
+                setPlayerData(prev => ({
+                  ...prev,
+                  ruoloPrimario: e.target.value,
+                }))
+              }
             >
               {ruoli.map(ruolo => (
-                <option key={ruolo.value} value={ruolo.value}>{ruolo.label}</option>
+                <option key={ruolo.value} value={ruolo.value}>
+                  {ruolo.label}
+                </option>
               ))}
             </select>
           </div>
@@ -253,7 +302,12 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               type="text"
               className="form-input"
               value={playerData.stileGiocatore}
-              onChange={(e) => setPlayerData(prev => ({ ...prev, stileGiocatore: e.target.value }))}
+              onChange={e =>
+                setPlayerData(prev => ({
+                  ...prev,
+                  stileGiocatore: e.target.value,
+                }))
+              }
               placeholder="Es. Regista creativo"
             />
           </div>
@@ -261,17 +315,23 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
       </div>
 
       <div className="form-section">
-        <h4 className="text-lg font-semibold text-white mb-4">🎴 Carta Giocatore</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">
+          🎴 Carta Giocatore
+        </h4>
         <div className="form-grid">
           <div className="form-group">
             <label className="form-label">Rarità</label>
             <select
               className="form-select"
               value={playerData.carta.rarita}
-              onChange={(e) => handleInputChange('carta', 'rarita', e.target.value)}
+              onChange={e =>
+                handleInputChange('carta', 'rarita', e.target.value)
+              }
             >
               {rarita.map(r => (
-                <option key={r.value} value={r.value}>{r.label}</option>
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
               ))}
             </select>
           </div>
@@ -284,9 +344,17 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               max="100"
               className={`form-input ${errors.complessivamente ? 'error' : ''}`}
               value={playerData.carta.complessivamente}
-              onChange={(e) => handleInputChange('carta', 'complessivamente', parseInt(e.target.value))}
+              onChange={e =>
+                handleInputChange(
+                  'carta',
+                  'complessivamente',
+                  parseInt(e.target.value)
+                )
+              }
             />
-            {errors.complessivamente && <span className="error-text">{errors.complessivamente}</span>}
+            {errors.complessivamente && (
+              <span className="error-text">{errors.complessivamente}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -297,7 +365,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               max="110"
               className="form-input"
               value={playerData.carta.potenziale}
-              onChange={(e) => handleInputChange('carta', 'potenziale', parseInt(e.target.value))}
+              onChange={e =>
+                handleInputChange(
+                  'carta',
+                  'potenziale',
+                  parseInt(e.target.value)
+                )
+              }
             />
           </div>
 
@@ -309,7 +383,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               max="5"
               className="form-input"
               value={playerData.carta.livelloMassimo}
-              onChange={(e) => handleInputChange('carta', 'livelloMassimo', parseInt(e.target.value))}
+              onChange={e =>
+                handleInputChange(
+                  'carta',
+                  'livelloMassimo',
+                  parseInt(e.target.value)
+                )
+              }
             />
           </div>
 
@@ -318,7 +398,9 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
             <select
               className="form-select"
               value={playerData.carta.condizione}
-              onChange={(e) => handleInputChange('carta', 'condizione', e.target.value)}
+              onChange={e =>
+                handleInputChange('carta', 'condizione', e.target.value)
+              }
             >
               <option value="A">A (Ottima)</option>
               <option value="B">B (Buona)</option>
@@ -333,7 +415,9 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
             <select
               className="form-select"
               value={playerData.carta.valoreGiocatore}
-              onChange={(e) => handleInputChange('carta', 'valoreGiocatore', e.target.value)}
+              onChange={e =>
+                handleInputChange('carta', 'valoreGiocatore', e.target.value)
+              }
             >
               <option value="1★">1★</option>
               <option value="2★">2★</option>
@@ -356,7 +440,9 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               max="50"
               className={`form-input ${errors.eta ? 'error' : ''}`}
               value={playerData.anagrafica.eta}
-              onChange={(e) => handleInputChange('anagrafica', 'eta', parseInt(e.target.value))}
+              onChange={e =>
+                handleInputChange('anagrafica', 'eta', parseInt(e.target.value))
+              }
             />
             {errors.eta && <span className="error-text">{errors.eta}</span>}
           </div>
@@ -369,7 +455,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               max="220"
               className="form-input"
               value={playerData.anagrafica.altezza}
-              onChange={(e) => handleInputChange('anagrafica', 'altezza', parseInt(e.target.value))}
+              onChange={e =>
+                handleInputChange(
+                  'anagrafica',
+                  'altezza',
+                  parseInt(e.target.value)
+                )
+              }
             />
           </div>
 
@@ -381,7 +473,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               max="120"
               className="form-input"
               value={playerData.anagrafica.peso}
-              onChange={(e) => handleInputChange('anagrafica', 'peso', parseInt(e.target.value))}
+              onChange={e =>
+                handleInputChange(
+                  'anagrafica',
+                  'peso',
+                  parseInt(e.target.value)
+                )
+              }
             />
           </div>
 
@@ -391,7 +489,9 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               type="text"
               className="form-input"
               value={playerData.anagrafica.club}
-              onChange={(e) => handleInputChange('anagrafica', 'club', e.target.value)}
+              onChange={e =>
+                handleInputChange('anagrafica', 'club', e.target.value)
+              }
               placeholder="Es. Real Madrid"
             />
           </div>
@@ -402,7 +502,9 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               type="text"
               className="form-input"
               value={playerData.anagrafica.nazionalita}
-              onChange={(e) => handleInputChange('anagrafica', 'nazionalita', e.target.value)}
+              onChange={e =>
+                handleInputChange('anagrafica', 'nazionalita', e.target.value)
+              }
               placeholder="Es. Inghilterra"
             />
           </div>
@@ -418,7 +520,10 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
           <h4 className="text-lg font-semibold text-white mb-4">⚽ Attacco</h4>
           <div className="stats-grid">
             {[
-              { key: 'comportamentoOffensivo', label: 'Comportamento Offensivo' },
+              {
+                key: 'comportamentoOffensivo',
+                label: 'Comportamento Offensivo',
+              },
               { key: 'controlloPalla', label: 'Controllo Palla' },
               { key: 'velocitaDribbling', label: 'Velocità Dribbling' },
               { key: 'possessoStretto', label: 'Possesso Stretto' },
@@ -427,7 +532,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               { key: 'finalizzazione', label: 'Finalizzazione' },
               { key: 'colpoTesta', label: 'Colpo di Testa' },
               { key: 'calciPiazzati', label: 'Calci Piazzati' },
-              { key: 'tiroAGiro', label: 'Tiro a Giro' }
+              { key: 'tiroAGiro', label: 'Tiro a Giro' },
             ].map(stat => (
               <div key={stat.key} className="stat-field">
                 <label className="stat-label">{stat.label}</label>
@@ -437,7 +542,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
                   max="100"
                   className="stat-input"
                   value={playerData.statistiche[stat.key]}
-                  onChange={(e) => handleInputChange('statistiche', stat.key, parseInt(e.target.value) || 0)}
+                  onChange={e =>
+                    handleInputChange(
+                      'statistiche',
+                      stat.key,
+                      parseInt(e.target.value) || 0
+                    )
+                  }
                 />
               </div>
             ))}
@@ -448,10 +559,16 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
           <h4 className="text-lg font-semibold text-white mb-4">🛡️ Difesa</h4>
           <div className="stats-grid">
             {[
-              { key: 'comportamentoDifensivo', label: 'Comportamento Difensivo' },
-              { key: 'coinvolgimentoDifensivo', label: 'Coinvolgimento Difensivo' },
+              {
+                key: 'comportamentoDifensivo',
+                label: 'Comportamento Difensivo',
+              },
+              {
+                key: 'coinvolgimentoDifensivo',
+                label: 'Coinvolgimento Difensivo',
+              },
               { key: 'contrasto', label: 'Contrasto' },
-              { key: 'aggressivita', label: 'Aggressività' }
+              { key: 'aggressivita', label: 'Aggressività' },
             ].map(stat => (
               <div key={stat.key} className="stat-field">
                 <label className="stat-label">{stat.label}</label>
@@ -461,7 +578,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
                   max="100"
                   className="stat-input"
                   value={playerData.statistiche[stat.key]}
-                  onChange={(e) => handleInputChange('statistiche', stat.key, parseInt(e.target.value) || 0)}
+                  onChange={e =>
+                    handleInputChange(
+                      'statistiche',
+                      stat.key,
+                      parseInt(e.target.value) || 0
+                    )
+                  }
                 />
               </div>
             ))}
@@ -478,7 +601,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               { key: 'elevazione', label: 'Elevazione' },
               { key: 'contattoFisico', label: 'Contatto Fisico' },
               { key: 'equilibrio', label: 'Equilibrio' },
-              { key: 'resistenza', label: 'Resistenza' }
+              { key: 'resistenza', label: 'Resistenza' },
             ].map(stat => (
               <div key={stat.key} className="stat-field">
                 <label className="stat-label">{stat.label}</label>
@@ -488,7 +611,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
                   max="100"
                   className="stat-input"
                   value={playerData.statistiche[stat.key]}
-                  onChange={(e) => handleInputChange('statistiche', stat.key, parseInt(e.target.value) || 0)}
+                  onChange={e =>
+                    handleInputChange(
+                      'statistiche',
+                      stat.key,
+                      parseInt(e.target.value) || 0
+                    )
+                  }
                 />
               </div>
             ))}
@@ -503,7 +632,7 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
               { key: 'presaPT', label: 'Presa PT' },
               { key: 'parataPT', label: 'Parata PT' },
               { key: 'riflessiPT', label: 'Riflessi PT' },
-              { key: 'estensionePT', label: 'Estensione PT' }
+              { key: 'estensionePT', label: 'Estensione PT' },
             ].map(stat => (
               <div key={stat.key} className="stat-field">
                 <label className="stat-label">{stat.label}</label>
@@ -513,7 +642,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
                   max="100"
                   className="stat-input"
                   value={playerData.statistiche[stat.key]}
-                  onChange={(e) => handleInputChange('statistiche', stat.key, parseInt(e.target.value) || 0)}
+                  onChange={e =>
+                    handleInputChange(
+                      'statistiche',
+                      stat.key,
+                      parseInt(e.target.value) || 0
+                    )
+                  }
                 />
               </div>
             ))}
@@ -535,8 +670,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
             <TogglePill
               key={booster}
               selected={playerData.booster.includes(booster)}
-              onClick={() => handleArrayChange('booster', booster,
-                playerData.booster.includes(booster) ? 'remove' : 'add')}
+              onClick={() =>
+                handleArrayChange(
+                  'booster',
+                  booster,
+                  playerData.booster.includes(booster) ? 'remove' : 'add'
+                )
+              }
             >
               {booster}
             </TogglePill>
@@ -549,7 +689,9 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const renderAbilitiesTab = () => (
     <div className="tab-content">
       <div className="form-section">
-        <h4 className="text-lg font-semibold text-white mb-4">🎯 Abilità Giocatore</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">
+          🎯 Abilità Giocatore
+        </h4>
         <p className="section-description mb-6">
           Seleziona le abilità speciali di questo giocatore.
         </p>
@@ -558,8 +700,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
             <TogglePill
               key={abilita}
               selected={playerData.abilita.includes(abilita)}
-              onClick={() => handleArrayChange('abilita', abilita,
-                playerData.abilita.includes(abilita) ? 'remove' : 'add')}
+              onClick={() =>
+                handleArrayChange(
+                  'abilita',
+                  abilita,
+                  playerData.abilita.includes(abilita) ? 'remove' : 'add'
+                )
+              }
             >
               {abilita}
             </TogglePill>
@@ -572,7 +719,9 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const renderStiliIATab = () => (
     <div className="tab-content">
       <div className="form-section">
-        <h4 className="text-lg font-semibold text-white mb-4">🤖 Stili di Gioco IA</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">
+          🤖 Stili di Gioco IA
+        </h4>
         <p className="section-description mb-6">
           Seleziona gli stili di gioco IA per questo giocatore.
         </p>
@@ -581,8 +730,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
             <TogglePill
               key={stile}
               selected={playerData.stiliIA.includes(stile)}
-              onClick={() => handleArrayChange('stiliIA', stile, 
-                playerData.stiliIA.includes(stile) ? 'remove' : 'add')}
+              onClick={() =>
+                handleArrayChange(
+                  'stiliIA',
+                  stile,
+                  playerData.stiliIA.includes(stile) ? 'remove' : 'add'
+                )
+              }
             >
               {stile}
             </TogglePill>
@@ -595,60 +749,79 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const renderPositionTab = () => (
     <div className="tab-content">
       <div className="form-section">
-        <h4 className="text-lg font-semibold text-white mb-4">📍 Competenze Posizione</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">
+          📍 Competenze Posizione
+        </h4>
         <p className="section-description">
-          Aggiungi le posizioni in cui il giocatore può giocare e il relativo livello di competenza.
+          Aggiungi le posizioni in cui il giocatore può giocare e il relativo
+          livello di competenza.
         </p>
-        
+
         <div className="position-list">
           {playerData.competenzePosizione.map((pos, index) => (
             <div key={index} className="position-item">
               <select
                 className="form-select"
                 value={pos.posizione}
-                onChange={(e) => {
+                onChange={e => {
                   const newPos = [...playerData.competenzePosizione];
                   newPos[index].posizione = e.target.value;
-                  setPlayerData(prev => ({ ...prev, competenzePosizione: newPos }));
+                  setPlayerData(prev => ({
+                    ...prev,
+                    competenzePosizione: newPos,
+                  }));
                 }}
               >
                 {ruoli.map(ruolo => (
-                  <option key={ruolo.value} value={ruolo.value}>{ruolo.label}</option>
+                  <option key={ruolo.value} value={ruolo.value}>
+                    {ruolo.label}
+                  </option>
                 ))}
               </select>
-              
+
               <select
                 className="form-select"
                 value={pos.livello}
-                onChange={(e) => {
+                onChange={e => {
                   const newPos = [...playerData.competenzePosizione];
                   newPos[index].livello = e.target.value;
-                  setPlayerData(prev => ({ ...prev, competenzePosizione: newPos }));
+                  setPlayerData(prev => ({
+                    ...prev,
+                    competenzePosizione: newPos,
+                  }));
                 }}
               >
                 <option value="Basso">Basso</option>
                 <option value="Intermedio">Intermedio</option>
                 <option value="Alto">Alto</option>
               </select>
-              
+
               <button
                 className="btn-icon"
                 onClick={() => {
-                  const newPos = playerData.competenzePosizione.filter((_, i) => i !== index);
-                  setPlayerData(prev => ({ ...prev, competenzePosizione: newPos }));
+                  const newPos = playerData.competenzePosizione.filter(
+                    (_, i) => i !== index
+                  );
+                  setPlayerData(prev => ({
+                    ...prev,
+                    competenzePosizione: newPos,
+                  }));
                 }}
               >
                 <X size={16} />
               </button>
             </div>
           ))}
-          
+
           <button
             className="btn btn-secondary"
             onClick={() => {
               setPlayerData(prev => ({
                 ...prev,
-                competenzePosizione: [...prev.competenzePosizione, { posizione: 'PT', livello: 'Intermedio' }]
+                competenzePosizione: [
+                  ...prev.competenzePosizione,
+                  { posizione: 'PT', livello: 'Intermedio' },
+                ],
               }));
             }}
           >
@@ -662,25 +835,33 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   const renderMediaTab = () => (
     <div className="tab-content">
       <div className="form-section">
-        <h4 className="text-lg font-semibold text-white mb-4">📸 Immagini Giocatore</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">
+          📸 Immagini Giocatore
+        </h4>
         <p className="section-description">
           Carica le immagini del giocatore per una migliore visualizzazione.
         </p>
-        
+
         <div className="media-grid">
           <div className="media-upload">
-            <h5 className="text-base font-semibold text-white mb-2">🃏 Carta Giocatore</h5>
+            <h5 className="text-base font-semibold text-white mb-2">
+              🃏 Carta Giocatore
+            </h5>
             <div className="upload-area">
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleImageUpload('imgCarta', e.target.files[0])}
+                onChange={e => handleImageUpload('imgCarta', e.target.files[0])}
                 className="file-input"
                 id="carta-upload"
               />
               <label htmlFor="carta-upload" className="upload-label">
                 {playerData.media.imgCarta ? (
-                  <img src={playerData.media.imgCarta} alt="Carta" className="upload-preview" />
+                  <img
+                    src={playerData.media.imgCarta}
+                    alt="Carta"
+                    className="upload-preview"
+                  />
                 ) : (
                   <div className="upload-placeholder">
                     <Upload size={32} />
@@ -692,18 +873,26 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
           </div>
 
           <div className="media-upload">
-            <h5 className="text-base font-semibold text-white mb-2">⚡ Abilità e Booster</h5>
+            <h5 className="text-base font-semibold text-white mb-2">
+              ⚡ Abilità e Booster
+            </h5>
             <div className="upload-area">
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleImageUpload('imgAbilitaBooster', e.target.files[0])}
+                onChange={e =>
+                  handleImageUpload('imgAbilitaBooster', e.target.files[0])
+                }
                 className="file-input"
                 id="abilita-upload"
               />
               <label htmlFor="abilita-upload" className="upload-label">
                 {playerData.media.imgAbilitaBooster ? (
-                  <img src={playerData.media.imgAbilitaBooster} alt="Abilità" className="upload-preview" />
+                  <img
+                    src={playerData.media.imgAbilitaBooster}
+                    alt="Abilità"
+                    className="upload-preview"
+                  />
                 ) : (
                   <div className="upload-placeholder">
                     <Upload size={32} />
@@ -715,18 +904,26 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
           </div>
 
           <div className="media-upload">
-            <h5 className="text-base font-semibold text-white mb-2">🤖 Stili IA</h5>
+            <h5 className="text-base font-semibold text-white mb-2">
+              🤖 Stili IA
+            </h5>
             <div className="upload-area">
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleImageUpload('imgAbilitaIA', e.target.files[0])}
+                onChange={e =>
+                  handleImageUpload('imgAbilitaIA', e.target.files[0])
+                }
                 className="file-input"
                 id="ia-upload"
               />
               <label htmlFor="ia-upload" className="upload-label">
                 {playerData.media.imgAbilitaIA ? (
-                  <img src={playerData.media.imgAbilitaIA} alt="Stili IA" className="upload-preview" />
+                  <img
+                    src={playerData.media.imgAbilitaIA}
+                    alt="Stili IA"
+                    className="upload-preview"
+                  />
                 ) : (
                   <div className="upload-placeholder">
                     <Upload size={32} />
@@ -750,8 +947,8 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
         <div className="w-80 bg-[#0b1223] border-r border-white/10 text-white flex flex-col">
           <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
             <h3 className="font-bold text-lg">Sezioni</h3>
-            <button 
-              onClick={onClose} 
+            <button
+              onClick={onClose}
               className="text-white/70 hover:text-white text-3xl leading-none transition-colors"
               aria-label="Chiudi"
             >
@@ -766,8 +963,8 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
                   onClick={() => setCurrentTab(tab.id)}
                   className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                     currentTab === tab.id
-                      ? "bg-emerald-500 text-[#0b1223] font-semibold"
-                      : "bg-white/5 hover:bg-white/10 text-white"
+                      ? 'bg-emerald-500 text-[#0b1223] font-semibold'
+                      : 'bg-white/5 hover:bg-white/10 text-white'
                   }`}
                 >
                   {tab.label}
@@ -782,8 +979,12 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
           {/* Header */}
           <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-[#0f172a]">
             <div>
-              <h2 className="text-2xl font-bold">Inserimento Manuale Giocatore</h2>
-              <p className="text-white/60 text-sm">Compila i campi. La logica di salvataggio rimane invariata.</p>
+              <h2 className="text-2xl font-bold">
+                Inserimento Manuale Giocatore
+              </h2>
+              <p className="text-white/60 text-sm">
+                Compila i campi. La logica di salvataggio rimane invariata.
+              </p>
             </div>
           </div>
 
@@ -803,14 +1004,14 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
           {/* Footer */}
           <div className="px-6 py-4 border-t border-white/10 bg-[#0f172a]">
             <div className="max-w-6xl mx-auto flex justify-end gap-3">
-              <button 
-                onClick={onClose} 
+              <button
+                onClick={onClose}
                 className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium"
               >
                 Annulla
               </button>
-              <button 
-                onClick={handleSave} 
+              <button
+                onClick={handleSave}
                 disabled={isSaving}
                 className="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 font-semibold flex items-center gap-2"
               >

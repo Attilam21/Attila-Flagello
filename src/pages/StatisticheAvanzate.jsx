@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Target, 
-  Users, 
-  Zap, 
-  Shield, 
-  AlertCircle, 
+import {
+  BarChart3,
+  TrendingUp,
+  Target,
+  Users,
+  Zap,
+  Shield,
+  AlertCircle,
   CheckCircle,
   Filter,
   Eye,
@@ -21,21 +21,28 @@ import {
   Star,
   ArrowRight,
   Plus,
-  Settings
+  Settings,
 } from 'lucide-react';
 import { Card, Button, Badge, EmptyState } from '../components/ui';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/Table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '../components/ui/Table';
 import { auth } from '../services/firebaseClient';
-import { 
-  collection, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  getDocs, 
-  doc, 
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+  doc,
   getDoc,
-  setDoc
+  setDoc,
 } from 'firebase/firestore';
 import { db } from '../services/firebaseClient';
 
@@ -45,12 +52,12 @@ const StatisticheAvanzate = ({ onPageChange }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasData, setHasData] = useState(true);
   const [user, setUser] = useState(null);
-  
+
   // Firestore data states
   const [matchesData, setMatchesData] = useState([]);
   const [playersData, setPlayersData] = useState([]);
   const [tasksData, setTasksData] = useState([]);
-  
+
   // Firestore data loading functions
   const loadMatchesData = async (userId, range) => {
     try {
@@ -64,7 +71,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       const querySnapshot = await getDocs(q);
       const matches = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setMatchesData(matches);
       return matches;
@@ -74,14 +81,14 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     }
   };
 
-  const loadPlayersData = async (userId) => {
+  const loadPlayersData = async userId => {
     try {
       const playersRef = collection(db, 'players');
       const q = query(playersRef, where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
       const players = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setPlayersData(players);
       return players;
@@ -91,14 +98,14 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     }
   };
 
-  const loadTasksData = async (userId) => {
+  const loadTasksData = async userId => {
     try {
       const tasksRef = collection(db, 'tasks');
       const q = query(tasksRef, where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
       const tasks = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setTasksData(tasks);
       return tasks;
@@ -108,25 +115,34 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     }
   };
 
-  const calculateKPIs = (matches) => {
+  const calculateKPIs = matches => {
     if (!matches || matches.length === 0) return {};
-    
+
     const totalMatches = matches.length;
-    const totals = matches.reduce((acc, match) => {
-      return {
-        possession: acc.possession + (match.possession || 0),
-        shots: acc.shots + (match.shots || 0),
-        shotsOnTarget: acc.shotsOnTarget + (match.shotsOnTarget || 0),
-        passAccuracy: acc.passAccuracy + (match.passAccuracy || 0),
-        corners: acc.corners + (match.corners || 0),
-        fouls: acc.fouls + (match.fouls || 0),
-        goalsScored: acc.goalsScored + (match.goalsScored || 0),
-        goalsConceded: acc.goalsConceded + (match.goalsConceded || 0)
-      };
-    }, {
-      possession: 0, shots: 0, shotsOnTarget: 0, passAccuracy: 0,
-      corners: 0, fouls: 0, goalsScored: 0, goalsConceded: 0
-    });
+    const totals = matches.reduce(
+      (acc, match) => {
+        return {
+          possession: acc.possession + (match.possession || 0),
+          shots: acc.shots + (match.shots || 0),
+          shotsOnTarget: acc.shotsOnTarget + (match.shotsOnTarget || 0),
+          passAccuracy: acc.passAccuracy + (match.passAccuracy || 0),
+          corners: acc.corners + (match.corners || 0),
+          fouls: acc.fouls + (match.fouls || 0),
+          goalsScored: acc.goalsScored + (match.goalsScored || 0),
+          goalsConceded: acc.goalsConceded + (match.goalsConceded || 0),
+        };
+      },
+      {
+        possession: 0,
+        shots: 0,
+        shotsOnTarget: 0,
+        passAccuracy: 0,
+        corners: 0,
+        fouls: 0,
+        goalsScored: 0,
+        goalsConceded: 0,
+      }
+    );
 
     // Calculate averages and trends
     const averages = {
@@ -137,7 +153,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       corners: Math.round(totals.corners / totalMatches),
       fouls: Math.round(totals.fouls / totalMatches),
       goalsScored: Math.round(totals.goalsScored / totalMatches),
-      goalsConceded: Math.round(totals.goalsConceded / totalMatches)
+      goalsConceded: Math.round(totals.goalsConceded / totalMatches),
     };
 
     // Calculate trends (simplified - compare with previous range)
@@ -145,12 +161,14 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     Object.keys(averages).forEach(key => {
       const currentValue = averages[key];
       const previousValue = currentValue * 0.9; // Mock previous value
-      const change = Math.round(((currentValue - previousValue) / previousValue) * 100);
-      
+      const change = Math.round(
+        ((currentValue - previousValue) / previousValue) * 100
+      );
+
       trends[key] = {
         value: currentValue,
         trend: change > 0 ? 'up' : change < 0 ? 'down' : 'neutral',
-        change: Math.abs(change)
+        change: Math.abs(change),
       };
     });
 
@@ -159,25 +177,30 @@ const StatisticheAvanzate = ({ onPageChange }) => {
 
   const generateTasksFromAnalysis = (matches, players) => {
     const tasks = [];
-    
+
     if (!matches || matches.length === 0) return tasks;
 
     // Analyze possession
-    const avgPossession = matches.reduce((acc, match) => acc + (match.possession || 0), 0) / matches.length;
+    const avgPossession =
+      matches.reduce((acc, match) => acc + (match.possession || 0), 0) /
+      matches.length;
     if (avgPossession < 50) {
       tasks.push({
         id: `task-${Date.now()}-1`,
         title: 'Migliora il controllo del possesso palla',
-        description: 'La squadra ha una media possesso bassa. Concentrati sulla costruzione del gioco.',
+        description:
+          'La squadra ha una media possesso bassa. Concentrati sulla costruzione del gioco.',
         role: 'Centrocampisti',
         priority: avgPossession < 40 ? 'Alta' : 'Media',
         impact: 'Alto',
-        category: 'Tattica'
+        category: 'Tattica',
       });
     }
 
     // Analyze defensive errors
-    const avgGoalsConceded = matches.reduce((acc, match) => acc + (match.goalsConceded || 0), 0) / matches.length;
+    const avgGoalsConceded =
+      matches.reduce((acc, match) => acc + (match.goalsConceded || 0), 0) /
+      matches.length;
     if (avgGoalsConceded > 2) {
       tasks.push({
         id: `task-${Date.now()}-2`,
@@ -186,24 +209,28 @@ const StatisticheAvanzate = ({ onPageChange }) => {
         role: 'Difensori',
         priority: avgGoalsConceded > 3 ? 'Alta' : 'Media',
         impact: 'Alto',
-        category: 'Difesa'
+        category: 'Difesa',
       });
     }
 
     // Analyze offensive efficiency
-    const avgShots = matches.reduce((acc, match) => acc + (match.shots || 0), 0) / matches.length;
-    const avgGoals = matches.reduce((acc, match) => acc + (match.goalsScored || 0), 0) / matches.length;
+    const avgShots =
+      matches.reduce((acc, match) => acc + (match.shots || 0), 0) /
+      matches.length;
+    const avgGoals =
+      matches.reduce((acc, match) => acc + (match.goalsScored || 0), 0) /
+      matches.length;
     const efficiency = avgGoals / avgShots;
-    
+
     if (efficiency < 0.15) {
       tasks.push({
         id: `task-${Date.now()}-3`,
-        title: 'Migliora l\'efficacia offensiva',
+        title: "Migliora l'efficacia offensiva",
         description: 'Bassa conversione tiri-gol. Lavora sulla finalizzazione.',
         role: 'Attaccanti',
         priority: efficiency < 0.1 ? 'Alta' : 'Media',
         impact: 'Medio',
-        category: 'Attacco'
+        category: 'Attacco',
       });
     }
 
@@ -214,15 +241,15 @@ const StatisticheAvanzate = ({ onPageChange }) => {
   useEffect(() => {
     const loadData = async () => {
       if (!auth.currentUser) return;
-      
+
       setIsLoading(true);
       const userId = auth.currentUser.uid;
-      
+
       try {
         const [matches, players, tasks] = await Promise.all([
           loadMatchesData(userId, selectedRange),
           loadPlayersData(userId),
-          loadTasksData(userId)
+          loadTasksData(userId),
         ]);
 
         if (matches.length === 0) {
@@ -232,7 +259,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
           // Calculate KPIs from real data
           const calculatedKPIs = calculateKPIs(matches);
           setKpiData(calculatedKPIs);
-          
+
           // Generate tasks from analysis
           const generatedTasks = generateTasksFromAnalysis(matches, players);
           setSuggestedTasks(generatedTasks);
@@ -257,7 +284,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     corners: { value: 6, trend: 'down', change: -1 },
     fouls: { value: 12, trend: 'down', change: -2 },
     goalsScored: { value: 3, trend: 'up', change: 1 },
-    goalsConceded: { value: 1, trend: 'down', change: -1 }
+    goalsConceded: { value: 1, trend: 'down', change: -1 },
   });
 
   const [styleAnalysis, setStyleAnalysis] = useState({
@@ -270,8 +297,8 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       counterAttack: 45,
       crossing: 35,
       longShots: 25,
-      setPieces: 70
-    }
+      setPieces: 70,
+    },
   });
 
   const [squadCoherence, setSquadCoherence] = useState({
@@ -279,12 +306,22 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     departments: {
       defense: { coherence: 85, warnings: 1 },
       midfield: { coherence: 75, warnings: 2 },
-      attack: { coherence: 74, warnings: 1 }
+      attack: { coherence: 74, warnings: 1 },
     },
     warnings: [
-      { player: 'Messi', position: 'RW', issue: 'Fuori ruolo', severity: 'high' },
-      { player: 'Ronaldo', position: 'ST', issue: 'Zona scoperta', severity: 'medium' }
-    ]
+      {
+        player: 'Messi',
+        position: 'RW',
+        issue: 'Fuori ruolo',
+        severity: 'high',
+      },
+      {
+        player: 'Ronaldo',
+        position: 'ST',
+        issue: 'Zona scoperta',
+        severity: 'medium',
+      },
+    ],
   });
 
   const [passNetwork, setPassNetwork] = useState({
@@ -294,8 +331,8 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     heatmap: {
       center: 45,
       left: 25,
-      right: 30
-    }
+      right: 30,
+    },
   });
 
   const [offensiveDanger, setOffensiveDanger] = useState({
@@ -305,8 +342,8 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     shotMap: [
       { zone: 'Area piccola', shots: 4, xG: 1.2 },
       { zone: 'Dischetto', shots: 6, xG: 0.8 },
-      { zone: 'Fuori area', shots: 4, xG: 0.3 }
-    ]
+      { zone: 'Fuori area', shots: 4, xG: 0.3 },
+    ],
   });
 
   const [defensivePhase, setDefensivePhase] = useState({
@@ -317,8 +354,8 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     heatmap: {
       highPressing: 35,
       mediumPressing: 45,
-      lowPressing: 20
-    }
+      lowPressing: 20,
+    },
   });
 
   const [recurringErrors, setRecurringErrors] = useState([
@@ -327,30 +364,65 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       frequency: 8,
       trend: 'up',
       lastOccurrence: '2 partite fa',
-      impact: 'high'
+      impact: 'high',
     },
     {
       error: 'Tiri concessi dal mezzo spazio destro',
       frequency: 6,
       trend: 'down',
       lastOccurrence: '1 partita fa',
-      impact: 'medium'
+      impact: 'medium',
     },
     {
-      error: 'Calo dopo il 70\'',
+      error: "Calo dopo il 70'",
       frequency: 5,
       trend: 'stable',
       lastOccurrence: '3 partite fa',
-      impact: 'medium'
-    }
+      impact: 'medium',
+    },
   ]);
 
   const [bestPlayers, setBestPlayers] = useState([
-    { name: 'Jude Bellingham', role: 'CC', rating: 8.5, goals: 2, assists: 3, synergy: 92 },
-    { name: 'Vinicius Jr.', role: 'COME', rating: 8.2, goals: 1, assists: 2, synergy: 88 },
-    { name: 'Luka Modric', role: 'PT', rating: 7.9, goals: 0, assists: 4, synergy: 85 },
-    { name: 'Thibaut Courtois', role: 'PT', rating: 7.8, goals: 0, assists: 0, synergy: 82 },
-    { name: 'Davide Alaba', role: 'DC', rating: 7.6, goals: 0, assists: 1, synergy: 79 }
+    {
+      name: 'Jude Bellingham',
+      role: 'CC',
+      rating: 8.5,
+      goals: 2,
+      assists: 3,
+      synergy: 92,
+    },
+    {
+      name: 'Vinicius Jr.',
+      role: 'COME',
+      rating: 8.2,
+      goals: 1,
+      assists: 2,
+      synergy: 88,
+    },
+    {
+      name: 'Luka Modric',
+      role: 'PT',
+      rating: 7.9,
+      goals: 0,
+      assists: 4,
+      synergy: 85,
+    },
+    {
+      name: 'Thibaut Courtois',
+      role: 'PT',
+      rating: 7.8,
+      goals: 0,
+      assists: 0,
+      synergy: 82,
+    },
+    {
+      name: 'Davide Alaba',
+      role: 'DC',
+      rating: 7.6,
+      goals: 0,
+      assists: 1,
+      synergy: 79,
+    },
   ]);
 
   const [metaComparison, setMetaComparison] = useState({
@@ -362,8 +434,8 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     suggestions: [
       'Considera il modulo 4-2-3-1 per maggiore equilibrio',
       'Adatta lo stile al meta attuale',
-      'Rafforza il centrocampo'
-    ]
+      'Rafforza il centrocampo',
+    ],
   });
 
   const [suggestedTasks, setSuggestedTasks] = useState([
@@ -374,7 +446,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       role: 'Centrocampisti',
       priority: 'Alta',
       impact: 'Alto',
-      category: 'Tattica'
+      category: 'Tattica',
     },
     {
       id: 2,
@@ -383,7 +455,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       role: 'Difensori',
       priority: 'Media',
       impact: 'Alto',
-      category: 'Tecnica'
+      category: 'Tecnica',
     },
     {
       id: 3,
@@ -392,12 +464,12 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       role: 'Tutti',
       priority: 'Bassa',
       impact: 'Medio',
-      category: 'Fisico'
-    }
+      category: 'Fisico',
+    },
   ]);
 
   // Handlers
-  const handleRangeChange = (range) => {
+  const handleRangeChange = range => {
     setSelectedRange(range);
     // In production: refetch data based on range
     setIsLoading(true);
@@ -408,39 +480,37 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     console.log('Creare contromisure');
   };
 
-
-  const handleAddTask = async (task) => {
+  const handleAddTask = async task => {
     try {
       if (!auth.currentUser) return;
-      
+
       const userId = auth.currentUser.uid;
       const taskRef = doc(collection(db, 'tasks'));
-      
+
       const taskData = {
         ...task,
         userId,
         createdAt: new Date(),
         status: 'pending',
-        source: 'statistiche-avanzate'
+        source: 'statistiche-avanzate',
       };
-      
+
       await setDoc(taskRef, taskData);
       console.log('Task aggiunto con successo:', task.title);
-      
+
       // Reload tasks
       await loadTasksData(userId);
-      
     } catch (error) {
-      console.error('Errore nell\'aggiungere il task:', error);
+      console.error("Errore nell'aggiungere il task:", error);
     }
   };
 
   const handleAddAllTasks = async () => {
     try {
       if (!auth.currentUser) return;
-      
+
       const userId = auth.currentUser.uid;
-      
+
       for (const task of suggestedTasks) {
         const taskRef = doc(collection(db, 'tasks'));
         const taskData = {
@@ -448,21 +518,20 @@ const StatisticheAvanzate = ({ onPageChange }) => {
           userId,
           createdAt: new Date(),
           status: 'pending',
-          source: 'statistiche-avanzate'
+          source: 'statistiche-avanzate',
         };
-        
+
         await setDoc(taskRef, taskData);
       }
-      
+
       console.log('Tutti i task aggiunti con successo');
       await loadTasksData(userId);
-      
     } catch (error) {
-      console.error('Errore nell\'aggiungere tutti i task:', error);
+      console.error("Errore nell'aggiungere tutti i task:", error);
     }
   };
 
-  const handlePlayerClick = (player) => {
+  const handlePlayerClick = player => {
     console.log('Apri dettagli giocatore:', player);
   };
 
@@ -483,7 +552,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
           <div className="flex items-center gap-2">
             <span className="text-white/60 text-sm">Range:</span>
             <div className="flex bg-white/10 rounded-lg p-1">
-              {['5', '10', '30'].map((range) => (
+              {['5', '10', '30'].map(range => (
                 <button
                   key={range}
                   onClick={() => handleRangeChange(range)}
@@ -499,17 +568,14 @@ const StatisticheAvanzate = ({ onPageChange }) => {
             </div>
           </div>
           <div className="flex gap-2">
-            <button 
+            <button
               onClick={handleCreateCounters}
               className="btn btn-secondary"
             >
               <Shield size={16} />
               Crea contromisure
             </button>
-            <button 
-              onClick={handleAddAllTasks}
-              className="btn btn-primary"
-            >
+            <button onClick={handleAddAllTasks} className="btn btn-primary">
               <Plus size={16} />
               Aggiungi tutti i task
             </button>
@@ -537,7 +603,9 @@ const StatisticheAvanzate = ({ onPageChange }) => {
               <Activity size={24} />
             </div>
             <div className="kpi-value">{data.value}</div>
-            <div className="kpi-label">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+            <div className="kpi-label">
+              {key.replace(/([A-Z])/g, ' $1').trim()}
+            </div>
             <div className={`kpi-trend ${data.trend}`}>
               {data.trend === 'up' ? (
                 <TrendingUp size={16} />
@@ -546,7 +614,8 @@ const StatisticheAvanzate = ({ onPageChange }) => {
               ) : (
                 <div className="w-4 h-0.5 bg-white/40"></div>
               )}
-              {data.change > 0 ? '+' : ''}{data.change}%
+              {data.change > 0 ? '+' : ''}
+              {data.change}%
             </div>
           </Card>
         ))}
@@ -571,7 +640,8 @@ const StatisticheAvanzate = ({ onPageChange }) => {
           <div className="style-overview">
             <div className="style-name">{styleAnalysis.playStyle}</div>
             <div className="style-description">
-              Approccio basato sul controllo del possesso palla e costruzione del gioco
+              Approccio basato sul controllo del possesso palla e costruzione
+              del gioco
             </div>
           </div>
           <div className="style-strengths">
@@ -597,12 +667,24 @@ const StatisticheAvanzate = ({ onPageChange }) => {
             {/* Placeholder for radar chart */}
             <div className="radar-placeholder">
               <div className="radar-center">
-                <div className="radar-axis">Possesso: {styleAnalysis.radar.possession}%</div>
-                <div className="radar-axis">Pressing: {styleAnalysis.radar.pressing}%</div>
-                <div className="radar-axis">Contropiede: {styleAnalysis.radar.counterAttack}%</div>
-                <div className="radar-axis">Cross: {styleAnalysis.radar.crossing}%</div>
-                <div className="radar-axis">Tiri da fuori: {styleAnalysis.radar.longShots}%</div>
-                <div className="radar-axis">Pali fissi: {styleAnalysis.radar.setPieces}%</div>
+                <div className="radar-axis">
+                  Possesso: {styleAnalysis.radar.possession}%
+                </div>
+                <div className="radar-axis">
+                  Pressing: {styleAnalysis.radar.pressing}%
+                </div>
+                <div className="radar-axis">
+                  Contropiede: {styleAnalysis.radar.counterAttack}%
+                </div>
+                <div className="radar-axis">
+                  Cross: {styleAnalysis.radar.crossing}%
+                </div>
+                <div className="radar-axis">
+                  Tiri da fuori: {styleAnalysis.radar.longShots}%
+                </div>
+                <div className="radar-axis">
+                  Pali fissi: {styleAnalysis.radar.setPieces}%
+                </div>
               </div>
             </div>
           </div>
@@ -630,7 +712,10 @@ const StatisticheAvanzate = ({ onPageChange }) => {
             <div className="field-placeholder">
               <div className="field-warnings">
                 {squadCoherence.warnings.map((warning, index) => (
-                  <div key={index} className={`warning-marker ${warning.severity}`}>
+                  <div
+                    key={index}
+                    className={`warning-marker ${warning.severity}`}
+                  >
                     {warning.player}
                   </div>
                 ))}
@@ -645,11 +730,13 @@ const StatisticheAvanzate = ({ onPageChange }) => {
               <div key={dept} className="department-item">
                 <div className="department-header">
                   <span className="department-name">{dept}</span>
-                  <span className="department-coherence">{data.coherence}%</span>
+                  <span className="department-coherence">
+                    {data.coherence}%
+                  </span>
                 </div>
                 <div className="department-bar">
-                  <div 
-                    className="department-fill" 
+                  <div
+                    className="department-fill"
                     style={{ width: `${data.coherence}%` }}
                   ></div>
                 </div>
@@ -751,8 +838,8 @@ const StatisticheAvanzate = ({ onPageChange }) => {
               <div key={index} className="xg-bar">
                 <div className="xg-label">{zone.zone}</div>
                 <div className="xg-bar-container">
-                  <div 
-                    className="xg-bar-fill" 
+                  <div
+                    className="xg-bar-fill"
                     style={{ width: `${(zone.xG / 2.3) * 100}%` }}
                   ></div>
                 </div>
@@ -806,8 +893,8 @@ const StatisticheAvanzate = ({ onPageChange }) => {
             <div className="duel-bar">
               <div className="duel-label">% Vittoria Duelli</div>
               <div className="duel-bar-container">
-                <div 
-                  className="duel-bar-fill" 
+                <div
+                  className="duel-bar-fill"
                   style={{ width: `${defensivePhase.duelWinRate}%` }}
                 ></div>
               </div>
@@ -840,7 +927,9 @@ const StatisticheAvanzate = ({ onPageChange }) => {
                 <div className="error-content">
                   <div className="error-title">{error.error}</div>
                   <div className="error-meta">
-                    <span className="error-frequency">{error.frequency} volte</span>
+                    <span className="error-frequency">
+                      {error.frequency} volte
+                    </span>
                     <span className="error-last">{error.lastOccurrence}</span>
                   </div>
                   <div className={`error-impact ${error.impact}`}>
@@ -910,15 +999,15 @@ const StatisticheAvanzate = ({ onPageChange }) => {
                 <TableCell>{player.assists}</TableCell>
                 <TableCell>
                   <div className="synergy-bar">
-                    <div 
-                      className="synergy-fill" 
+                    <div
+                      className="synergy-fill"
                       style={{ width: `${player.synergy}%` }}
                     ></div>
                     <span className="synergy-text">{player.synergy}%</span>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <button 
+                  <button
                     onClick={() => handlePlayerClick(player)}
                     className="btn btn-sm btn-ghost"
                   >
@@ -950,12 +1039,16 @@ const StatisticheAvanzate = ({ onPageChange }) => {
           <div className="formation-comparison">
             <div className="formation-current">
               <div className="formation-label">Attuale</div>
-              <div className="formation-name">{metaComparison.currentFormation}</div>
+              <div className="formation-name">
+                {metaComparison.currentFormation}
+              </div>
             </div>
             <div className="formation-vs">VS</div>
             <div className="formation-meta">
               <div className="formation-label">Meta</div>
-              <div className="formation-name">{metaComparison.metaFormation}</div>
+              <div className="formation-name">
+                {metaComparison.metaFormation}
+              </div>
             </div>
           </div>
         </Card>
@@ -986,15 +1079,17 @@ const StatisticheAvanzate = ({ onPageChange }) => {
         </p>
       </div>
       <div className="tasks-list">
-        {suggestedTasks.map((task) => (
+        {suggestedTasks.map(task => (
           <Card key={task.id} className="task-card">
             <div className="task-header">
               <div className="task-priority">
-                <Badge 
+                <Badge
                   variant={
-                    task.priority === 'Alta' ? 'danger' : 
-                    task.priority === 'Media' ? 'warning' : 
-                    'secondary'
+                    task.priority === 'Alta'
+                      ? 'danger'
+                      : task.priority === 'Media'
+                        ? 'warning'
+                        : 'secondary'
                   }
                 >
                   {task.priority}
@@ -1011,7 +1106,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
               </div>
             </div>
             <div className="task-actions">
-              <button 
+              <button
                 onClick={() => handleAddTask(task)}
                 className="btn btn-primary btn-sm"
               >
@@ -1036,7 +1131,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
             title="Nessun dato disponibile"
             description="Carica almeno una partita per visualizzare le statistiche avanzate"
             action={
-              <button 
+              <button
                 onClick={() => onPageChange('carica-partita')}
                 className="btn btn-primary"
               >

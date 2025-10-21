@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from 'firebase/auth';
 import { auth } from '../services/firebaseClient';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -14,7 +17,7 @@ const Login = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -27,7 +30,7 @@ const Login = ({ onLogin }) => {
         await signInWithEmailAndPassword(auth, email, password);
         console.log('✅ User signed in successfully');
       }
-      
+
       if (onLogin) {
         onLogin();
       }
@@ -39,10 +42,10 @@ const Login = ({ onLogin }) => {
     }
   };
 
-  const getErrorMessage = (errorCode) => {
+  const getErrorMessage = errorCode => {
     switch (errorCode) {
       case 'auth/user-not-found':
-        return 'Utente non trovato. Verifica l\'email.';
+        return "Utente non trovato. Verifica l'email.";
       case 'auth/wrong-password':
         return 'Password errata.';
       case 'auth/email-already-in-use':
@@ -79,7 +82,7 @@ const Login = ({ onLogin }) => {
               <Input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 placeholder="inserisci@email.com"
                 required
                 className="form-input"
@@ -94,7 +97,7 @@ const Login = ({ onLogin }) => {
               <Input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
                 placeholder="Inserisci password"
                 required
                 className="form-input"
@@ -116,11 +119,7 @@ const Login = ({ onLogin }) => {
             </div>
           )}
 
-          <Button
-            type="submit"
-            disabled={loading}
-            className="login-button"
-          >
+          <Button type="submit" disabled={loading} className="login-button">
             {loading ? (
               <div className="loading-spinner-small" />
             ) : (

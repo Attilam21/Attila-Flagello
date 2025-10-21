@@ -1,7 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Plus, Camera, UserPlus, Save, Users, Target, BarChart3 } from 'lucide-react';
+import {
+  Plus,
+  Camera,
+  UserPlus,
+  Save,
+  Users,
+  Target,
+  BarChart3,
+} from 'lucide-react';
 import { auth } from '../services/firebaseClient';
-import { listenToPlayers, addPlayer, updatePlayer, deletePlayerById } from '../services/firebaseClient';
+import {
+  listenToPlayers,
+  addPlayer,
+  updatePlayer,
+  deletePlayerById,
+} from '../services/firebaseClient';
 import OCRWizard from '../components/rosa/OCRWizard';
 import ManualPlayerModal from '../components/rosa/ManualPlayerModal';
 
@@ -19,7 +32,7 @@ const Rosa = ({ onPageChange }) => {
   useEffect(() => {
     if (!user) return;
 
-    const unsubscribe = listenToPlayers(user.uid, (playersList) => {
+    const unsubscribe = listenToPlayers(user.uid, playersList => {
       setPlayers(playersList);
       setLoading(false);
     });
@@ -35,18 +48,20 @@ const Rosa = ({ onPageChange }) => {
   };
 
   const handleAddPlayerManual = () => {
-    console.log('handleAddPlayerManual called, setting showManualModal to true');
+    console.log(
+      'handleAddPlayerManual called, setting showManualModal to true'
+    );
     setShowManualModal(true);
   };
 
-  const handlePlayerAdded = (playerData) => {
+  const handlePlayerAdded = playerData => {
     console.log('🎯 Giocatore aggiunto tramite OCR:', playerData);
     // Qui salveremo il giocatore su Firestore
     // addPlayer(user.uid, playerData);
     setShowOCRWizard(false);
   };
 
-  const handlePlayerSaved = (playerData) => {
+  const handlePlayerSaved = playerData => {
     console.log('💾 Giocatore salvato manualmente:', playerData);
     // Qui salveremo il giocatore su Firestore
     // addPlayer(user.uid, playerData);
@@ -64,11 +79,92 @@ const Rosa = ({ onPageChange }) => {
   };
 
   const formations = [
-    { id: '4-3-3', name: '4-3-3', positions: ['PT', 'TD', 'DC', 'DC', 'TS', 'CC', 'CC', 'CC', 'AS', 'ATT', 'AD'] },
-    { id: '4-2-3-1', name: '4-2-3-1', positions: ['PT', 'TD', 'DC', 'DC', 'TS', 'CDC', 'CDC', 'COC', 'AS', 'AD', 'ATT'] },
-    { id: '4-4-2', name: '4-4-2', positions: ['PT', 'TD', 'DC', 'DC', 'TS', 'AS', 'CC', 'CC', 'AD', 'ATT', 'ATT'] },
-    { id: '3-5-2', name: '3-5-2', positions: ['PT', 'DC', 'DC', 'DC', 'TD', 'TS', 'CC', 'CC', 'CC', 'ATT', 'ATT'] },
-    { id: '5-3-2', name: '5-3-2', positions: ['PT', 'TD', 'DC', 'DC', 'TS', 'TD', 'TS', 'CC', 'CC', 'CC', 'ATT', 'ATT'] }
+    {
+      id: '4-3-3',
+      name: '4-3-3',
+      positions: [
+        'PT',
+        'TD',
+        'DC',
+        'DC',
+        'TS',
+        'CC',
+        'CC',
+        'CC',
+        'AS',
+        'ATT',
+        'AD',
+      ],
+    },
+    {
+      id: '4-2-3-1',
+      name: '4-2-3-1',
+      positions: [
+        'PT',
+        'TD',
+        'DC',
+        'DC',
+        'TS',
+        'CDC',
+        'CDC',
+        'COC',
+        'AS',
+        'AD',
+        'ATT',
+      ],
+    },
+    {
+      id: '4-4-2',
+      name: '4-4-2',
+      positions: [
+        'PT',
+        'TD',
+        'DC',
+        'DC',
+        'TS',
+        'AS',
+        'CC',
+        'CC',
+        'AD',
+        'ATT',
+        'ATT',
+      ],
+    },
+    {
+      id: '3-5-2',
+      name: '3-5-2',
+      positions: [
+        'PT',
+        'DC',
+        'DC',
+        'DC',
+        'TD',
+        'TS',
+        'CC',
+        'CC',
+        'CC',
+        'ATT',
+        'ATT',
+      ],
+    },
+    {
+      id: '5-3-2',
+      name: '5-3-2',
+      positions: [
+        'PT',
+        'TD',
+        'DC',
+        'DC',
+        'TS',
+        'TD',
+        'TS',
+        'CC',
+        'CC',
+        'CC',
+        'ATT',
+        'ATT',
+      ],
+    },
   ];
 
   const currentFormation = formations.find(f => f.id === selectedFormation);
@@ -76,8 +172,13 @@ const Rosa = ({ onPageChange }) => {
   if (loading) {
     return (
       <div className="page-container">
-        <div className="loading-spinner" style={{ width: '48px', height: '48px', margin: '0 auto' }}></div>
-        <p style={{ color: '#9CA3AF', textAlign: 'center', marginTop: '16px' }}>Caricamento rosa...</p>
+        <div
+          className="loading-spinner"
+          style={{ width: '48px', height: '48px', margin: '0 auto' }}
+        ></div>
+        <p style={{ color: '#9CA3AF', textAlign: 'center', marginTop: '16px' }}>
+          Caricamento rosa...
+        </p>
       </div>
     );
   }
@@ -113,19 +214,19 @@ const Rosa = ({ onPageChange }) => {
           <div className="section-header">
             <h3>📋 Lista Giocatori</h3>
             <div className="player-tabs">
-              <button 
+              <button
                 className={`tab ${activeTab === 'titolari' ? 'active' : ''}`}
                 onClick={() => setActiveTab('titolari')}
               >
                 Titolari ({titolari.length})
               </button>
-              <button 
+              <button
                 className={`tab ${activeTab === 'riserve' ? 'active' : ''}`}
                 onClick={() => setActiveTab('riserve')}
               >
                 Riserve ({riserve.length})
               </button>
-              <button 
+              <button
                 className={`tab ${activeTab === 'tutti' ? 'active' : ''}`}
                 onClick={() => setActiveTab('tutti')}
               >
@@ -147,8 +248,12 @@ const Rosa = ({ onPageChange }) => {
                     <div key={player.id} className="player-card">
                       <div className="player-info">
                         <div className="player-name">{player.nome}</div>
-                        <div className="player-role">{player.ruoloPrimario}</div>
-                        <div className="player-rating">{player.carta.complessivamente}</div>
+                        <div className="player-role">
+                          {player.ruoloPrimario}
+                        </div>
+                        <div className="player-rating">
+                          {player.carta.complessivamente}
+                        </div>
                       </div>
                       <div className="player-actions">
                         <button className="btn-icon">✏️</button>
@@ -173,8 +278,12 @@ const Rosa = ({ onPageChange }) => {
                     <div key={player.id} className="player-card">
                       <div className="player-info">
                         <div className="player-name">{player.nome}</div>
-                        <div className="player-role">{player.ruoloPrimario}</div>
-                        <div className="player-rating">{player.carta.complessivamente}</div>
+                        <div className="player-role">
+                          {player.ruoloPrimario}
+                        </div>
+                        <div className="player-rating">
+                          {player.carta.complessivamente}
+                        </div>
                       </div>
                       <div className="player-actions">
                         <button className="btn-icon">✏️</button>
@@ -192,15 +301,22 @@ const Rosa = ({ onPageChange }) => {
                 {players.length === 0 ? (
                   <div className="empty-state">
                     <Users size={48} />
-                    <p>Nessun giocatore presente. Aggiungi la tua rosa tramite OCR o inserimento manuale.</p>
+                    <p>
+                      Nessun giocatore presente. Aggiungi la tua rosa tramite
+                      OCR o inserimento manuale.
+                    </p>
                   </div>
                 ) : (
                   players.map(player => (
                     <div key={player.id} className="player-card">
                       <div className="player-info">
                         <div className="player-name">{player.nome}</div>
-                        <div className="player-role">{player.ruoloPrimario}</div>
-                        <div className="player-rating">{player.carta.complessivamente}</div>
+                        <div className="player-role">
+                          {player.ruoloPrimario}
+                        </div>
+                        <div className="player-rating">
+                          {player.carta.complessivamente}
+                        </div>
                         <div className="player-status">
                           {player.isTitolare ? '🟢 Titolare' : '🔵 Riserva'}
                         </div>
@@ -223,9 +339,9 @@ const Rosa = ({ onPageChange }) => {
           <div className="section-header">
             <h3>⚽ Campo Tattico</h3>
             <div className="formation-selector">
-              <select 
-                value={selectedFormation} 
-                onChange={(e) => setSelectedFormation(e.target.value)}
+              <select
+                value={selectedFormation}
+                onChange={e => setSelectedFormation(e.target.value)}
                 className="formation-select"
               >
                 {formations.map(formation => (
@@ -247,22 +363,24 @@ const Rosa = ({ onPageChange }) => {
                 </div>
                 <div className="goal-area bottom"></div>
               </div>
-              
+
               {/* Gettoni giocatori */}
               <div className="player-tokens">
                 {pitchPlayers.map((player, index) => (
-                  <div 
-                    key={player.id} 
+                  <div
+                    key={player.id}
                     className="player-token"
-                    style={{ 
-                      left: `${player.x}%`, 
-                      top: `${player.y}%` 
+                    style={{
+                      left: `${player.x}%`,
+                      top: `${player.y}%`,
                     }}
                   >
                     <div className="token-content">
                       <div className="token-name">{player.nome}</div>
                       <div className="token-role">{player.ruoloPrimario}</div>
-                      <div className="token-rating">{player.carta.complessivamente}</div>
+                      <div className="token-rating">
+                        {player.carta.complessivamente}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -282,7 +400,10 @@ const Rosa = ({ onPageChange }) => {
               <div className="index-label">Attacco</div>
               <div className="index-value">85</div>
               <div className="index-bar">
-                <div className="index-fill attack" style={{ width: '85%' }}></div>
+                <div
+                  className="index-fill attack"
+                  style={{ width: '85%' }}
+                ></div>
               </div>
             </div>
 
@@ -290,7 +411,10 @@ const Rosa = ({ onPageChange }) => {
               <div className="index-label">Difesa</div>
               <div className="index-value">78</div>
               <div className="index-bar">
-                <div className="index-fill defense" style={{ width: '78%' }}></div>
+                <div
+                  className="index-fill defense"
+                  style={{ width: '78%' }}
+                ></div>
               </div>
             </div>
 
@@ -298,7 +422,10 @@ const Rosa = ({ onPageChange }) => {
               <div className="index-label">Transizione</div>
               <div className="index-value">82</div>
               <div className="index-bar">
-                <div className="index-fill transition" style={{ width: '82%' }}></div>
+                <div
+                  className="index-fill transition"
+                  style={{ width: '82%' }}
+                ></div>
               </div>
             </div>
           </div>
@@ -337,8 +464,8 @@ const Rosa = ({ onPageChange }) => {
                   <span>92%</span>
                 </div>
               </div>
-        </div>
-      </div>
+            </div>
+          </div>
 
           <div className="tactical-warnings">
             <h4>⚠️ Avvisi Tattici</h4>
@@ -356,16 +483,15 @@ const Rosa = ({ onPageChange }) => {
         </div>
       </div>
 
-
       {/* Manual Player Modal */}
-      <ManualPlayerModal 
+      <ManualPlayerModal
         isOpen={showManualModal}
         onClose={() => setShowManualModal(false)}
         onPlayerSaved={handlePlayerSaved}
       />
 
       {/* OCR Wizard Modal */}
-      <OCRWizard 
+      <OCRWizard
         isOpen={showOCRWizard}
         onClose={() => setShowOCRWizard(false)}
         onPlayerAdded={handlePlayerAdded}

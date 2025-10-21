@@ -27,7 +27,10 @@ function App() {
       }, 5000);
 
       unsubscribe = onAuthStateChanged(auth, user => {
-        console.log('🔐 Auth state changed:', user ? `Logged in as ${user.email}` : 'Logged out');
+        console.log(
+          '🔐 Auth state changed:',
+          user ? `Logged in as ${user.email}` : 'Logged out'
+        );
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
@@ -76,7 +79,7 @@ function App() {
     }
   };
 
-  const handlePageChange = (page) => {
+  const handlePageChange = page => {
     console.log('📄 Page change requested:', page);
     setCurrentPage(page);
     console.log('✅ Page changed to:', page);
@@ -121,18 +124,24 @@ function App() {
       case 'rosa':
         console.log('👥 Rendering Rosa page');
         return <Rosa onPageChange={handlePageChange} />;
-    case 'carica-partita':
-      console.log('📸 Rendering Carica Partita page');
-      return <CaricaUltimaPartita onPageChange={handlePageChange} />;
-    case 'statistiche-avanzate':
-      console.log('📊 Rendering Statistiche Avanzate page');
-      return <StatisticheAvanzate onPageChange={handlePageChange} />;
+      case 'carica-partita':
+        console.log('📸 Rendering Carica Partita page');
+        return <CaricaUltimaPartita onPageChange={handlePageChange} />;
+      case 'statistiche-avanzate':
+        console.log('📊 Rendering Statistiche Avanzate page');
+        return <StatisticheAvanzate onPageChange={handlePageChange} />;
       case 'suggerimenti':
         console.log('💡 Rendering Suggerimenti page');
-        return <div className="page-placeholder">💡 Suggerimenti Formazione - In sviluppo</div>;
+        return (
+          <div className="page-placeholder">
+            💡 Suggerimenti Formazione - In sviluppo
+          </div>
+        );
       case 'contromisure':
         console.log('🛡️ Rendering Contromisure page');
-        return <div className="page-placeholder">🛡️ Contromisure - In sviluppo</div>;
+        return (
+          <div className="page-placeholder">🛡️ Contromisure - In sviluppo</div>
+        );
       default:
         console.log('🏠 Rendering default Home page');
         return <Home user={user} onPageChange={handlePageChange} />;
