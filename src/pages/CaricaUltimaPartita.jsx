@@ -191,6 +191,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       // Path per Firebase Storage: uploads/{userId}/{fileName}
       const storageRef = ref(storage, `uploads/${userId}/${fileName}`);
 
+      console.log(`📤 Starting upload to: uploads/${userId}/${fileName}`);
+      
       // Upload file
       const uploadTask = uploadBytes(storageRef, file);
 
@@ -206,7 +208,9 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         });
       }, 200);
 
+      console.log(`⏳ Waiting for upload to complete...`);
       await uploadTask;
+      console.log(`✅ Upload task completed successfully`);
 
       // Cleanup interval e completa progresso
       clearInterval(progressInterval);
@@ -217,6 +221,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       setProcessingImages(prev => [...prev, { type, fileName, userId }]);
 
       console.log(`✅ Image uploaded successfully: ${fileName}`);
+      console.log(`📁 Storage path: uploads/${userId}/${fileName}`);
+      console.log(`🔄 Cloud Function should trigger automatically for: uploads/${userId}/${fileName}`);
 
     } catch (error) {
       console.error('❌ Error uploading image:', error);
@@ -276,7 +282,15 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       const userId = auth.currentUser.uid;
       
       console.log('🔄 Processing OCR with images:', uploadImages);
-      console.log('📋 Processing images:', processingImages);
+      console.log('📋 Processing images from state:', processingImages);
+      
+      // Verifica che le immagini siano state caricate su Storage
+      if (processingImages.length === 0) {
+        console.log('⚠️ No processing images found, waiting for uploads to complete...');
+        alert('Le immagini sono ancora in upload. Aspetta qualche secondo e riprova.');
+        setIsProcessing(false);
+        return;
+      }
       
       // Inizializza stati OCR per ogni immagine caricata
       const initialOcrStatus = {};
@@ -386,8 +400,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         }
       };
       
-      // Inizia controllo completamento
-      completionTimeoutId = setTimeout(checkCompletion, 2000);
+      // Inizia controllo completamento dopo 5 secondi per dare tempo alle immagini di essere processate
+      completionTimeoutId = setTimeout(checkCompletion, 5000);
       
     } catch (error) {
       console.error('❌ Errore elaborazione OCR:', error);
