@@ -29,7 +29,7 @@ import { Card, Button, Badge, EmptyState } from '../components/ui';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/Table';
 import { auth, storage, db } from '../services/firebaseClient';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, doc, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, doc, onSnapshot, getDoc, setDoc } from 'firebase/firestore';
 
 const CaricaUltimaPartita = ({ onPageChange }) => {
   console.log('📸 CaricaUltimaPartita component rendering');
@@ -581,11 +581,72 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   const handleSave = async () => {
     try {
       console.log('💾 Salvando analisi partita:', matchData);
-      // Qui integreremo con Firebase
+      
+      if (!auth.currentUser) {
+        alert('Devi essere loggato per salvare i dati.');
+        return;
+      }
+
+      const userId = auth.currentUser.uid;
+      
+      // Salva i dati della partita in Firestore
+      const matchDoc = {
+        ...matchData,
+        createdAt: new Date(),
+        userId: userId,
+        status: 'completed',
+        images: uploadImages
+      };
+
+      // Salva in matches/{userId}/matches/{matchId}
+      const matchRef = await addDoc(collection(db, 'matches', userId, 'matches'), matchDoc);
+      
+      // Aggiorna le statistiche della dashboard
+      await updateDashboardStats(userId, matchData);
+      
+      console.log('✅ Analisi salvata con ID:', matchRef.id);
       alert('Analisi salvata con successo!');
+      
     } catch (error) {
       console.error('❌ Errore salvataggio:', error);
       alert('Errore durante il salvataggio.');
+    }
+  };
+
+  // Aggiorna le statistiche della dashboard
+  const updateDashboardStats = async (userId, matchData) => {
+    try {
+      const statsRef = doc(db, 'dashboard', userId, 'stats', 'general');
+      const statsSnap = await getDoc(statsRef);
+      
+      let currentStats = statsSnap.exists() ? statsSnap.data() : {};
+      
+      // Aggiorna le statistiche con i nuovi dati
+      if (matchData.stats) {
+        currentStats = {
+          ...currentStats,
+          lastMatch: {
+            possesso: matchData.stats.possesso || 0,
+            tiri: matchData.stats.tiri || 0,
+            tiriInPorta: matchData.stats.tiriInPorta || 0,
+            passaggi: matchData.stats.passaggi || 0,
+            passaggiRiusciti: matchData.stats.passaggiRiusciti || 0,
+            corner: matchData.stats.corner || 0,
+            falli: matchData.stats.falli || 0,
+            contrasti: matchData.stats.contrasti || 0,
+            parate: matchData.stats.parate || 0,
+            updatedAt: new Date()
+          }
+        };
+      }
+      
+      // Salva le statistiche aggiornate
+      await setDoc(statsRef, currentStats, { merge: true });
+      
+      console.log('📊 Dashboard stats updated');
+      
+    } catch (error) {
+      console.error('❌ Errore aggiornamento dashboard:', error);
     }
   };
 
@@ -818,26 +879,35 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   );
 
   // Renderizza KPI della partita
-  const renderMatchKPIs = () => (
-    <div className="kpi-section">
-      <div className="section-header">
-        <h2 className="section-title">
-          <BarChart3 size={24} />
-          Statistiche Partita
-        </h2>
-      </div>
+  const renderMatchKPIs = () => {
+    // Usa dati OCR reali se disponibili, altrimenti mock data
+    const displayKPIs = matchData.stats && Object.keys(matchData.stats).length > 0 ? 
+      generateKPIsFromStats(matchData.stats) : matchKPIs;
 
-      <div className="kpi-grid">
-        {Object.entries(matchKPIs).map(([key, data]) => (
+    return (
+      <div className="kpi-section">
+        <div className="section-header">
+          <h2 className="section-title">
+            <BarChart3 size={24} />
+            Statistiche Partita {matchData.stats && Object.keys(matchData.stats).length > 0 ? '(Da OCR)' : '(Mock)'}
+          </h2>
+        </div>
+
+        <div className="kpi-grid">
+          {Object.entries(displayKPIs).map(([key, data]) => (
           <div key={key} className="kpi-card">
             <div className="kpi-header">
               <span className="kpi-label">
-                {key === 'possesso' ? 'Possesso' :
+                {key === 'possesso' ? 'Possesso %' :
                  key === 'tiri' ? 'Tiri' :
                  key === 'tiriInPorta' ? 'Tiri in Porta' :
-                 key === 'precisionePassaggi' ? 'Precisione Passaggi' :
+                 key === 'passaggi' ? 'Passaggi' :
+                 key === 'passaggiRiusciti' ? 'Passaggi Riusciti' :
                  key === 'corner' ? 'Corner' :
                  key === 'falli' ? 'Falli' :
+                 key === 'contrasti' ? 'Contrasti' :
+                 key === 'parate' ? 'Parate' :
+                 key === 'precisionePassaggi' ? 'Precisione Passaggi' :
                  key === 'golFatti' ? 'Gol Fatti' :
                  key === 'golSubiti' ? 'Gol Subiti' :
                  key === 'diffReti' ? 'Diff. Reti' : key}
@@ -853,7 +923,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
               </div>
             </div>
             <div className="kpi-value">
-              {key === 'possesso' || key === 'precisionePassaggi' ? `${data.value}%` : data.value}
+              {(key === 'possesso' || key === 'precisionePassaggi') && data.value ? `${data.value}%` : 
+               (data.value || data)}
             </div>
             <div className="kpi-comparison">
               {data.trend !== 'neutral' && (
@@ -866,7 +937,19 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         ))}
       </div>
     </div>
-  );
+    );
+  };
+
+  // Genera KPIs dai dati OCR
+  const generateKPIsFromStats = (stats) => {
+    const kpis = {};
+    
+    Object.entries(stats).forEach(([key, value]) => {
+      kpis[key] = { value: value };
+    });
+    
+    return kpis;
+  };
 
   // Renderizza analisi IA
   const renderAIAnalysis = () => (
@@ -1028,12 +1111,17 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   );
 
   // Renderizza migliori giocatori
-  const renderBestPlayers = () => (
-    <div className="players-section">
-      <div className="section-header">
-        <h2 className="section-title">
-          <Users size={24} />
-          Migliori Giocatori
+  const renderBestPlayers = () => {
+    // Usa dati OCR reali se disponibili, altrimenti mock data
+    const displayPlayers = matchData.ratings && matchData.ratings.length > 0 ? 
+      generatePlayersFromRatings(matchData.ratings) : bestPlayers;
+
+    return (
+      <div className="players-section">
+        <div className="section-header">
+          <h2 className="section-title">
+            <Users size={24} />
+            Migliori Giocatori {matchData.ratings && matchData.ratings.length > 0 ? '(Da OCR)' : '(Mock)'}
         </h2>
         <div className="section-filters">
           <button 
@@ -1073,7 +1161,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {bestPlayers.map((player, index) => (
+            {displayPlayers.map((player, index) => (
               <TableRow key={index} className="player-row">
                 <TableCell>
                   <div className="player-info">
@@ -1120,7 +1208,24 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         </Table>
       </div>
     </div>
-  );
+    );
+  };
+
+  // Genera giocatori dai dati OCR ratings
+  const generatePlayersFromRatings = (ratings) => {
+    return ratings.map((rating, index) => ({
+      name: rating.player,
+      role: "N/A", // Non disponibile da OCR
+      rating: rating.rating,
+      goals: 0, // Non disponibile da OCR
+      assists: 0, // Non disponibile da OCR
+      participation: 0, // Non disponibile da OCR
+      form: rating.rating >= 7.5 ? "Excellent" : rating.rating >= 6.5 ? "Good" : "Average",
+      mvp: rating.rating >= 8.0,
+      growth: false,
+      isProfiled: rating.isProfiled || false
+    }));
+  };
 
   // Renderizza storico partite
   const renderMatchHistory = () => (
