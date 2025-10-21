@@ -281,8 +281,41 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       const matchDocRef = doc(collection(db, 'matches', userId, 'data'));
       await setDoc(matchDocRef, matchDoc);
       console.log('💾 Match data saved to Firestore');
+
+      // Aggiorna anche la Dashboard con i dati dell'ultima partita
+      await updateDashboardStats(userId, data.stats);
+      
     } catch (error) {
       console.error('❌ Error saving match data:', error);
+    }
+  };
+
+  // Aggiorna le statistiche della Dashboard
+  const updateDashboardStats = async (userId, stats) => {
+    try {
+      const dashboardRef = doc(db, 'dashboard', userId, 'stats', 'general');
+      const dashboardDoc = {
+        lastMatch: {
+          possesso: stats.possesso || 0,
+          tiriInPorta: stats.tiriInPorta || 0,
+          tiri: stats.tiri || 0,
+          passaggi: stats.passaggi || 0,
+          passaggiRiusciti: stats.passaggiRiusciti || 0,
+          corner: stats.corner || 0,
+          falli: stats.falli || 0,
+          fuorigioco: stats.fuorigioco || 0,
+          parate: stats.parate || 0,
+          golSegnati: stats.golSegnati || 0,
+          golSubiti: stats.golSubiti || 0,
+        },
+        lastUpdated: new Date(),
+        source: 'gemini-ai'
+      };
+
+      await setDoc(dashboardRef, dashboardDoc);
+      console.log('📊 Dashboard stats updated with match data');
+    } catch (error) {
+      console.error('❌ Error updating dashboard stats:', error);
     }
   };
 
