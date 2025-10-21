@@ -468,30 +468,47 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
   // Funzione per parsare il testo OCR
   const parseOcrText = (text, filePath) => {
-    console.log('🔍 Parsing OCR text for:', filePath);
-    console.log('📄 OCR Text:', text);
+    try {
+      console.log('🔍 Parsing OCR text for:', filePath);
+      console.log('📄 OCR Text:', text);
 
-    // Estrai tipo di immagine dal filePath
-    const imageType = filePath.includes('stats')
-      ? 'stats'
-      : filePath.includes('ratings')
-        ? 'ratings'
-        : filePath.includes('heatmapOffensive')
-          ? 'heatmapOffensive'
-          : filePath.includes('heatmapDefensive')
-            ? 'heatmapDefensive'
-            : 'unknown';
+      // Estrai tipo di immagine dal filePath
+      const imageType = filePath.includes('stats')
+        ? 'stats'
+        : filePath.includes('ratings')
+          ? 'ratings'
+          : filePath.includes('heatmapOffensive')
+            ? 'heatmapOffensive'
+            : filePath.includes('heatmapDefensive')
+              ? 'heatmapDefensive'
+              : 'unknown';
 
-    switch (imageType) {
-      case 'stats':
-        return parseStatsFromOcr(text);
-      case 'ratings':
-        return parseRatingsFromOcr(text);
-      case 'heatmapOffensive':
-      case 'heatmapDefensive':
-        return parseHeatmapFromOcr(text);
-      default:
-        return { rawText: text };
+      let result;
+      switch (imageType) {
+        case 'stats':
+          result = parseStatsFromOcr(text);
+          break;
+        case 'ratings':
+          result = parseRatingsFromOcr(text);
+          break;
+        case 'heatmapOffensive':
+        case 'heatmapDefensive':
+          result = parseHeatmapFromOcr(text);
+          break;
+        default:
+          result = { rawText: text };
+      }
+
+      // Validazione robusta del risultato
+      if (!result || typeof result !== 'object') {
+        console.warn('⚠️ parseOcrText returned invalid result:', result);
+        return { rawText: text, type: imageType };
+      }
+
+      return result;
+    } catch (error) {
+      console.error('❌ Error in parseOcrText:', error);
+      return { rawText: text, error: error.message };
     }
   };
 
@@ -1210,17 +1227,31 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
   // Genera KPIs dai dati OCR
   const generateKPIsFromStats = stats => {
-    const kpis = {};
+    try {
+      // Validazione robusta dell'input
+      if (!stats || typeof stats !== 'object' || Array.isArray(stats)) {
+        console.warn('⚠️ generateKPIsFromStats received invalid stats:', stats);
+        return {};
+      }
 
-    Object.entries(stats).forEach(([key, value]) => {
-      kpis[key] = {
-        value: value,
-        trend: 'neutral', // Default per dati OCR
-        vsAvg: 0, // Default per dati OCR
-      };
-    });
+      const kpis = {};
 
-    return kpis;
+      Object.entries(stats).forEach(([key, value]) => {
+        // Validazione di key e value
+        if (typeof key === 'string' && key.length > 0) {
+          kpis[key] = {
+            value: value || 0,
+            trend: 'neutral', // Default per dati OCR
+            vsAvg: 0, // Default per dati OCR
+          };
+        }
+      });
+
+      return kpis;
+    } catch (error) {
+      console.error('❌ Error in generateKPIsFromStats:', error);
+      return {};
+    }
   };
 
   // Renderizza analisi IA (solo se ci sono dati)
@@ -1572,23 +1603,42 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
   // Genera giocatori dai dati OCR ratings
   const generatePlayersFromRatings = ratings => {
-    return ratings.map((rating, index) => ({
-      name: rating.player,
-      role: 'N/A', // Non disponibile da OCR
-      rating: rating.rating,
-      goals: 0, // Non disponibile da OCR
-      assists: 0, // Non disponibile da OCR
-      participation: 0, // Non disponibile da OCR
-      form:
-        rating.rating >= 7.5
-          ? 'Excellent'
-          : rating.rating >= 6.5
-            ? 'Good'
-            : 'Average',
-      mvp: rating.rating >= 8.0,
-      growth: false,
-      isProfiled: rating.isProfiled || false,
-    }));
+    try {
+      // Validazione robusta dell'input
+      if (!Array.isArray(ratings)) {
+        console.warn('⚠️ generatePlayersFromRatings received invalid ratings:', ratings);
+        return [];
+      }
+
+      return ratings.map((rating, index) => {
+        // Validazione di ogni rating
+        if (!rating || typeof rating !== 'object') {
+          console.warn('⚠️ Invalid rating object at index', index, ':', rating);
+          return null;
+        }
+
+        return {
+          name: rating.player || `Player ${index + 1}`,
+          role: 'N/A', // Non disponibile da OCR
+          rating: typeof rating.rating === 'number' ? rating.rating : 0,
+          goals: 0, // Non disponibile da OCR
+          assists: 0, // Non disponibile da OCR
+          participation: 0, // Non disponibile da OCR
+          form:
+            rating.rating >= 7.5
+              ? 'Excellent'
+              : rating.rating >= 6.5
+                ? 'Good'
+                : 'Average',
+          mvp: rating.rating >= 8.0,
+          growth: false,
+          isProfiled: Boolean(rating.isProfiled),
+        };
+      }).filter(player => player !== null); // Rimuove oggetti null
+    } catch (error) {
+      console.error('❌ Error in generatePlayersFromRatings:', error);
+      return [];
+    }
   };
 
   // Renderizza storico partite (solo se ci sono dati)
