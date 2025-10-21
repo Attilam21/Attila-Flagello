@@ -1954,7 +1954,7 @@ body {
 .modal-overlay {
   position: fixed;
   top: 0;
-  left: 0;
+  left: 250px !important;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.8);
@@ -1962,7 +1962,7 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding-left: 250px; /* Leave space for sidebar */
+  width: calc(100% - 250px) !important;
 }
 
 /* OCR Wizard styles */
@@ -2861,11 +2861,6 @@ select.form-select option {
   position: relative !important;
 }
 
-/* Modal overlay should not cover sidebar */
-.modal-overlay {
-  left: 250px; /* Start after sidebar */
-  width: calc(100% - 250px); /* Adjust width to not cover sidebar */
-}
 
 .modal-content {
   background: #1f2937;
