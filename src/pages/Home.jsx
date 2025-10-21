@@ -4,21 +4,6 @@ import { Trophy, Target, Eye, Clock, Brain, Zap, TrendingUp, Users, Shield, BarC
 const Home = ({ user, onPageChange }) => {
   console.log('🏠 Home component rendering with user:', user?.email);
 
-  const [lastMatch, setLastMatch] = useState({
-    result: 'W',
-    score: '2-1',
-    opponent: 'Barcelona',
-    opponentLogo: '⚽',
-    date: '2024-01-15',
-    mode: 'Divisione 1',
-    kpis: {
-      possession: 58,
-      shots: 12,
-      shotsOnTarget: 8,
-      passAccuracy: 87,
-      corners: 5
-    }
-  });
 
   const [generalKpis, setGeneralKpis] = useState({
     winrate: 75,
@@ -73,25 +58,8 @@ const Home = ({ user, onPageChange }) => {
 
   return (
     <div className="dashboard-container">
-      {/* Hero - Ultima Partita */}
+      {/* Hero - Cliente Progress */}
       <div className="hero-section">
-        <div className="hero-header">
-          <div className="match-result">
-            <div className="result-badge success">W</div>
-            <div className="result-score">{lastMatch.score}</div>
-          </div>
-          <div className="match-info">
-            <div className="opponent-info">
-              <span className="opponent-logo">{lastMatch.opponentLogo}</span>
-              <span className="opponent-name">{lastMatch.opponent}</span>
-            </div>
-            <div className="match-details">
-              <span className="match-date">{lastMatch.date}</span>
-              <span className="match-mode">{lastMatch.mode}</span>
-            </div>
-          </div>
-        </div>
-
         {/* Progress Bar per il Cliente */}
         <div className="client-progress-section">
           <div className="client-info">
@@ -118,43 +86,6 @@ const Home = ({ user, onPageChange }) => {
           </div>
         </div>
 
-        <div className="hero-kpis">
-          <div className="kpi-item">
-            <span className="kpi-label">Possesso</span>
-            <span className="kpi-value">{lastMatch.kpis.possession}%</span>
-          </div>
-          <div className="kpi-item">
-            <span className="kpi-label">Tiri</span>
-            <span className="kpi-value">{lastMatch.kpis.shots}</span>
-          </div>
-          <div className="kpi-item">
-            <span className="kpi-label">TiP</span>
-            <span className="kpi-value">{lastMatch.kpis.shotsOnTarget}</span>
-          </div>
-          <div className="kpi-item">
-            <span className="kpi-label">Pass%</span>
-            <span className="kpi-value">{lastMatch.kpis.passAccuracy}%</span>
-          </div>
-          <div className="kpi-item">
-            <span className="kpi-label">Corner</span>
-            <span className="kpi-value">{lastMatch.kpis.corners}</span>
-          </div>
-        </div>
-
-        <div className="hero-actions">
-          <button className="btn btn-primary" onClick={() => onPageChange('statistiche')}>
-            <BarChart3 size={16} />
-            Apri Analisi
-          </button>
-          <button className="btn btn-secondary" onClick={() => onPageChange('carica-partita')}>
-            <Upload size={16} />
-            Nuova Partita
-          </button>
-          <button className="btn btn-secondary">
-            <Brain size={16} />
-            Genera Task
-          </button>
-        </div>
       </div>
 
       {/* KPI Strip - Statistiche Generali */}
