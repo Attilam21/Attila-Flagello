@@ -58,6 +58,14 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   const [ocrStatus, setOcrStatus] = useState({});
   const [processingImages, setProcessingImages] = useState([]);
 
+  // Cleanup generale al dismount del componente
+  useEffect(() => {
+    return () => {
+      // Cleanup di tutti i listener e timeout attivi
+      console.log('🧹 CaricaUltimaPartita cleanup on unmount');
+    };
+  }, []);
+
   // Stati per le sezioni
   const [activeSection, setActiveSection] = useState('upload');
   const [showBreadcrumb, setShowBreadcrumb] = useState(true);
@@ -179,7 +187,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       // Upload file
       const uploadTask = uploadBytes(storageRef, file);
 
-      // Simula progresso (in realtà Firebase non fornisce progress callback per uploadBytes)
+      // Simula progresso con cleanup sicuro
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           const current = prev[type] || 0;
@@ -193,7 +201,8 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
       await uploadTask;
 
-      // Completa progresso
+      // Cleanup interval e completa progresso
+      clearInterval(progressInterval);
       setUploadProgress(prev => ({ ...prev, [type]: 100 }));
       setUploadImages(prev => ({ ...prev, [type]: file }));
 
@@ -253,16 +262,16 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       setOcrStatus(initialOcrStatus);
       
       // Setup listener per risultati OCR
-      const ocrListener = onSnapshot(
+      const unsubscribeOCR = onSnapshot(
         doc(db, 'matches', userId, 'ocr', 'latest'),
         (doc) => {
           if (doc.exists()) {
             const data = doc.data();
             console.log('📊 OCR Result received:', data);
             
-            if (data.status === 'done' && data.text) {
+            if (data.status === 'done' && data.textAnswer) {
               // Parse OCR text e aggiorna stato
-              const parsedData = parseOcrText(data.text, data.filePath);
+              const parsedData = parseOcrText(data.textAnswer, data.filePath);
               setOcrResults(prev => ({
                 ...prev,
                 [data.filePath]: parsedData
@@ -290,6 +299,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       // Aspetta che tutte le immagini siano processate
       const maxWaitTime = 60000; // 60 secondi
       const startTime = Date.now();
+      let completionTimeoutId = null;
       
       const checkCompletion = () => {
         const allProcessed = processingImages.every(img => 
@@ -297,8 +307,11 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         );
         
         if (allProcessed || Date.now() - startTime > maxWaitTime) {
-          // Cleanup listener
-          ocrListener();
+          // Cleanup listener e timeout
+          unsubscribeOCR();
+          if (completionTimeoutId) {
+            clearTimeout(completionTimeoutId);
+          }
           
           // Aggrega tutti i risultati OCR
           const aggregatedData = aggregateOcrResults();
@@ -307,16 +320,25 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
           setActiveSection('analysis');
           setIsProcessing(false);
         } else {
-          // Continua a controllare
-          setTimeout(checkCompletion, 1000);
+          // Continua a controllare con cleanup sicuro
+          completionTimeoutId = setTimeout(checkCompletion, 1000);
         }
       };
       
       // Inizia controllo completamento
-      setTimeout(checkCompletion, 2000);
+      completionTimeoutId = setTimeout(checkCompletion, 2000);
       
     } catch (error) {
       console.error('❌ Errore elaborazione OCR:', error);
+      
+      // Cleanup in caso di errore
+      if (typeof unsubscribeOCR === 'function') {
+        unsubscribeOCR();
+      }
+      if (completionTimeoutId) {
+        clearTimeout(completionTimeoutId);
+      }
+      
       alert('Errore durante l\'elaborazione. Riprova.');
       setIsProcessing(false);
     }
@@ -350,22 +372,23 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   const parseStatsFromOcr = (text) => {
     const stats = {};
     
-    // Regex per estrarre numeri dalle statistiche
+    // Regex per estrarre numeri dalle statistiche (più flessibili)
     const patterns = {
       possesso: /possesso[:\s]*(\d+)/i,
       tiri: /tiri[:\s]*(\d+)/i,
-      tiriInPorta: /tiri\s+in\s+porta[:\s]*(\d+)/i,
-      precisionePassaggi: /precisione\s+passaggi[:\s]*(\d+)/i,
-      corner: /corner[:\s]*(\d+)/i,
-      falli: /falli[:\s]*(\d+)/i,
-      golFatti: /gol\s+fatti[:\s]*(\d+)/i,
-      golSubiti: /gol\s+subiti[:\s]*(\d+)/i
+      tiriInPorta: /(tiri\s+in\s+porta|tiri\s+porta)[:\s]*(\d+)/i,
+      precisionePassaggi: /(precisione\s+passaggi|passaggi\s+riusciti)[:\s]*(\d+)/i,
+      corner: /(corner|calci\s+d'angolo)[:\s]*(\d+)/i,
+      falli: /(falli|infrazioni)[:\s]*(\d+)/i,
+      golFatti: /(gol\s+fatti|reti\s+segnate)[:\s]*(\d+)/i,
+      golSubiti: /(gol\s+subiti|reti\s+subite)[:\s]*(\d+)/i
     };
     
     Object.entries(patterns).forEach(([key, pattern]) => {
       const match = text.match(pattern);
       if (match) {
-        stats[key] = parseInt(match[1]);
+        // Usa il secondo gruppo se presente (per pattern con parentesi multiple)
+        stats[key] = parseInt(match[2] || match[1]);
       }
     });
     
