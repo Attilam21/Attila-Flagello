@@ -252,18 +252,24 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       
       console.log('✅ Elaborazione Gemini completata con successo!');
       
-    } catch (error) {
-      console.error('❌ Errore elaborazione Gemini:', error);
-      
-      // Messaggio specifico per API non abilitata
-      if (error.message.includes('Generative Language API non abilitata')) {
-        alert('⚠️ Generative Language API non abilitata!\n\nVai su: https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853\n\nClicca "ENABLE" per abilitare l\'API, poi riprova.');
-      } else {
-        alert('Errore durante l\'elaborazione con Gemini. Riprova.');
-      }
-      
-      setIsProcessing(false);
-    }
+            } catch (error) {
+              console.error('❌ Errore elaborazione Gemini:', error);
+              
+              // Messaggio specifico per API non abilitata
+              if (error.message.includes('Generative Language API non abilitata')) {
+                alert('⚠️ Generative Language API non abilitata!\n\nVai su: https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853\n\nClicca "ENABLE" per abilitare l\'API, poi riprova.');
+              } else {
+                alert('Errore durante l\'elaborazione con Gemini. Riprova.');
+              }
+              
+              // Genera dati demo come fallback
+              const demoData = generateDemoData();
+              setMatchData(demoData);
+              setActiveSection('analysis');
+              alert('⚠️ API non disponibile. Mostro dati demo per testare l\'interfaccia.');
+              
+              setIsProcessing(false);
+            }
   };
 
   // Salva i dati della partita in Firestore
@@ -317,6 +323,36 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     } catch (error) {
       console.error('❌ Error updating dashboard stats:', error);
     }
+  };
+
+  // Genera dati demo per testare l'interfaccia quando l'API non è disponibile
+  const generateDemoData = () => {
+    return {
+      stats: {
+        possesso: 65,
+        tiri: 12,
+        tiriInPorta: 8,
+        passaggi: 450,
+        passaggiRiusciti: 380,
+        corner: 6,
+        falli: 15,
+        fuorigioco: 3,
+        parate: 4,
+        golSegnati: 3,
+        golSubiti: 1,
+      },
+      ratings: [
+        { player: 'Buffon', rating: 7.5, role: 'Portiere' },
+        { player: 'Cannavaro', rating: 8.2, role: 'Difensore' },
+        { player: 'Pirlo', rating: 9.0, role: 'Centrocampista' },
+        { player: 'Totti', rating: 8.8, role: 'Attaccante' },
+        { player: 'Del Piero', rating: 8.5, role: 'Attaccante' },
+      ],
+      heatmaps: {
+        offensive: { description: 'Attività concentrata sulla fascia destra', zones: ['fascia destra', 'area di rigore'] },
+        defensive: { description: 'Pressa alta e recuperi in centrocampo', zones: ['centrocampo', 'area di rigore'] }
+      }
+    };
   };
 
   // Renderizza uploader immagini
