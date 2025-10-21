@@ -14,9 +14,10 @@ import {
 
 const SideNav = ({ currentPage, onPageChange, user, onLogout }) => {
   const navItems = [
-    { id: 'home', label: 'Casa', icon: Home },
-    { id: 'rosa', label: 'Rosa', icon: Users },
-    { id: 'carica-partita', label: 'Carica Ultima Partita', icon: Upload },
+  { id: 'home', label: 'Casa', icon: Home },
+  { id: 'rosa', label: 'Rosa', icon: Users },
+  { id: 'carica-partita', label: 'Carica Ultima Partita', icon: Upload },
+  { id: 'statistiche-avanzate', label: 'Statistiche Avanzate', icon: BarChart3 },
     { id: 'statistiche', label: 'Statistiche Avanzate', icon: BarChart3 },
     { id: 'suggerimenti', label: 'Suggerimenti Formazione', icon: Lightbulb },
     { id: 'contromisure', label: 'Contromisure', icon: Shield },

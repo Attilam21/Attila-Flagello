@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Rosa from './pages/Rosa';
 import CaricaUltimaPartita from './pages/CaricaUltimaPartita';
+import StatisticheAvanzate from './pages/StatisticheAvanzate';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
@@ -120,9 +121,12 @@ function App() {
       case 'rosa':
         console.log('👥 Rendering Rosa page');
         return <Rosa onPageChange={handlePageChange} />;
-      case 'carica-partita':
-        console.log('📸 Rendering Carica Partita page');
-        return <CaricaUltimaPartita onPageChange={handlePageChange} />;
+    case 'carica-partita':
+      console.log('📸 Rendering Carica Partita page');
+      return <CaricaUltimaPartita onPageChange={handlePageChange} />;
+    case 'statistiche-avanzate':
+      console.log('📊 Rendering Statistiche Avanzate page');
+      return <StatisticheAvanzate onPageChange={handlePageChange} />;
       case 'statistiche':
         console.log('📊 Rendering Statistiche page');
         return <div className="page-placeholder">📊 Statistiche Avanzate - In sviluppo</div>;
