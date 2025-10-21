@@ -254,42 +254,59 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       console.log('🔄 Processing OCR with images:', uploadImages);
       console.log('📋 Processing images:', processingImages);
       
-      // Inizializza stati OCR per ogni immagine
+      // Inizializza stati OCR per ogni immagine caricata
       const initialOcrStatus = {};
-      processingImages.forEach(img => {
-        initialOcrStatus[img.type] = 'processing';
+      Object.keys(uploadImages).forEach(type => {
+        if (uploadImages[type]) {
+          initialOcrStatus[type] = 'processing';
+        }
       });
       setOcrStatus(initialOcrStatus);
       
-      // Setup listener per risultati OCR
+      // Setup listener per risultati OCR - ascolta tutta la collection
       const unsubscribeOCR = onSnapshot(
-        doc(db, 'matches', userId, 'ocr', 'latest'),
-        (doc) => {
-          if (doc.exists()) {
-            const data = doc.data();
-            console.log('📊 OCR Result received:', data);
-            
-            if (data.status === 'done' && data.textAnswer) {
-              // Parse OCR text e aggiorna stato
-              const parsedData = parseOcrText(data.textAnswer, data.filePath);
-              setOcrResults(prev => ({
-                ...prev,
-                [data.filePath]: parsedData
-              }));
+        collection(db, 'matches', userId, 'ocr'),
+        (snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added' || change.type === 'modified') {
+              const data = change.doc.data();
+              console.log('📊 OCR Result received:', data);
               
-              // Aggiorna stato OCR
-              setOcrStatus(prev => ({
-                ...prev,
-                [data.filePath]: 'completed'
-              }));
-            } else if (data.status === 'error') {
-              console.error('❌ OCR Error:', data.error);
-              setOcrStatus(prev => ({
-                ...prev,
-                [data.filePath]: 'error'
-              }));
+              if (data.status === 'done' && data.text) {
+                // Parse OCR text e aggiorna stato
+                const parsedData = parseOcrText(data.text, data.filePath);
+                setOcrResults(prev => ({
+                  ...prev,
+                  [data.filePath]: parsedData
+                }));
+                
+                // Estrai tipo di immagine dal filePath
+                const imageType = data.filePath.includes('stats_') ? 'stats' : 
+                                 data.filePath.includes('ratings_') ? 'ratings' :
+                                 data.filePath.includes('heatmapOffensive_') ? 'heatmapOffensive' :
+                                 data.filePath.includes('heatmapDefensive_') ? 'heatmapDefensive' : 'unknown';
+                
+                // Aggiorna stato OCR
+                setOcrStatus(prev => ({
+                  ...prev,
+                  [imageType]: 'completed'
+                }));
+              } else if (data.status === 'error') {
+                console.error('❌ OCR Error:', data.error);
+                
+                // Estrai tipo di immagine dal filePath per errore
+                const imageType = data.filePath.includes('stats_') ? 'stats' : 
+                                 data.filePath.includes('ratings_') ? 'ratings' :
+                                 data.filePath.includes('heatmapOffensive_') ? 'heatmapOffensive' :
+                                 data.filePath.includes('heatmapDefensive_') ? 'heatmapDefensive' : 'unknown';
+                
+                setOcrStatus(prev => ({
+                  ...prev,
+                  [imageType]: 'error'
+                }));
+              }
             }
-          }
+          });
         },
         (error) => {
           console.error('❌ OCR Listener Error:', error);
@@ -302,8 +319,15 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       let completionTimeoutId = null;
       
       const checkCompletion = () => {
-        const allProcessed = processingImages.every(img => 
-          ocrStatus[img.type] === 'completed' || ocrStatus[img.type] === 'error'
+        // Controlla se abbiamo immagini in processing
+        const uploadedTypes = Object.keys(uploadImages).filter(type => uploadImages[type]);
+        if (uploadedTypes.length === 0) {
+          console.log('⚠️ No uploaded images found, waiting...');
+          return;
+        }
+        
+        const allProcessed = uploadedTypes.every(type => 
+          ocrStatus[type] === 'completed' || ocrStatus[type] === 'error'
         );
         
         if (allProcessed || Date.now() - startTime > maxWaitTime) {

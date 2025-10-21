@@ -47,13 +47,13 @@ exports.onImageUpload = onObjectFinalized(async event => {
   try {
     const startTime = Date.now();
 
-    // Aggiorna stato a processing
+    // Aggiorna stato a processing - usa requestId come document ID
     await admin
       .firestore()
       .collection('matches')
       .doc(userId)
       .collection('ocr')
-      .doc('latest')
+      .doc(requestId)
       .set({
         userId,
         filePath,
@@ -96,13 +96,13 @@ exports.onImageUpload = onObjectFinalized(async event => {
         requestId,
       };
 
-      // Salva in matches/{userId}/ocr/latest
+      // Salva in matches/{userId}/ocr/{requestId}
       await admin
         .firestore()
         .collection('matches')
         .doc(userId)
         .collection('ocr')
-        .doc('latest')
+        .doc(requestId)
         .set(ocrResult);
 
       console.log('✅ OCR result saved:', {
@@ -132,7 +132,7 @@ exports.onImageUpload = onObjectFinalized(async event => {
         .collection('matches')
         .doc(userId)
         .collection('ocr')
-        .doc('latest')
+        .doc(requestId)
         .set(ocrResult);
 
       return ocrResult;
@@ -151,7 +151,7 @@ exports.onImageUpload = onObjectFinalized(async event => {
       .collection('matches')
       .doc(userId)
       .collection('ocr')
-      .doc('latest')
+      .doc(requestId)
       .set({
         userId,
         filePath,
