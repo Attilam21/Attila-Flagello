@@ -38,6 +38,15 @@ service cloud.firestore {
       }
     }
 
+    // Dashboard stats and analytics per user
+    match /dashboard/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /stats/{statId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
     // AI chat history, documents contain a userId field
     match /ai_chat_history/{sessionId} {
       allow read, write: if isSignedIn() && request.resource.data.userId == request.auth.uid;

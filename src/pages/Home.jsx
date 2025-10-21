@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Trophy, Target, Eye, Clock, Brain, Zap, TrendingUp, Users, Shield, BarChart3, Upload, MessageSquare, CheckCircle, ArrowRight, Star, Activity, TrendingDown } from 'lucide-react';
+import { auth, db } from '../services/firebaseClient';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 
 const Home = ({ user, onPageChange }) => {
   console.log('🏠 Home component rendering with user:', user?.email);
@@ -16,6 +18,10 @@ const Home = ({ user, onPageChange }) => {
     avgRating: 8.2,
     cleanSheets: 8
   });
+
+  // Stati per i dati reali da Firestore
+  const [realStats, setRealStats] = useState(null);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
 
   const [coachProgress, setCoachProgress] = useState({
     currentStep: 1,
@@ -55,6 +61,74 @@ const Home = ({ user, onPageChange }) => {
   const handleKpiClick = (kpi) => {
     onPageChange('statistiche');
   };
+
+  // Carica dati reali da Firestore
+  useEffect(() => {
+    if (!auth.currentUser) {
+      setIsLoadingStats(false);
+      return;
+    }
+
+    console.log('🏠 Loading real stats from Firestore for user:', auth.currentUser.uid);
+    
+    const loadRealStats = async () => {
+      try {
+        const statsRef = doc(db, 'dashboard', auth.currentUser.uid, 'stats', 'general');
+        const statsSnap = await getDoc(statsRef);
+        
+        if (statsSnap.exists()) {
+          const statsData = statsSnap.data();
+          console.log('📊 Real stats loaded:', statsData);
+          setRealStats(statsData);
+          
+          // Aggiorna i KPI con i dati reali se disponibili
+          if (statsData.lastMatch) {
+            setGeneralKpis(prev => ({
+              ...prev,
+              avgPossession: statsData.lastMatch.possesso || prev.avgPossession,
+              shotsOnTarget: statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
+              // Aggiungi altri campi man mano che vengono salvati
+            }));
+            console.log('✅ Dashboard KPI updated with real data');
+          }
+        } else {
+          console.log('📊 No real stats found, using default values');
+        }
+      } catch (error) {
+        console.error('❌ Error loading real stats:', error);
+      } finally {
+        setIsLoadingStats(false);
+      }
+    };
+
+    loadRealStats();
+
+    // Setup listener real-time per aggiornamenti
+    const statsRef = doc(db, 'dashboard', auth.currentUser.uid, 'stats', 'general');
+    const unsubscribe = onSnapshot(statsRef, (snap) => {
+      if (snap.exists()) {
+        const statsData = snap.data();
+        console.log('📊 Real-time stats update:', statsData);
+        setRealStats(statsData);
+        
+        // Aggiorna KPI in tempo reale
+        if (statsData.lastMatch) {
+          setGeneralKpis(prev => ({
+            ...prev,
+            avgPossession: statsData.lastMatch.possesso || prev.avgPossession,
+            shotsOnTarget: statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
+          }));
+          console.log('✅ Dashboard KPI updated in real-time');
+        }
+      }
+    }, (error) => {
+      console.error('❌ Real-time stats listener error:', error);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [auth.currentUser]);
 
   return (
     <div className="dashboard-container">
@@ -116,8 +190,8 @@ const Home = ({ user, onPageChange }) => {
             <Eye size={20} />
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Precisione Tiri</div>
-            <div className="kpi-value">{generalKpis.shotsOnTarget}%</div>
+            <div className="kpi-label">Tiri in Porta {realStats?.lastMatch ? '📊' : '📋'}</div>
+            <div className="kpi-value">{generalKpis.shotsOnTarget}</div>
           </div>
         </div>
 
@@ -126,7 +200,7 @@ const Home = ({ user, onPageChange }) => {
             <Clock size={20} />
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Possesso</div>
+            <div className="kpi-label">Possesso {realStats?.lastMatch ? '📊' : '📋'}</div>
             <div className="kpi-value">{generalKpis.avgPossession}%</div>
           </div>
         </div>
