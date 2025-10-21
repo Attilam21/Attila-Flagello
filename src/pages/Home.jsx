@@ -216,7 +216,7 @@ const Home = ({ user, onPageChange }) => {
           ))}
         </div>
         <div className="last-match-info">
-          <strong>Ultima partita:</strong> {lastMatch.opponent} {lastMatch.score} ({lastMatch.date})
+          <strong>Ultima partita:</strong> Barcelona 2-1 (15/01/2024)
         </div>
       </div>
 
