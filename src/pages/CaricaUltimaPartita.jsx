@@ -28,6 +28,7 @@ import {
 import { Card, Button, Badge, EmptyState } from '../components/ui';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/Table';
 import { auth, storage, db } from '../services/firebaseClient';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, doc, onSnapshot, getDoc, setDoc, getDocs, query, where, orderBy } from 'firebase/firestore';
 
@@ -386,17 +387,26 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       
       startRobustPolling();
       
-      // Timeout di sicurezza per evitare loop infiniti
+      // Timeout di sicurezza per evitare loop infiniti e crash
       setTimeout(() => {
         if (isProcessing) {
-          console.log('⏰ OCR processing timeout, stopping...');
+          console.log('⏰ OCR processing timeout, stopping safely...');
           setIsProcessing(false);
+          
+          // Cleanup sicuro
           if (ocrListenerRef.current) {
-            ocrListenerRef.current();
+            try {
+              ocrListenerRef.current();
+            } catch (error) {
+              console.error('❌ Error during OCR cleanup:', error);
+            }
             ocrListenerRef.current = null;
           }
+          
+          // Mostra messaggio di errore invece di crash
+          alert('Timeout durante l\'elaborazione OCR. Riprova più tardi.');
         }
-      }, 120000); // 2 minuti timeout
+      }, 60000); // Ridotto a 1 minuto per evitare crash
       
     } catch (error) {
       console.error('❌ Errore elaborazione OCR:', error);
@@ -600,23 +610,29 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
       console.log('🔄 Processing doc:', doc.id, 'Data:', data);
       
       if (data.status === 'done' && data.text && data.filePath) {
-        const parsedData = parseOcrText(data.text, data.filePath);
-        console.log('✅ Parsed data:', parsedData);
-        
-        if (parsedData.stats) {
-          console.log('✅ Found stats in parsed data:', parsedData.stats);
-          aggregated.stats = { ...aggregated.stats, ...parsedData.stats };
-        }
-        if (parsedData.ratings) {
-          console.log('✅ Found ratings in parsed data:', parsedData.ratings);
-          aggregated.ratings = [...aggregated.ratings, ...parsedData.ratings];
-        }
-        if (parsedData.type === 'heatmap') {
-          if (data.filePath.includes('heatmapOffensive')) {
-            aggregated.heatmaps.offensive = parsedData;
-          } else if (data.filePath.includes('heatmapDefensive')) {
-            aggregated.heatmaps.defensive = parsedData;
+        try {
+          const parsedData = parseOcrText(data.text, data.filePath);
+          console.log('✅ Parsed data:', parsedData);
+          
+          if (parsedData && typeof parsedData === 'object') {
+            if (parsedData.stats && typeof parsedData.stats === 'object') {
+              console.log('✅ Found stats in parsed data:', parsedData.stats);
+              aggregated.stats = { ...aggregated.stats, ...parsedData.stats };
+            }
+            if (parsedData.ratings && Array.isArray(parsedData.ratings)) {
+              console.log('✅ Found ratings in parsed data:', parsedData.ratings);
+              aggregated.ratings = [...aggregated.ratings, ...parsedData.ratings];
+            }
+            if (parsedData.type === 'heatmap') {
+              if (data.filePath.includes('heatmapOffensive')) {
+                aggregated.heatmaps.offensive = parsedData;
+              } else if (data.filePath.includes('heatmapDefensive')) {
+                aggregated.heatmaps.defensive = parsedData;
+              }
+            }
           }
+        } catch (error) {
+          console.error('❌ Error parsing OCR data:', error);
         }
       }
     });
@@ -950,11 +966,16 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         </button>
         <button 
           onClick={() => {
-            console.log('🧪 Test button clicked - using fallback data');
-            const fallbackData = generateFallbackData();
-            setMatchData(fallbackData);
-            setActiveSection('analysis');
-            alert('Dati di test caricati! (Questo bypassa il problema dell\'adblocker)');
+            try {
+              console.log('🧪 Test button clicked - using fallback data');
+              const fallbackData = generateFallbackData();
+              setMatchData(fallbackData);
+              setActiveSection('analysis');
+              alert('Dati di test caricati! (Questo bypassa il problema dell\'adblocker)');
+            } catch (error) {
+              console.error('❌ Error in test button:', error);
+              alert('Errore durante il caricamento dei dati di test. Riprova.');
+            }
           }}
           className="btn btn-warning"
         >
@@ -1586,41 +1607,43 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
   );
 
   return (
-    <div className="carica-partita-page">
-      {/* Header con azioni globali */}
-      <div className="page-header">
-        {renderGlobalActions()}
-      </div>
+    <ErrorBoundary>
+      <div className="carica-partita-page">
+        {/* Header con azioni globali */}
+        <div className="page-header">
+          {renderGlobalActions()}
+        </div>
 
-      {/* Contenuto principale */}
-      <div className="page-content">
-        {/* Sezione Upload - sempre visibile */}
-        {renderImageUploader()}
-        
-        {/* Sezioni di analisi - visibili dopo l'elaborazione o per demo */}
-        {(activeSection === 'analysis' || showAllSections) && (
-          <>
-            {renderMatchKPIs()}
-            {renderAIAnalysis()}
-            {renderRecurringErrors()}
-            {renderBestPlayers()}
-            {renderMatchHistory()}
-            {renderTasksSuggestions()}
-          </>
-        )}
-        
-        {/* Sezione vuota se nessuna immagine caricata */}
-        {!showAllSections && Object.values(uploadImages).every(img => img === null) && (
-          <div className="empty-state">
-            <EmptyState
-              icon={Upload}
-              title="Carica le 4 immagini per iniziare"
-              description="Seleziona le immagini della partita per iniziare l'analisi completa"
-            />
-          </div>
-        )}
+        {/* Contenuto principale */}
+        <div className="page-content">
+          {/* Sezione Upload - sempre visibile */}
+          {renderImageUploader()}
+          
+          {/* Sezioni di analisi - visibili dopo l'elaborazione o per demo */}
+          {(activeSection === 'analysis' || showAllSections) && (
+            <>
+              {renderMatchKPIs()}
+              {renderAIAnalysis()}
+              {renderRecurringErrors()}
+              {renderBestPlayers()}
+              {renderMatchHistory()}
+              {renderTasksSuggestions()}
+            </>
+          )}
+          
+          {/* Sezione vuota se nessuna immagine caricata */}
+          {!showAllSections && Object.values(uploadImages).every(img => img === null) && (
+            <div className="empty-state">
+              <EmptyState
+                icon={Upload}
+                title="Carica le 4 immagini per iniziare"
+                description="Seleziona le immagini della partita per iniziare l'analisi completa"
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 

@@ -82,14 +82,20 @@ const Home = ({ user, onPageChange }) => {
           setRealStats(statsData);
           
           // Aggiorna i KPI con i dati reali se disponibili
-          if (statsData.lastMatch) {
-            setGeneralKpis(prev => ({
-              ...prev,
-              avgPossession: statsData.lastMatch.possesso || prev.avgPossession,
-              shotsOnTarget: statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
-              // Aggiungi altri campi man mano che vengono salvati
-            }));
-            console.log('✅ Dashboard KPI updated with real data');
+          if (statsData.lastMatch && typeof statsData.lastMatch === 'object') {
+            try {
+              setGeneralKpis(prev => {
+                const newKpis = {
+                  ...prev,
+                  avgPossession: statsData.lastMatch.possesso || prev.avgPossession,
+                  shotsOnTarget: statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
+                };
+                console.log('✅ Dashboard KPI updated with real data:', newKpis);
+                return newKpis;
+              });
+            } catch (error) {
+              console.error('❌ Error updating KPI with real data:', error);
+            }
           }
         } else {
           console.log('📊 No real stats found, using default values');
@@ -103,26 +109,47 @@ const Home = ({ user, onPageChange }) => {
 
     loadRealStats();
 
-    // Setup listener real-time per aggiornamenti
+    // Setup listener real-time per aggiornamenti con gestione errori robusta
     const statsRef = doc(db, 'dashboard', auth.currentUser.uid, 'stats', 'general');
     const unsubscribe = onSnapshot(statsRef, (snap) => {
-      if (snap.exists()) {
-        const statsData = snap.data();
-        console.log('📊 Real-time stats update:', statsData);
-        setRealStats(statsData);
-        
-        // Aggiorna KPI in tempo reale
-        if (statsData.lastMatch) {
-          setGeneralKpis(prev => ({
-            ...prev,
-            avgPossession: statsData.lastMatch.possesso || prev.avgPossession,
-            shotsOnTarget: statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
-          }));
-          console.log('✅ Dashboard KPI updated in real-time');
+      try {
+        if (snap.exists()) {
+          const statsData = snap.data();
+          console.log('📊 Real-time stats update:', statsData);
+          setRealStats(statsData);
+          
+          // Aggiorna KPI in tempo reale con validazione
+          if (statsData.lastMatch && typeof statsData.lastMatch === 'object') {
+            try {
+              setGeneralKpis(prev => {
+                const newKpis = {
+                  ...prev,
+                  avgPossession: statsData.lastMatch.possesso || prev.avgPossession,
+                  shotsOnTarget: statsData.lastMatch.tiriInPorta || prev.shotsOnTarget,
+                };
+                console.log('✅ Dashboard KPI updated in real-time:', newKpis);
+                return newKpis;
+              });
+            } catch (error) {
+              console.error('❌ Error updating KPI in real-time:', error);
+            }
+          }
         }
+      } catch (error) {
+        console.error('❌ Error processing real-time stats update:', error);
+        // Non bloccare l'app per errori di parsing
       }
     }, (error) => {
       console.error('❌ Real-time stats listener error:', error);
+      
+      // Se è un errore di permessi, disabilita il listener per evitare loop
+      if (error.code === 'permission-denied') {
+        console.log('🚫 Permission denied, disabling real-time listener');
+        return;
+      }
+      
+      // Per altri errori, continua a provare
+      console.log('🔄 Will retry listener setup...');
     });
 
     return () => {
@@ -191,7 +218,7 @@ const Home = ({ user, onPageChange }) => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Tiri in Porta {realStats?.lastMatch ? '📊' : '📋'}</div>
-            <div className="kpi-value">{generalKpis.shotsOnTarget}</div>
+            <div className="kpi-value">{generalKpis.shotsOnTarget || 0}</div>
           </div>
         </div>
 
@@ -201,7 +228,7 @@ const Home = ({ user, onPageChange }) => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Possesso {realStats?.lastMatch ? '📊' : '📋'}</div>
-            <div className="kpi-value">{generalKpis.avgPossession}%</div>
+            <div className="kpi-value">{generalKpis.avgPossession || 0}%</div>
           </div>
         </div>
 
