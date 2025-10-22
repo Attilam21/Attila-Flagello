@@ -18,23 +18,19 @@ import {
   where,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { validationSchemas, validateData, sanitizeData } from '../utils/validationSchemas';
+import { offlineManager } from '../utils/offlineManager';
+import { performanceOptimizer } from '../utils/performanceOptimizer';
+import { errorRecoveryManager, withErrorRecovery } from '../utils/errorRecovery';
 
 // Configurazione Firebase
 const firebaseConfig = {
-  apiKey:
-    import.meta.env.VITE_FIREBASE_API_KEY ||
-    'AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI',
-  authDomain:
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ||
-    'attila-475314.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'attila-475314',
-  storageBucket:
-    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'attila-475314.appspot.com',
-  messagingSenderId:
-    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '814206807853',
-  appId:
-    import.meta.env.VITE_FIREBASE_APP_ID ||
-    '1:814206807853:web:256884e64c9d867509eda4',
+  apiKey: 'AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI',
+  authDomain: 'attila-475314.firebaseapp.com',
+  projectId: 'attila-475314',
+  storageBucket: 'attila-475314.appspot.com',
+  messagingSenderId: '814206807853',
+  appId: '1:814206807853:web:256884e64c9d867509eda4',
 };
 
 // Inizializza Firebase
@@ -144,22 +140,58 @@ export const listenToMatchHistory = (userId, callback, limitCount = 20) => {
 };
 
 // ---------- Players CRUD ----------
-export const addPlayer = async (userId, player) => {
+export const addPlayer = withErrorRecovery(async (userId, player) => {
+  // Validazione dati
+  const validation = validateData(validationSchemas.player, player);
+  if (!validation.isValid) {
+    throw new Error(`Dati giocatore non validi: ${validation.errors.join(', ')}`);
+  }
+
+  // Sanitizzazione dati
+  const sanitizedPlayer = sanitizeData(validationSchemas.player, player);
+
   const colRef = collection(db, 'users', userId, 'players');
   const payload = {
-    ...player,
+    ...sanitizedPlayer,
     userId,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
   };
+  
   const refDoc = await addDoc(colRef, payload);
-  return { id: refDoc.id, ...payload };
-};
+  const result = { id: refDoc.id, ...payload };
+  
+  // Aggiorna cache offline
+  const cacheKey = offlineManager.generateCacheKey('players', userId, refDoc.id);
+  offlineManager.setCache(cacheKey, result);
+  
+  return result;
+});
 
-export const updatePlayer = async (userId, playerId, updates) => {
+export const updatePlayer = withErrorRecovery(async (userId, playerId, updates) => {
+  // Validazione aggiornamenti
+  const validation = validateData(validationSchemas.player, updates);
+  if (!validation.isValid) {
+    throw new Error(`Aggiornamenti giocatore non validi: ${validation.errors.join(', ')}`);
+  }
+
+  // Sanitizzazione aggiornamenti
+  const sanitizedUpdates = sanitizeData(validationSchemas.player, updates);
+
   const refDoc = doc(db, 'users', userId, 'players', playerId);
-  await updateDoc(refDoc, { ...updates, updatedAt: Timestamp.now() });
-};
+  const updateData = { ...sanitizedUpdates, updatedAt: Timestamp.now() };
+  
+  await updateDoc(refDoc, updateData);
+  
+  // Aggiorna cache offline
+  const cacheKey = offlineManager.generateCacheKey('players', userId, playerId);
+  const cachedData = offlineManager.getCache(cacheKey);
+  if (cachedData) {
+    offlineManager.setCache(cacheKey, { ...cachedData, ...updateData });
+  }
+  
+  return updateData;
+});
 
 export const deletePlayerById = async (userId, playerId) => {
   const refDoc = doc(db, 'users', userId, 'players', playerId);
@@ -175,9 +207,25 @@ export const getPlayerById = async (userId, playerId) => {
 export const listenToPlayers = (userId, callback) => {
   const colRef = collection(db, 'users', userId, 'players');
   const q = query(colRef, orderBy('createdAt', 'desc'));
+  
   return onSnapshot(q, snap => {
     const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    // Aggiorna cache offline
+    const cacheKey = offlineManager.generateCacheKey('players', userId);
+    offlineManager.setCache(cacheKey, items);
+    
     callback(items);
+  }, error => {
+    console.error('❌ Errore listener giocatori:', error);
+    
+    // Fallback alla cache se disponibile
+    const cacheKey = offlineManager.generateCacheKey('players', userId);
+    const cachedData = offlineManager.getCache(cacheKey);
+    if (cachedData) {
+      console.log('📦 Usando dati cache per giocatori');
+      callback(cachedData);
+    }
   });
 };
 

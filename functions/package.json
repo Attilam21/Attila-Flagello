@@ -13,11 +13,13 @@
   "engines": {
     "node": "20"
   },
-  "main": "index.js",
+  "type": "module",
+  "main": "lib/index.js",
   "dependencies": {
-    "@google-cloud/vision": "^5.3.4",
-    "firebase-admin": "^13.5.0",
-    "firebase-functions": "^6.6.0"
+    "@google-cloud/vertexai": "^1.10.0",
+    "@google-cloud/vision": "^4.3.2",
+    "firebase-admin": "^12.5.0",
+    "firebase-functions": "^5.0.1"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",

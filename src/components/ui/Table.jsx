@@ -45,3 +45,4 @@ const TableCell = ({ className, ...props }) => (
 );
 
 export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell };
+export default Table;

@@ -96,7 +96,7 @@ const Home = ({ user, onPageChange }) => {
   };
 
   const handleKpiClick = kpi => {
-    onPageChange('statistiche');
+    onPageChange('statistiche-avanzate');
   };
 
   // Carica dati reali da Firestore
@@ -153,6 +153,8 @@ const Home = ({ user, onPageChange }) => {
         }
       } catch (error) {
         console.error('❌ Error loading real stats:', error);
+        // Fallback ai dati mock se Firestore non disponibile
+        console.log('📊 Using fallback mock data');
       } finally {
         setIsLoadingStats(false);
       }
@@ -355,21 +357,21 @@ const Home = ({ user, onPageChange }) => {
             <div className="step-number">1</div>
             <div className="step-label">Rosa</div>
           </div>
-          <div className="step" onClick={() => onPageChange('statistiche')}>
+          <div className="step" onClick={() => onPageChange('statistiche-avanzate')}>
             <div className="step-number">2</div>
             <div className="step-label">Statistiche</div>
           </div>
           <div className="step" onClick={() => onPageChange('carica-partita')}>
             <div className="step-number">3</div>
-            <div className="step-label">Heatmap</div>
+            <div className="step-label">Carica Partita</div>
           </div>
           <div className="step" onClick={() => onPageChange('contromisure')}>
             <div className="step-number">4</div>
-            <div className="step-label">Avversario</div>
+            <div className="step-label">Contromisure</div>
           </div>
           <div className="step" onClick={() => onPageChange('suggerimenti')}>
             <div className="step-number">5</div>
-            <div className="step-label">Task/Chat</div>
+            <div className="step-label">Suggerimenti</div>
           </div>
         </div>
 
@@ -387,7 +389,7 @@ const Home = ({ user, onPageChange }) => {
             <button
               key={index}
               className={`match-result-btn ${result === 'W' ? 'win' : result === 'D' ? 'draw' : 'loss'}`}
-              onClick={() => onPageChange('statistiche')}
+              onClick={() => onPageChange('statistiche-avanzate')}
             >
               {result}
             </button>

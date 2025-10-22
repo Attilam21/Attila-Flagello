@@ -20,3 +20,4 @@ const LoadingSkeletonCard = ({ className, ...props }) => (
 );
 
 export { LoadingSkeleton, LoadingSkeletonBlock, LoadingSkeletonCard };
+export default LoadingSkeleton;

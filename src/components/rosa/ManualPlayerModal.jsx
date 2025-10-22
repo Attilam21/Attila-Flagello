@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   Save,
@@ -11,6 +12,15 @@ import {
   CheckCircle,
   AlertCircle,
 } from 'lucide-react';
+
+// Console log per debug import
+console.log("ManualPlayerModal module LOADED @", import.meta.env?.VITE_APP_VERSION);
+
+// Portal Shell Component
+const ModalShell = ({ children }) => {
+  if (typeof document === "undefined") return null;
+  return createPortal(children, document.body);
+};
 
 // TogglePill Component
 const TogglePill = ({ selected, children, onClick, disabled }) => {
@@ -941,8 +951,18 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[120] bg-black/70">
-      <div className="w-full h-full bg-[#0b1223] text-white flex overflow-hidden">
+    <ModalShell>
+      <div className="fixed inset-0 z-[9999]">
+        {/* Backdrop */}
+        <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+        {/* Panel */}
+        <div
+          role="dialog" 
+          aria-modal="true"
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        >
+          <div className="pointer-events-auto w-full max-w-7xl h-full rounded-2xl bg-[#0b1223] border border-white/10 shadow-2xl overflow-hidden">
+            <div className="w-full h-full bg-[#0b1223] text-white flex overflow-hidden">
         {/* Sidebar */}
         <div className="w-80 bg-[#0b1223] border-r border-white/10 text-white flex flex-col">
           <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
@@ -1031,7 +1051,10 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
           </div>
         </div>
       </div>
-    </div>
+          </div>
+        </div>
+      </div>
+    </ModalShell>
   );
 };
 

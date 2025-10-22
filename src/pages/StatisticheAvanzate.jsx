@@ -76,7 +76,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       setMatchesData(matches);
       return matches;
     } catch (error) {
-      console.error('Error loading matches:', error);
+      console.error('❌ Error loading matches:', error);
       return [];
     }
   };
@@ -93,7 +93,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       setPlayersData(players);
       return players;
     } catch (error) {
-      console.error('Error loading players:', error);
+      console.error('❌ Error loading players:', error);
       return [];
     }
   };
@@ -110,7 +110,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       setTasksData(tasks);
       return tasks;
     } catch (error) {
-      console.error('Error loading tasks:', error);
+      console.error('❌ Error loading tasks:', error);
       return [];
     }
   };
@@ -538,6 +538,11 @@ const StatisticheAvanzate = ({ onPageChange }) => {
   // Render functions
   const renderHeader = () => (
     <div className="page-header sticky top-0 z-10 bg-[#0b1223] pb-4">
+      <div className="breadcrumb mb-4">
+        <span>Casa</span>
+        <span>→</span>
+        <span>Statistiche Avanzate</span>
+      </div>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">
