@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { auth } from '../services/firebaseClient';
+import { auth, db } from '../services/firebaseClient';
+import { onSnapshot, doc } from 'firebase/firestore';
 import { cloudFunctions } from '../services/cloudFunctions';
 import { uploadImageForOCR, simulateUpload } from '../services/uploadHelper';
 import { saveMatch, generateMatchId } from '../services/firestoreWrapper';
@@ -32,6 +33,83 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     if (!currentMatchId) {
       setCurrentMatchId(generateMatchId());
     }
+  }, [currentMatchId]);
+
+  // Listener per aggiornamenti real-time da OCR trigger
+  useEffect(() => {
+    if (!auth.currentUser || !currentMatchId) return;
+
+    const userId = auth.currentUser.uid;
+    const matchId = currentMatchId;
+    
+    // Usa gli import già definiti
+    
+    // Listener per stats
+    const unsubscribeStats = onSnapshot(
+      doc(db, 'users', userId, 'matches', matchId, 'stats', 'main'),
+      (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          console.log('📊 Real-time stats update:', data);
+          setMatchData(prev => ({
+            ...prev,
+            stats: data
+          }));
+        }
+      }
+    );
+
+    // Listener per votes
+    const unsubscribeVotes = onSnapshot(
+      doc(db, 'users', userId, 'matches', matchId, 'votes', 'main'),
+      (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          console.log('📊 Real-time votes update:', data);
+          setMatchData(prev => ({
+            ...prev,
+            ratings: data
+          }));
+        }
+      }
+    );
+
+    // Listener per heatmap
+    const unsubscribeHeatmap = onSnapshot(
+      doc(db, 'users', userId, 'matches', matchId, 'heatmap', 'main'),
+      (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          console.log('📊 Real-time heatmap update:', data);
+          setMatchData(prev => ({
+            ...prev,
+            heatmaps: { ...prev.heatmaps, ...data }
+          }));
+        }
+      }
+    );
+
+    // Listener per roster
+    const unsubscribeRoster = onSnapshot(
+      doc(db, 'users', userId, 'roster'),
+      (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          console.log('📊 Real-time roster update:', data);
+          setMatchData(prev => ({
+            ...prev,
+            roster: data
+          }));
+        }
+      }
+    );
+
+    return () => {
+      unsubscribeStats();
+      unsubscribeVotes();
+      unsubscribeHeatmap();
+      unsubscribeRoster();
+    };
   }, [currentMatchId]);
 
   // Handler per upload immagini

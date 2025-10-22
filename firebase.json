@@ -4,6 +4,7 @@
     "runtime": "nodejs20"
   },
   "hosting": {
+    "target": "attila-475314",
     "public": "dist",
     "ignore": [
       "firebase.json",

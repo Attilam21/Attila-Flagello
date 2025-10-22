@@ -1,4 +1,4 @@
-import { ROLE_ALIASES } from "./efb_dict.js";
+import { ROLE_ALIASES, STAT_LABELS_IT } from "./efb_dict.js";
 // Utility
 const num = (s) => {
     if (s == null)
@@ -48,15 +48,13 @@ export function parseMatchStats(rawText) {
             ? { us: percent(m[1]), oppo: percent(m[2]) }
             : { us: num(m[1]), oppo: num(m[2]) };
     };
-    out.poss = getPair("Possesso di palla|Possesso palla");
-    out.tiri = getPair("Tiri totali|Tiri");
-    out.tiriporta = getPair("Tiri in porta");
-    out.passaggi = getPair("Passaggi(?! riusciti)");
-    out.passaggiRiusciti = getPair("Passaggi riusciti");
-    out.corner = getPair("Calci d'angolo|Corner");
-    out.falli = getPair("Falli");
-    out.contrasti = getPair("Contrasti");
-    out.parate = getPair("Parate");
+    // Usa STAT_LABELS_IT per mappare le etichette
+    for (const [italian, key] of Object.entries(STAT_LABELS_IT)) {
+        const pair = getPair(italian);
+        if (pair.us !== null || pair.oppo !== null) {
+            out[key] = pair;
+        }
+    }
     // risultato 6–1 ecc.
     const r = rawText.match(/(\d+)\s*[–-]\s*(\d+)/);
     if (r)
