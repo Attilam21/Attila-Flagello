@@ -1,14 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Configurazione Gemini con fallback per API non abilitata
-const API_KEY =
-  import.meta.env.VITE_GEMINI_API_KEY ||
-  'AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI';
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 if (!API_KEY) {
-  console.warn(
-    '⚠️ VITE_GEMINI_API_KEY is not set. Gemini AI will not be available.'
-  );
+  console.warn('⚠️ VITE_GEMINI_API_KEY is not set. Gemini AI will be disabled.');
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
