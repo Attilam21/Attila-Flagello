@@ -14,15 +14,15 @@ const functions = getFunctions();
 export const ocrParseImage = async (userId, matchId, type, storageUrl) => {
   try {
     console.log('🔍 Calling OCR Parse Image:', { userId, matchId, type });
-    
+
     const ocrFunction = httpsCallable(functions, 'ocrParseImage');
     const result = await ocrFunction({
       userId,
       matchId,
       type,
-      storageUrl
+      storageUrl,
     });
-    
+
     console.log('✅ OCR Parse Image result:', result.data);
     return result.data;
   } catch (error) {
@@ -36,16 +36,20 @@ export const ocrParseImage = async (userId, matchId, type, storageUrl) => {
  */
 export const chatAttila = async (userId, chatId, message, contextRefs = {}) => {
   try {
-    console.log('🤖 Calling Chat Attila:', { userId, chatId, message: message.substring(0, 50) });
-    
+    console.log('🤖 Calling Chat Attila:', {
+      userId,
+      chatId,
+      message: message.substring(0, 50),
+    });
+
     const chatFunction = httpsCallable(functions, 'chatAttila');
     const result = await chatFunction({
       userId,
       chatId,
       message,
-      contextRefs
+      contextRefs,
     });
-    
+
     console.log('✅ Chat Attila result:', result.data);
     return result.data;
   } catch (error) {
@@ -60,13 +64,13 @@ export const chatAttila = async (userId, chatId, message, contextRefs = {}) => {
 export const genTasks = async (userId, matchId) => {
   try {
     console.log('📋 Calling Gen Tasks:', { userId, matchId });
-    
+
     const tasksFunction = httpsCallable(functions, 'genTasks');
     const result = await tasksFunction({
       userId,
-      matchId
+      matchId,
     });
-    
+
     console.log('✅ Gen Tasks result:', result.data);
     return result.data;
   } catch (error) {
@@ -94,16 +98,16 @@ export const cloudFunctions = {
     const userId = getCurrentUserId();
     return await ocrParseImage(userId, matchId, type, storageUrl);
   },
-  
+
   chatAttila: async (chatId, message, contextRefs = {}) => {
     const userId = getCurrentUserId();
     return await chatAttila(userId, chatId, message, contextRefs);
   },
-  
-  genTasks: async (matchId) => {
+
+  genTasks: async matchId => {
     const userId = getCurrentUserId();
     return await genTasks(userId, matchId);
-  }
+  },
 };
 
 export default cloudFunctions;

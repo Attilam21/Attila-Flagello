@@ -5,7 +5,16 @@ import { cloudFunctions } from '../services/cloudFunctions';
 import { uploadImageForOCR, simulateUpload } from '../services/uploadHelper';
 import { saveMatch, generateMatchId } from '../services/firestoreWrapper';
 import { Card, Button, Badge, Table, EmptyState } from '../components/ui';
-import { Upload, BarChart3, Users, Target, TrendingUp, AlertCircle, CheckCircle, X } from 'lucide-react';
+import {
+  Upload,
+  BarChart3,
+  Users,
+  Target,
+  TrendingUp,
+  AlertCircle,
+  CheckCircle,
+  X,
+} from 'lucide-react';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 const CaricaUltimaPartita = ({ onPageChange }) => {
@@ -15,7 +24,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     heatmapOffensive: null,
     heatmapDefensive: null,
   });
-  
+
   const [uploadProgress, setUploadProgress] = useState({});
   const [ocrStatus, setOcrStatus] = useState({});
   const [matchData, setMatchData] = useState({
@@ -41,19 +50,19 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
     const userId = auth.currentUser.uid;
     const matchId = currentMatchId;
-    
+
     // Usa gli import già definiti
-    
+
     // Listener per stats
     const unsubscribeStats = onSnapshot(
       doc(db, 'users', userId, 'matches', matchId, 'stats', 'main'),
-      (doc) => {
+      doc => {
         if (doc.exists()) {
           const data = doc.data();
           console.log('📊 Real-time stats update:', data);
           setMatchData(prev => ({
             ...prev,
-            stats: data
+            stats: data,
           }));
         }
       }
@@ -62,13 +71,13 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     // Listener per votes
     const unsubscribeVotes = onSnapshot(
       doc(db, 'users', userId, 'matches', matchId, 'votes', 'main'),
-      (doc) => {
+      doc => {
         if (doc.exists()) {
           const data = doc.data();
           console.log('📊 Real-time votes update:', data);
           setMatchData(prev => ({
             ...prev,
-            ratings: data
+            ratings: data,
           }));
         }
       }
@@ -77,13 +86,13 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     // Listener per heatmap
     const unsubscribeHeatmap = onSnapshot(
       doc(db, 'users', userId, 'matches', matchId, 'heatmap', 'main'),
-      (doc) => {
+      doc => {
         if (doc.exists()) {
           const data = doc.data();
           console.log('📊 Real-time heatmap update:', data);
           setMatchData(prev => ({
             ...prev,
-            heatmaps: { ...prev.heatmaps, ...data }
+            heatmaps: { ...prev.heatmaps, ...data },
           }));
         }
       }
@@ -92,13 +101,13 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
     // Listener per roster
     const unsubscribeRoster = onSnapshot(
       doc(db, 'users', userId, 'roster'),
-      (doc) => {
+      doc => {
         if (doc.exists()) {
           const data = doc.data();
           console.log('📊 Real-time roster update:', data);
           setMatchData(prev => ({
             ...prev,
-            roster: data
+            roster: data,
           }));
         }
       }
@@ -137,25 +146,34 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
       // Simula progress
       setUploadProgress(prev => ({ ...prev, [type]: 0 }));
-      
+
       // Prova upload diretto su Storage con trigger OCR, fallback a simulazione
       let uploadResult;
       try {
         uploadResult = await uploadImageForOCR(file, type, currentMatchId);
-        console.log('✅ Image uploaded to Storage with OCR trigger:', uploadResult.url);
+        console.log(
+          '✅ Image uploaded to Storage with OCR trigger:',
+          uploadResult.url
+        );
       } catch (functionError) {
-        console.warn('⚠️ Storage upload failed, using simulation:', functionError.message);
+        console.warn(
+          '⚠️ Storage upload failed, using simulation:',
+          functionError.message
+        );
         uploadResult = await simulateUpload(file, type);
         console.log('✅ Image upload simulated:', uploadResult.url);
       }
 
       setUploadImages(prev => ({
         ...prev,
-        [type]: { file, url: uploadResult.url, fileName: uploadResult.fileName }
+        [type]: {
+          file,
+          url: uploadResult.url,
+          fileName: uploadResult.fileName,
+        },
       }));
-      
+
       setUploadProgress(prev => ({ ...prev, [type]: 100 }));
-      
     } catch (error) {
       console.error('❌ Error uploading image:', error);
       alert(`Errore durante l'upload: ${error.message}`);
@@ -165,7 +183,9 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
   // Handler per elaborazione OCR con Cloud Functions
   const handleProcessOCR = async () => {
-    const uploadedCount = Object.values(uploadImages).filter(img => img !== null).length;
+    const uploadedCount = Object.values(uploadImages).filter(
+      img => img !== null
+    ).length;
 
     if (uploadedCount < 4) {
       alert('Carica tutte e 4 le immagini prima di procedere');
@@ -191,8 +211,12 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
         try {
           console.log(`🔍 Elaborando ${type}...`);
-          const result = await cloudFunctions.ocrParseImage(matchId, type, imageData.url);
-          
+          const result = await cloudFunctions.ocrParseImage(
+            matchId,
+            type,
+            imageData.url
+          );
+
           if (result.success) {
             ocrResults[type] = result.data;
             setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
@@ -215,7 +239,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         },
         processedAt: new Date().toISOString(),
         userId,
-        matchId
+        matchId,
       };
 
       // Salva in Firestore
@@ -227,11 +251,10 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
 
       console.log('✅ Elaborazione OCR completata con successo!');
       alert('✅ Elaborazione completata! I dati sono stati salvati.');
-
     } catch (error) {
       console.error('❌ Errore elaborazione OCR:', error);
       alert(`Errore durante l'elaborazione: ${error.message}`);
-      
+
       // Fallback: usa dati demo
       console.log('🔄 Fallback: Usando dati demo...');
       const demoData = generateDemoData();
@@ -267,9 +290,33 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         goalDifference: 2,
       },
       players: [
-        { name: 'Messi', role: 'RW', rating: 9.2, goals: 2, assists: 1, isProfiled: true, badge: 'MVP' },
-        { name: 'Neymar', role: 'LW', rating: 8.5, goals: 1, assists: 2, isProfiled: true, badge: 'Growing' },
-        { name: 'Mbappé', role: 'CF', rating: 8.8, goals: 0, assists: 1, isProfiled: false, badge: 'Non profilato' },
+        {
+          name: 'Messi',
+          role: 'RW',
+          rating: 9.2,
+          goals: 2,
+          assists: 1,
+          isProfiled: true,
+          badge: 'MVP',
+        },
+        {
+          name: 'Neymar',
+          role: 'LW',
+          rating: 8.5,
+          goals: 1,
+          assists: 2,
+          isProfiled: true,
+          badge: 'Growing',
+        },
+        {
+          name: 'Mbappé',
+          role: 'CF',
+          rating: 8.8,
+          goals: 0,
+          assists: 1,
+          isProfiled: false,
+          badge: 'Non profilato',
+        },
       ],
       heatmaps: {
         offensive: { zones: ['left-wing', 'center'], intensity: 'high' },
@@ -300,23 +347,27 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
               </p>
             </div>
             <div className="flex items-center gap-4">
-               <Button
-                 onClick={handleProcessOCR}
-                 disabled={isProcessing || Object.values(uploadImages).filter(img => img !== null).length < 4}
-                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 disabled:opacity-50"
-               >
-                 {isProcessing ? (
-                   <>
-                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                     Elaborando...
-                   </>
-                 ) : (
-                   <>
-                     <BarChart3 size={20} className="mr-2" />
-                     Elabora con OCR
-                   </>
-                 )}
-               </Button>
+              <Button
+                onClick={handleProcessOCR}
+                disabled={
+                  isProcessing ||
+                  Object.values(uploadImages).filter(img => img !== null)
+                    .length < 4
+                }
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 disabled:opacity-50"
+              >
+                {isProcessing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Elaborando...
+                  </>
+                ) : (
+                  <>
+                    <BarChart3 size={20} className="mr-2" />
+                    Elabora con OCR
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </div>
@@ -330,8 +381,16 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
                 Carica le 4 immagini del match
               </h2>
               <div className="grid grid-cols-2 gap-4">
-                {['stats', 'ratings', 'heatmapOffensive', 'heatmapDefensive'].map((type) => (
-                  <div key={type} className="border-2 border-dashed border-white/20 rounded-lg p-4 text-center">
+                {[
+                  'stats',
+                  'ratings',
+                  'heatmapOffensive',
+                  'heatmapDefensive',
+                ].map(type => (
+                  <div
+                    key={type}
+                    className="border-2 border-dashed border-white/20 rounded-lg p-4 text-center"
+                  >
                     <Upload size={32} className="mx-auto mb-2 text-white/40" />
                     <p className="text-white/60 text-sm mb-2">
                       {type === 'stats' && 'Statistiche Match'}
@@ -339,20 +398,22 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
                       {type === 'heatmapOffensive' && 'Heatmap Offensiva'}
                       {type === 'heatmapDefensive' && 'Heatmap Difensiva'}
                     </p>
-                     <Button
-                       onClick={() => document.getElementById(`file-${type}`).click()}
-                       className="bg-white/10 hover:bg-white/20 text-white"
-                     >
-                       Carica Immagine
-                     </Button>
-                     
-                     <input
-                       id={`file-${type}`}
-                       type="file"
-                       accept="image/*"
-                       onChange={(e) => handleImageUpload(type, e.target.files[0])}
-                       style={{ display: 'none' }}
-                     />
+                    <Button
+                      onClick={() =>
+                        document.getElementById(`file-${type}`).click()
+                      }
+                      className="bg-white/10 hover:bg-white/20 text-white"
+                    >
+                      Carica Immagine
+                    </Button>
+
+                    <input
+                      id={`file-${type}`}
+                      type="file"
+                      accept="image/*"
+                      onChange={e => handleImageUpload(type, e.target.files[0])}
+                      style={{ display: 'none' }}
+                    />
                   </div>
                 ))}
               </div>
@@ -396,7 +457,9 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
                 {Object.entries(matchData.kpis).map(([key, value]) => (
                   <div key={key} className="text-center">
                     <div className="text-2xl font-bold text-white">{value}</div>
-                    <div className="text-sm text-white/60 capitalize">{key}</div>
+                    <div className="text-sm text-white/60 capitalize">
+                      {key}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -405,31 +468,48 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
         )}
 
         {/* Players Section */}
-        {activeSection === 'analysis' && matchData.players && matchData.players.length > 0 && (
-          <div className="mt-6">
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Migliori Giocatori
-              </h2>
-              <div className="space-y-3">
-                {matchData.players.map((player, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                    <div>
-                      <div className="font-semibold text-white">{player.name}</div>
-                      <div className="text-sm text-white/60">{player.role}</div>
+        {activeSection === 'analysis' &&
+          matchData.players &&
+          matchData.players.length > 0 && (
+            <div className="mt-6">
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold text-white mb-4">
+                  Migliori Giocatori
+                </h2>
+                <div className="space-y-3">
+                  {matchData.players.map((player, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                    >
+                      <div>
+                        <div className="font-semibold text-white">
+                          {player.name}
+                        </div>
+                        <div className="text-sm text-white/60">
+                          {player.role}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          className={
+                            player.badge === 'MVP'
+                              ? 'bg-yellow-500'
+                              : 'bg-blue-500'
+                          }
+                        >
+                          {player.badge}
+                        </Badge>
+                        <span className="text-white font-semibold">
+                          {player.rating}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className={player.badge === 'MVP' ? 'bg-yellow-500' : 'bg-blue-500'}>
-                        {player.badge}
-                      </Badge>
-                      <span className="text-white font-semibold">{player.rating}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-        )}
+                  ))}
+                </div>
+              </Card>
+            </div>
+          )}
       </div>
     </ErrorBoundary>
   );

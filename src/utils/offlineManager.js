@@ -4,11 +4,11 @@ class OfflineManager {
     this.cache = new Map();
     this.isOnline = navigator.onLine;
     this.pendingOperations = [];
-    
+
     // Setup event listeners
     window.addEventListener('online', this.handleOnline.bind(this));
     window.addEventListener('offline', this.handleOffline.bind(this));
-    
+
     // Carica cache esistente
     this.loadCacheFromStorage();
   }
@@ -50,34 +50,35 @@ class OfflineManager {
   }
 
   // Aggiungi dati alla cache
-  setCache(key, data, ttl = 300000) { // 5 minuti default
+  setCache(key, data, ttl = 300000) {
+    // 5 minuti default
     const cacheItem = {
       data,
       timestamp: Date.now(),
-      ttl
+      ttl,
     };
-    
+
     this.cache.set(key, cacheItem);
     this.saveCacheToStorage();
-    
+
     console.log(`💾 Dati salvati in cache: ${key}`);
   }
 
   // Recupera dati dalla cache
   getCache(key) {
     const cacheItem = this.cache.get(key);
-    
+
     if (!cacheItem) {
       return null;
     }
-    
+
     // Verifica se i dati sono scaduti
     if (Date.now() - cacheItem.timestamp > cacheItem.ttl) {
       this.cache.delete(key);
       this.saveCacheToStorage();
       return null;
     }
-    
+
     return cacheItem.data;
   }
 
@@ -85,9 +86,9 @@ class OfflineManager {
   addPendingOperation(operation) {
     this.pendingOperations.push({
       ...operation,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     console.log(`⏳ Operazione aggiunta alla coda: ${operation.type}`);
   }
 
@@ -97,7 +98,9 @@ class OfflineManager {
       return;
     }
 
-    console.log(`🔄 Sincronizzazione ${this.pendingOperations.length} operazioni...`);
+    console.log(
+      `🔄 Sincronizzazione ${this.pendingOperations.length} operazioni...`
+    );
 
     const operations = [...this.pendingOperations];
     this.pendingOperations = [];
@@ -166,7 +169,7 @@ class OfflineManager {
       valid,
       expired,
       pendingOperations: this.pendingOperations.length,
-      isOnline: this.isOnline
+      isOnline: this.isOnline,
     };
   }
 }
@@ -175,7 +178,7 @@ class OfflineManager {
 export const offlineManager = new OfflineManager();
 
 // Utility functions per integrazione con Firebase
-export const withOfflineSupport = (firebaseOperation) => {
+export const withOfflineSupport = firebaseOperation => {
   return async (...args) => {
     if (offlineManager.isOnline) {
       try {
@@ -200,7 +203,9 @@ export const withOfflineSupport = (firebaseOperation) => {
 // Hook per stato offline
 export const useOfflineStatus = () => {
   const [isOnline, setIsOnline] = React.useState(offlineManager.isOnline);
-  const [cacheStats, setCacheStats] = React.useState(offlineManager.getCacheStats());
+  const [cacheStats, setCacheStats] = React.useState(
+    offlineManager.getCacheStats()
+  );
 
   React.useEffect(() => {
     const updateStatus = () => {

@@ -18,35 +18,36 @@ export const uploadImageForOCR = async (file, type, matchId = 'current') => {
 
     // Mappa tipi per metadati
     const typeMapping = {
-      'stats': 'MATCH_STATS',
-      'ratings': 'VOTES', 
-      'heatmapOffensive': 'HEATMAP',
-      'heatmapDefensive': 'HEATMAP',
-      'opponent': 'OPPONENT_FORMATION'
+      stats: 'MATCH_STATS',
+      ratings: 'VOTES',
+      heatmapOffensive: 'HEATMAP',
+      heatmapDefensive: 'HEATMAP',
+      opponent: 'OPPONENT_FORMATION',
     };
 
     const metadataType = typeMapping[type] || type.toUpperCase();
-    
+
     // Upload diretto su Storage con metadati
     const fileName = `${type}_${Date.now()}.jpg`;
     const storageRef = ref(storage, `users/${userId}/images/${fileName}`);
-    
+
     const uploadTask = uploadBytesResumable(storageRef, file, {
       customMetadata: {
         uid: userId,
         type: metadataType,
-        matchId: matchId
-      }
+        matchId: matchId,
+      },
     });
 
     return new Promise((resolve, reject) => {
       uploadTask.on(
         'state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        snapshot => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log('📊 Upload progress:', progress + '%');
         },
-        (error) => {
+        error => {
           console.error('❌ Upload error:', error);
           reject(error);
         },
@@ -59,7 +60,7 @@ export const uploadImageForOCR = async (file, type, matchId = 'current') => {
               fileName: fileName,
               type: metadataType,
               matchId: matchId,
-              timestamp: Date.now()
+              timestamp: Date.now(),
             });
           } catch (error) {
             reject(error);
@@ -67,7 +68,6 @@ export const uploadImageForOCR = async (file, type, matchId = 'current') => {
         }
       );
     });
-
   } catch (error) {
     console.error('❌ Upload error:', error);
     throw error;
@@ -77,7 +77,7 @@ export const uploadImageForOCR = async (file, type, matchId = 'current') => {
 /**
  * Converte file in base64
  */
-const fileToBase64 = (file) => {
+const fileToBase64 = file => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -90,7 +90,7 @@ const fileToBase64 = (file) => {
  * Fallback: Simula upload per test
  */
 export const simulateUpload = async (file, type) => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(() => {
       resolve({
         url: `https://example.com/images/${type}_${Date.now()}.jpg`,
@@ -98,7 +98,7 @@ export const simulateUpload = async (file, type) => {
         type,
         timestamp: Date.now(),
         size: file.size,
-        simulated: true
+        simulated: true,
       });
     }, 1000);
   });
@@ -106,5 +106,5 @@ export const simulateUpload = async (file, type) => {
 
 export default {
   uploadImageForOCR,
-  simulateUpload
+  simulateUpload,
 };

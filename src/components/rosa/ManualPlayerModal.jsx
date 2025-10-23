@@ -14,11 +14,14 @@ import {
 } from 'lucide-react';
 
 // Console log per debug import
-console.log("ManualPlayerModal module LOADED @", import.meta.env?.VITE_APP_VERSION);
+console.log(
+  'ManualPlayerModal module LOADED @',
+  import.meta.env?.VITE_APP_VERSION
+);
 
 // Portal Shell Component
 const ModalShell = ({ children }) => {
-  if (typeof document === "undefined") return null;
+  if (typeof document === 'undefined') return null;
   return createPortal(children, document.body);
 };
 
@@ -957,100 +960,101 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
         <div className="absolute inset-0 bg-black/60" onClick={onClose} />
         {/* Panel */}
         <div
-          role="dialog" 
+          role="dialog"
           aria-modal="true"
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
         >
           <div className="pointer-events-auto w-full max-w-7xl h-full rounded-2xl bg-[#0b1223] border border-white/10 shadow-2xl overflow-hidden">
             <div className="w-full h-full bg-[#0b1223] text-white flex overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-80 bg-[#0b1223] border-r border-white/10 text-white flex flex-col">
-          <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-            <h3 className="font-bold text-lg">Sezioni</h3>
-            <button
-              onClick={onClose}
-              className="text-white/70 hover:text-white text-3xl leading-none transition-colors"
-              aria-label="Chiudi"
-            >
-              ×
-            </button>
-          </div>
-          <div className="flex-1 p-4 overflow-y-auto">
-            <div className="space-y-2">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setCurrentTab(tab.id)}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                    currentTab === tab.id
-                      ? 'bg-emerald-500 text-[#0b1223] font-semibold'
-                      : 'bg-white/5 hover:bg-white/10 text-white'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+              {/* Sidebar */}
+              <div className="w-80 bg-[#0b1223] border-r border-white/10 text-white flex flex-col">
+                <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+                  <h3 className="font-bold text-lg">Sezioni</h3>
+                  <button
+                    onClick={onClose}
+                    className="text-white/70 hover:text-white text-3xl leading-none transition-colors"
+                    aria-label="Chiudi"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="flex-1 p-4 overflow-y-auto">
+                  <div className="space-y-2">
+                    {tabs.map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setCurrentTab(tab.id)}
+                        className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                          currentTab === tab.id
+                            ? 'bg-emerald-500 text-[#0b1223] font-semibold'
+                            : 'bg-white/5 hover:bg-white/10 text-white'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
-        {/* Main Content */}
-        <div className="flex-1 bg-[#0f172a] text-white flex flex-col">
-          {/* Header */}
-          <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-[#0f172a]">
-            <div>
-              <h2 className="text-2xl font-bold">
-                Inserimento Manuale Giocatore
-              </h2>
-              <p className="text-white/60 text-sm">
-                Compila i campi. La logica di salvataggio rimane invariata.
-              </p>
-            </div>
-          </div>
+              {/* Main Content */}
+              <div className="flex-1 bg-[#0f172a] text-white flex flex-col">
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-[#0f172a]">
+                  <div>
+                    <h2 className="text-2xl font-bold">
+                      Inserimento Manuale Giocatore
+                    </h2>
+                    <p className="text-white/60 text-sm">
+                      Compila i campi. La logica di salvataggio rimane
+                      invariata.
+                    </p>
+                  </div>
+                </div>
 
-          {/* Content Area */}
-          <div className="flex-1 overflow-y-auto px-6 py-6">
-            <div className="max-w-7xl mx-auto">
-              {currentTab === 'general' && renderGeneralTab()}
-              {currentTab === 'stats' && renderStatsTab()}
-              {currentTab === 'booster' && renderBoosterTab()}
-              {currentTab === 'abilities' && renderAbilitiesTab()}
-              {currentTab === 'stiliIA' && renderStiliIATab()}
-              {currentTab === 'position' && renderPositionTab()}
-              {currentTab === 'media' && renderMediaTab()}
-            </div>
-          </div>
+                {/* Content Area */}
+                <div className="flex-1 overflow-y-auto px-6 py-6">
+                  <div className="max-w-7xl mx-auto">
+                    {currentTab === 'general' && renderGeneralTab()}
+                    {currentTab === 'stats' && renderStatsTab()}
+                    {currentTab === 'booster' && renderBoosterTab()}
+                    {currentTab === 'abilities' && renderAbilitiesTab()}
+                    {currentTab === 'stiliIA' && renderStiliIATab()}
+                    {currentTab === 'position' && renderPositionTab()}
+                    {currentTab === 'media' && renderMediaTab()}
+                  </div>
+                </div>
 
-          {/* Footer */}
-          <div className="px-6 py-4 border-t border-white/10 bg-[#0f172a]">
-            <div className="max-w-6xl mx-auto flex justify-end gap-3">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium"
-              >
-                Annulla
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 font-semibold flex items-center gap-2"
-              >
-                {isSaving ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Salvando...
-                  </>
-                ) : (
-                  <>
-                    <Save size={16} />
-                    Salva Giocatore
-                  </>
-                )}
-              </button>
+                {/* Footer */}
+                <div className="px-6 py-4 border-t border-white/10 bg-[#0f172a]">
+                  <div className="max-w-6xl mx-auto flex justify-end gap-3">
+                    <button
+                      onClick={onClose}
+                      className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium"
+                    >
+                      Annulla
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 font-semibold flex items-center gap-2"
+                    >
+                      {isSaving ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Salvando...
+                        </>
+                      ) : (
+                        <>
+                          <Save size={16} />
+                          Salva Giocatore
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
           </div>
         </div>
       </div>

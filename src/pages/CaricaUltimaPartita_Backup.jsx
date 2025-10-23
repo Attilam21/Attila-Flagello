@@ -289,7 +289,7 @@ const CaricaUltimaPartita = ({ onPageChange }) => {
           '⚠️ Generative Language API non abilitata!\n\nVai su: https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853\n\nClicca "ENABLE" per abilitare l\'API, poi riprova.'
         );
       } else {
-        console.error('❌ Errore durante l\'elaborazione con Gemini:', error);
+        console.error("❌ Errore durante l'elaborazione con Gemini:", error);
         alert("Errore durante l'elaborazione con Gemini. Riprova.");
       }
 

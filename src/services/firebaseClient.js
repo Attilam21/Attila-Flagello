@@ -18,10 +18,17 @@ import {
   where,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { validationSchemas, validateData, sanitizeData } from '../utils/validationSchemas';
+import {
+  validationSchemas,
+  validateData,
+  sanitizeData,
+} from '../utils/validationSchemas';
 import { offlineManager } from '../utils/offlineManager';
 import { performanceOptimizer } from '../utils/performanceOptimizer';
-import { errorRecoveryManager, withErrorRecovery } from '../utils/errorRecovery';
+import {
+  errorRecoveryManager,
+  withErrorRecovery,
+} from '../utils/errorRecovery';
 
 // Configurazione Firebase
 const firebaseConfig = {
@@ -144,7 +151,9 @@ export const addPlayer = withErrorRecovery(async (userId, player) => {
   // Validazione dati
   const validation = validateData(validationSchemas.player, player);
   if (!validation.isValid) {
-    throw new Error(`Dati giocatore non validi: ${validation.errors.join(', ')}`);
+    throw new Error(
+      `Dati giocatore non validi: ${validation.errors.join(', ')}`
+    );
   }
 
   // Sanitizzazione dati
@@ -157,41 +166,53 @@ export const addPlayer = withErrorRecovery(async (userId, player) => {
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
   };
-  
+
   const refDoc = await addDoc(colRef, payload);
   const result = { id: refDoc.id, ...payload };
-  
+
   // Aggiorna cache offline
-  const cacheKey = offlineManager.generateCacheKey('players', userId, refDoc.id);
+  const cacheKey = offlineManager.generateCacheKey(
+    'players',
+    userId,
+    refDoc.id
+  );
   offlineManager.setCache(cacheKey, result);
-  
+
   return result;
 });
 
-export const updatePlayer = withErrorRecovery(async (userId, playerId, updates) => {
-  // Validazione aggiornamenti
-  const validation = validateData(validationSchemas.player, updates);
-  if (!validation.isValid) {
-    throw new Error(`Aggiornamenti giocatore non validi: ${validation.errors.join(', ')}`);
-  }
+export const updatePlayer = withErrorRecovery(
+  async (userId, playerId, updates) => {
+    // Validazione aggiornamenti
+    const validation = validateData(validationSchemas.player, updates);
+    if (!validation.isValid) {
+      throw new Error(
+        `Aggiornamenti giocatore non validi: ${validation.errors.join(', ')}`
+      );
+    }
 
-  // Sanitizzazione aggiornamenti
-  const sanitizedUpdates = sanitizeData(validationSchemas.player, updates);
+    // Sanitizzazione aggiornamenti
+    const sanitizedUpdates = sanitizeData(validationSchemas.player, updates);
 
-  const refDoc = doc(db, 'users', userId, 'players', playerId);
-  const updateData = { ...sanitizedUpdates, updatedAt: Timestamp.now() };
-  
-  await updateDoc(refDoc, updateData);
-  
-  // Aggiorna cache offline
-  const cacheKey = offlineManager.generateCacheKey('players', userId, playerId);
-  const cachedData = offlineManager.getCache(cacheKey);
-  if (cachedData) {
-    offlineManager.setCache(cacheKey, { ...cachedData, ...updateData });
+    const refDoc = doc(db, 'users', userId, 'players', playerId);
+    const updateData = { ...sanitizedUpdates, updatedAt: Timestamp.now() };
+
+    await updateDoc(refDoc, updateData);
+
+    // Aggiorna cache offline
+    const cacheKey = offlineManager.generateCacheKey(
+      'players',
+      userId,
+      playerId
+    );
+    const cachedData = offlineManager.getCache(cacheKey);
+    if (cachedData) {
+      offlineManager.setCache(cacheKey, { ...cachedData, ...updateData });
+    }
+
+    return updateData;
   }
-  
-  return updateData;
-});
+);
 
 export const deletePlayerById = async (userId, playerId) => {
   const refDoc = doc(db, 'users', userId, 'players', playerId);
@@ -207,26 +228,30 @@ export const getPlayerById = async (userId, playerId) => {
 export const listenToPlayers = (userId, callback) => {
   const colRef = collection(db, 'users', userId, 'players');
   const q = query(colRef, orderBy('createdAt', 'desc'));
-  
-  return onSnapshot(q, snap => {
-    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    
-    // Aggiorna cache offline
-    const cacheKey = offlineManager.generateCacheKey('players', userId);
-    offlineManager.setCache(cacheKey, items);
-    
-    callback(items);
-  }, error => {
-    console.error('❌ Errore listener giocatori:', error);
-    
-    // Fallback alla cache se disponibile
-    const cacheKey = offlineManager.generateCacheKey('players', userId);
-    const cachedData = offlineManager.getCache(cacheKey);
-    if (cachedData) {
-      console.log('📦 Usando dati cache per giocatori');
-      callback(cachedData);
+
+  return onSnapshot(
+    q,
+    snap => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      // Aggiorna cache offline
+      const cacheKey = offlineManager.generateCacheKey('players', userId);
+      offlineManager.setCache(cacheKey, items);
+
+      callback(items);
+    },
+    error => {
+      console.error('❌ Errore listener giocatori:', error);
+
+      // Fallback alla cache se disponibile
+      const cacheKey = offlineManager.generateCacheKey('players', userId);
+      const cachedData = offlineManager.getCache(cacheKey);
+      if (cachedData) {
+        console.log('📦 Usando dati cache per giocatori');
+        callback(cachedData);
+      }
     }
-  });
+  );
 };
 
 // ---------- Player images (profile/stats/skills) ----------

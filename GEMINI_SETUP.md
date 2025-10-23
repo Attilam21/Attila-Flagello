@@ -1,17 +1,21 @@
 # 🤖 Setup Gemini AI per eFootballLab
 
 ## ⚠️ ERRORE ATTUALMENTE PRESENTE
+
 **Generative Language API non è abilitata** nel progetto Google Cloud.
 
 ## 🔧 RISOLUZIONE IMMEDIATA
 
 ### 1. **Abilita Generative Language API**
+
 Vai su questo link e clicca **"ENABLE"**:
+
 ```
 https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=814206807853
 ```
 
 ### 2. **Passaggi dettagliati:**
+
 1. Apri il link sopra nel browser
 2. Assicurati di essere loggato con l'account Google corretto
 3. Clicca il pulsante **"ENABLE"** (blu)
@@ -19,6 +23,7 @@ https://console.developers.google.com/apis/api/generativelanguage.googleapis.com
 5. Torna all'applicazione e riprova
 
 ### 3. **Verifica abilitazione:**
+
 - Vai su [Google Cloud Console](https://console.cloud.google.com/)
 - Seleziona il progetto `attila-475314` (ID: 814206807853)
 - Vai su **"APIs & Services" > "Library"**
@@ -47,12 +52,15 @@ Se hai problemi con l'abilitazione dell'API, puoi:
 ## 🔍 DEBUGGING
 
 ### Errori comuni:
+
 - **403 Forbidden**: API non abilitata
 - **SERVICE_DISABLED**: Servizio disabilitato nel progetto
 - **Invalid API Key**: Chiave API non valida o scaduta
 
 ### Log di debug:
+
 Apri la console del browser (F12) per vedere i log dettagliati:
+
 - `🤖 Gemini: Analizzando immagine...`
 - `❌ Gemini Error: ...`
 - `✅ Elaborazione Gemini completata...`
@@ -60,6 +68,7 @@ Apri la console del browser (F12) per vedere i log dettagliati:
 ## 📞 SUPPORTO
 
 Se continui ad avere problemi:
+
 1. Verifica che l'account Google abbia i permessi sul progetto
 2. Controlla che il progetto `814206807853` sia attivo
 3. Assicurati che la fatturazione sia abilitata (necessaria per Gemini AI)
@@ -67,6 +76,7 @@ Se continui ad avere problemi:
 ## ✅ TEST
 
 Dopo aver abilitato l'API:
+
 1. Vai su https://attila-475314.web.app
 2. Naviga su "Carica Ultima Partita"
 3. Carica 4 immagini di una partita

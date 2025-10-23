@@ -5,17 +5,20 @@ export const validationSchemas = {
     required: ['nome', 'ruoloPrimario', 'carta'],
     properties: {
       nome: { type: 'string', minLength: 2, maxLength: 50 },
-      ruoloPrimario: { type: 'string', enum: ['PT', 'TD', 'DC', 'TS', 'CC', 'AS', 'AD', 'ATT'] },
+      ruoloPrimario: {
+        type: 'string',
+        enum: ['PT', 'TD', 'DC', 'TS', 'CC', 'AS', 'AD', 'ATT'],
+      },
       carta: {
         type: 'object',
         required: ['complessivamente'],
         properties: {
-          complessivamente: { type: 'number', minimum: 0, maximum: 100 }
-        }
+          complessivamente: { type: 'number', minimum: 0, maximum: 100 },
+        },
       },
       isTitolare: { type: 'boolean' },
-      createdAt: { type: 'timestamp' }
-    }
+      createdAt: { type: 'timestamp' },
+    },
   },
 
   // Schema per partite
@@ -34,8 +37,8 @@ export const validationSchemas = {
           corner: { type: 'number', minimum: 0 },
           falli: { type: 'number', minimum: 0 },
           golSegnati: { type: 'number', minimum: 0 },
-          golSubiti: { type: 'number', minimum: 0 }
-        }
+          golSubiti: { type: 'number', minimum: 0 },
+        },
       },
       ratings: {
         type: 'array',
@@ -46,13 +49,13 @@ export const validationSchemas = {
             player: { type: 'string' },
             rating: { type: 'number', minimum: 0, maximum: 10 },
             role: { type: 'string' },
-            isProfiled: { type: 'boolean' }
-          }
-        }
+            isProfiled: { type: 'boolean' },
+          },
+        },
       },
       createdAt: { type: 'timestamp' },
-      source: { type: 'string' }
-    }
+      source: { type: 'string' },
+    },
   },
 
   // Schema per dashboard stats
@@ -72,12 +75,12 @@ export const validationSchemas = {
           fuorigioco: { type: 'number', minimum: 0 },
           parate: { type: 'number', minimum: 0 },
           golSegnati: { type: 'number', minimum: 0 },
-          golSubiti: { type: 'number', minimum: 0 }
-        }
+          golSubiti: { type: 'number', minimum: 0 },
+        },
       },
       lastUpdated: { type: 'timestamp' },
-      source: { type: 'string' }
-    }
+      source: { type: 'string' },
+    },
   },
 
   // Schema per task
@@ -92,15 +95,15 @@ export const validationSchemas = {
       category: { type: 'string' },
       status: { type: 'string', enum: ['pending', 'in_progress', 'completed'] },
       createdAt: { type: 'timestamp' },
-      source: { type: 'string' }
-    }
-  }
+      source: { type: 'string' },
+    },
+  },
 };
 
 // Funzione di validazione
 export const validateData = (schema, data) => {
   const errors = [];
-  
+
   // Validazione campi richiesti
   if (schema.required) {
     schema.required.forEach(field => {
@@ -109,12 +112,12 @@ export const validateData = (schema, data) => {
       }
     });
   }
-  
+
   // Validazione proprietà
   if (schema.properties && data) {
     Object.entries(schema.properties).forEach(([key, rules]) => {
       const value = data[key];
-      
+
       if (value !== undefined) {
         // Validazione tipo
         if (rules.type === 'string' && typeof value !== 'string') {
@@ -132,51 +135,71 @@ export const validateData = (schema, data) => {
         if (rules.type === 'array' && !Array.isArray(value)) {
           errors.push(`${key} deve essere un array`);
         }
-        
+
         // Validazione lunghezza stringa
-        if (rules.type === 'string' && rules.minLength && value.length < rules.minLength) {
+        if (
+          rules.type === 'string' &&
+          rules.minLength &&
+          value.length < rules.minLength
+        ) {
           errors.push(`${key} deve essere almeno ${rules.minLength} caratteri`);
         }
-        if (rules.type === 'string' && rules.maxLength && value.length > rules.maxLength) {
-          errors.push(`${key} deve essere massimo ${rules.maxLength} caratteri`);
+        if (
+          rules.type === 'string' &&
+          rules.maxLength &&
+          value.length > rules.maxLength
+        ) {
+          errors.push(
+            `${key} deve essere massimo ${rules.maxLength} caratteri`
+          );
         }
-        
+
         // Validazione range numerico
-        if (rules.type === 'number' && rules.minimum !== undefined && value < rules.minimum) {
+        if (
+          rules.type === 'number' &&
+          rules.minimum !== undefined &&
+          value < rules.minimum
+        ) {
           errors.push(`${key} deve essere almeno ${rules.minimum}`);
         }
-        if (rules.type === 'number' && rules.maximum !== undefined && value > rules.maximum) {
+        if (
+          rules.type === 'number' &&
+          rules.maximum !== undefined &&
+          value > rules.maximum
+        ) {
           errors.push(`${key} deve essere massimo ${rules.maximum}`);
         }
-        
+
         // Validazione enum
         if (rules.enum && !rules.enum.includes(value)) {
-          errors.push(`${key} deve essere uno dei valori: ${rules.enum.join(', ')}`);
+          errors.push(
+            `${key} deve essere uno dei valori: ${rules.enum.join(', ')}`
+          );
         }
       }
     });
   }
-  
+
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 };
 
 // Funzione di sanitizzazione dati
 export const sanitizeData = (schema, data) => {
   const sanitized = { ...data };
-  
+
   if (schema.properties) {
     Object.entries(schema.properties).forEach(([key, rules]) => {
       const value = sanitized[key];
-      
+
       if (value !== undefined) {
         // Sanitizzazione stringhe
         if (rules.type === 'string' && typeof value === 'string') {
           sanitized[key] = value.trim();
         }
-        
+
         // Sanitizzazione numeri
         if (rules.type === 'number' && typeof value === 'number') {
           if (rules.minimum !== undefined && value < rules.minimum) {
@@ -186,7 +209,7 @@ export const sanitizeData = (schema, data) => {
             sanitized[key] = rules.maximum;
           }
         }
-        
+
         // Sanitizzazione timestamp
         if (rules.type === 'timestamp' && !(value instanceof Date)) {
           sanitized[key] = new Date();
@@ -194,6 +217,6 @@ export const sanitizeData = (schema, data) => {
       }
     });
   }
-  
+
   return sanitized;
 };

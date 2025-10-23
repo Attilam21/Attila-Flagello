@@ -1,8 +1,8 @@
-import { 
-  ref, 
-  uploadBytesResumable, 
-  getDownloadURL, 
-  deleteObject 
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  deleteObject,
 } from 'firebase/storage';
 import { storage } from './firebaseClient';
 
@@ -18,10 +18,11 @@ export const uploadImage = async (userId, file, type, onProgress = null) => {
   try {
     // Validazione file
     if (!file || !file.type.startsWith('image/')) {
-      throw new Error('File non valido: deve essere un\'immagine');
+      throw new Error("File non valido: deve essere un'immagine");
     }
 
-    if (file.size > 10 * 1024 * 1024) { // 10MB max
+    if (file.size > 10 * 1024 * 1024) {
+      // 10MB max
       throw new Error('File troppo grande: massimo 10MB');
     }
 
@@ -37,17 +38,19 @@ export const uploadImage = async (userId, file, type, onProgress = null) => {
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     return new Promise((resolve, reject) => {
-      uploadTask.on('state_changed',
-        (snapshot) => {
+      uploadTask.on(
+        'state_changed',
+        snapshot => {
           // Progress tracking
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`📊 Upload progress: ${Math.round(progress)}%`);
-          
+
           if (onProgress) {
             onProgress(Math.round(progress));
           }
         },
-        (error) => {
+        error => {
           console.error('❌ Upload error:', error);
           reject(error);
         },
@@ -56,13 +59,13 @@ export const uploadImage = async (userId, file, type, onProgress = null) => {
             // Upload completato, ottieni URL
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
             console.log('✅ Image uploaded successfully:', downloadURL);
-            
+
             resolve({
               url: downloadURL,
               fileName,
               type,
               timestamp,
-              size: file.size
+              size: file.size,
             });
           } catch (error) {
             console.error('❌ Error getting download URL:', error);
@@ -71,7 +74,6 @@ export const uploadImage = async (userId, file, type, onProgress = null) => {
         }
       );
     });
-
   } catch (error) {
     console.error('❌ Upload image error:', error);
     throw error;
@@ -143,33 +145,32 @@ export const uploadImagesForOCR = async (userId, images, onProgress = null) => {
       if (!file) continue;
 
       try {
-        const result = await uploadImage(userId, file, type, (progress) => {
+        const result = await uploadImage(userId, file, type, progress => {
           if (onProgress) {
-            const overallProgress = ((completedImages + progress / 100) / totalImages) * 100;
+            const overallProgress =
+              ((completedImages + progress / 100) / totalImages) * 100;
             onProgress(Math.round(overallProgress));
           }
         });
 
         results.push({
           type,
-          ...result
+          ...result,
         });
 
         completedImages++;
         console.log(`✅ Uploaded ${type}: ${completedImages}/${totalImages}`);
-
       } catch (error) {
         console.error(`❌ Error uploading ${type}:`, error);
         results.push({
           type,
-          error: error.message
+          error: error.message,
         });
       }
     }
 
     console.log('✅ Batch upload completed:', results);
     return results;
-
   } catch (error) {
     console.error('❌ Batch upload error:', error);
     throw error;
@@ -193,7 +194,7 @@ export const getImageURL = async (userId, fileName) => {
 /**
  * Lista immagini utente
  */
-export const listUserImages = async (userId) => {
+export const listUserImages = async userId => {
   try {
     // Nota: Firebase Storage non ha una funzione list diretta
     // Questa funzione dovrebbe essere implementata con Cloud Functions
@@ -209,7 +210,7 @@ export const listUserImages = async (userId) => {
 /**
  * Valida file immagine
  */
-export const validateImageFile = (file) => {
+export const validateImageFile = file => {
   const errors = [];
 
   if (!file) {
@@ -218,7 +219,7 @@ export const validateImageFile = (file) => {
   }
 
   if (!file.type.startsWith('image/')) {
-    errors.push('Il file deve essere un\'immagine');
+    errors.push("Il file deve essere un'immagine");
   }
 
   if (file.size > 10 * 1024 * 1024) {
@@ -244,5 +245,5 @@ export default {
   uploadImagesForOCR,
   getImageURL,
   listUserImages,
-  validateImageFile
+  validateImageFile,
 };

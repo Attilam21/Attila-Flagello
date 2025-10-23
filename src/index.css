@@ -149,7 +149,9 @@ body {
   border-radius: 16px;
   padding: 32px;
   border: 1px solid #374151;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .login-header {
@@ -655,7 +657,6 @@ body {
   gap: 24px;
 }
 
-
 /* Hero Section */
 .hero-section {
   background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
@@ -857,13 +858,22 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
   animation: shimmer 2s infinite;
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .progress-details {
@@ -918,13 +928,27 @@ body {
   color: #ffffff;
 }
 
-.kpi-icon.green { background: #10b981; }
-.kpi-icon.blue { background: #3b82f6; }
-.kpi-icon.purple { background: #8b5cf6; }
-.kpi-icon.orange { background: #f59e0b; }
-.kpi-icon.red { background: #ef4444; }
-.kpi-icon.yellow { background: #eab308; }
-.kpi-icon.teal { background: #14b8a6; }
+.kpi-icon.green {
+  background: #10b981;
+}
+.kpi-icon.blue {
+  background: #3b82f6;
+}
+.kpi-icon.purple {
+  background: #8b5cf6;
+}
+.kpi-icon.orange {
+  background: #f59e0b;
+}
+.kpi-icon.red {
+  background: #ef4444;
+}
+.kpi-icon.yellow {
+  background: #eab308;
+}
+.kpi-icon.teal {
+  background: #14b8a6;
+}
 
 .kpi-content {
   flex: 1;
@@ -2327,7 +2351,7 @@ body {
   background: #1f2937;
 }
 
-.radio-option input[type="radio"] {
+.radio-option input[type='radio'] {
   margin: 0;
 }
 
@@ -2350,7 +2374,7 @@ body {
   background: #1f2937;
 }
 
-.checkbox-option input[type="checkbox"] {
+.checkbox-option input[type='checkbox'] {
   margin: 0;
 }
 
@@ -2828,7 +2852,7 @@ body {
   background: #1f2937;
 }
 
-.radio-option input[type="radio"] {
+.radio-option input[type='radio'] {
   margin: 0;
 }
 
@@ -2851,7 +2875,7 @@ body {
   background: #1f2937;
 }
 
-.checkbox-option input[type="checkbox"] {
+.checkbox-option input[type='checkbox'] {
   margin: 0;
 }
 
@@ -3532,7 +3556,7 @@ body {
 
 .toggle-slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 18px;
   width: 18px;
   left: 3px;
@@ -3993,7 +4017,6 @@ select.form-select option {
   position: relative !important;
 }
 
-
 .modal-content {
   background: #1f2937;
   border: 1px solid #374151;
@@ -4120,7 +4143,7 @@ select.form-select option {
 
 /* Badge specifici per la tabella giocatori */
 .players-table .badge,
-.players-table span[class*="inline-flex"] {
+.players-table span[class*='inline-flex'] {
   background: rgba(255, 255, 255, 0.1) !important;
   color: #ffffff !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -4131,7 +4154,7 @@ select.form-select option {
 }
 
 .players-table .badge-primary,
-.players-table span[class*="bg-emerald"] {
+.players-table span[class*='bg-emerald'] {
   background: #10b981 !important;
   color: #0b1223 !important;
   border-color: #10b981 !important;
@@ -4139,7 +4162,7 @@ select.form-select option {
 }
 
 .players-table .badge-success,
-.players-table span[class*="bg-green"] {
+.players-table span[class*='bg-green'] {
   background: #059669 !important;
   color: #ffffff !important;
   border-color: #059669 !important;
@@ -4147,7 +4170,7 @@ select.form-select option {
 }
 
 .players-table .badge-warning,
-.players-table span[class*="bg-yellow"] {
+.players-table span[class*='bg-yellow'] {
   background: #f59e0b !important;
   color: #0b1223 !important;
   border-color: #f59e0b !important;
@@ -4155,7 +4178,7 @@ select.form-select option {
 }
 
 .players-table .badge-danger,
-.players-table span[class*="bg-red"] {
+.players-table span[class*='bg-red'] {
   background: #ef4444 !important;
   color: #ffffff !important;
   border-color: #ef4444 !important;
@@ -4451,7 +4474,7 @@ select.form-select option {
 
 .toggle-slider:before {
   position: absolute !important;
-  content: "" !important;
+  content: '' !important;
   height: 18px !important;
   width: 18px !important;
   left: 2px !important;
@@ -4541,11 +4564,13 @@ select.form-select option {
   margin-bottom: 20px !important;
 }
 
-.strengths-list, .weaknesses-list {
+.strengths-list,
+.weaknesses-list {
   margin-bottom: 20px !important;
 }
 
-.strengths-list h4, .weaknesses-list h4 {
+.strengths-list h4,
+.weaknesses-list h4 {
   color: #ffffff !important;
   font-size: 0.875rem !important;
   font-weight: 600 !important;
@@ -4554,13 +4579,15 @@ select.form-select option {
   letter-spacing: 0.5px !important;
 }
 
-.strengths-list ul, .weaknesses-list ul {
+.strengths-list ul,
+.weaknesses-list ul {
   list-style: none !important;
   padding: 0 !important;
   margin: 0 !important;
 }
 
-.strengths-list li, .weaknesses-list li {
+.strengths-list li,
+.weaknesses-list li {
   color: rgba(255, 255, 255, 0.8) !important;
   font-size: 0.875rem !important;
   line-height: 1.5 !important;
@@ -4570,7 +4597,7 @@ select.form-select option {
 }
 
 .strengths-list li:before {
-  content: "✓" !important;
+  content: '✓' !important;
   color: #10b981 !important;
   font-weight: bold !important;
   position: absolute !important;
@@ -4578,7 +4605,7 @@ select.form-select option {
 }
 
 .weaknesses-list li:before {
-  content: "⚠" !important;
+  content: '⚠' !important;
   color: #ef4444 !important;
   font-weight: bold !important;
   position: absolute !important;
@@ -4809,7 +4836,7 @@ select.form-select option {
 }
 
 .style-strengths li:before {
-  content: "✓";
+  content: '✓';
   color: #10b981;
   font-weight: bold;
   position: absolute;
@@ -4817,7 +4844,7 @@ select.form-select option {
 }
 
 .style-weaknesses li:before {
-  content: "⚠";
+  content: '⚠';
   color: #ef4444;
   font-weight: bold;
   position: absolute;
@@ -4954,7 +4981,7 @@ select.form-select option {
   height: 300px;
   display: flex;
   align-items: center;
-  justify-content:掘center;
+  justify-content: 掘center;
 }
 
 .graph-placeholder,

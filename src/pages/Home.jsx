@@ -357,7 +357,10 @@ const Home = ({ user, onPageChange }) => {
             <div className="step-number">1</div>
             <div className="step-label">Rosa</div>
           </div>
-          <div className="step" onClick={() => onPageChange('statistiche-avanzate')}>
+          <div
+            className="step"
+            onClick={() => onPageChange('statistiche-avanzate')}
+          >
             <div className="step-number">2</div>
             <div className="step-label">Statistiche</div>
           </div>

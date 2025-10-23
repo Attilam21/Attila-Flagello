@@ -1,18 +1,18 @@
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
   limit,
   onSnapshot,
   addDoc,
   updateDoc,
   deleteDoc,
-  Timestamp 
+  Timestamp,
 } from 'firebase/firestore';
 import { db } from './firebaseClient';
 
@@ -32,12 +32,12 @@ export const saveRoster = async (userId, rosterData) => {
     await setDoc(rosterRef, {
       ...rosterData,
       updatedAt: Timestamp.now(),
-      step: 1
+      step: 1,
     });
-    
+
     // Cache locale per offline
     localStorage.setItem('roster_cache', JSON.stringify(rosterData));
-    
+
     console.log('✅ Roster salvato in Firestore');
     return true;
   } catch (error) {
@@ -49,11 +49,11 @@ export const saveRoster = async (userId, rosterData) => {
 /**
  * Carica dati del roster (Step 1)
  */
-export const loadRoster = async (userId) => {
+export const loadRoster = async userId => {
   try {
     const rosterRef = doc(db, 'users', userId, 'roster', 'current');
     const rosterDoc = await getDoc(rosterRef);
-    
+
     if (rosterDoc.exists()) {
       const data = rosterDoc.data();
       console.log('✅ Roster caricato da Firestore');
@@ -89,12 +89,12 @@ export const saveMatch = async (userId, matchId, matchData) => {
       ...matchData,
       userId,
       matchId,
-      updatedAt: Timestamp.now()
+      updatedAt: Timestamp.now(),
     });
-    
+
     // Cache locale
     localStorage.setItem(`match_${matchId}_cache`, JSON.stringify(matchData));
-    
+
     console.log('✅ Match salvato in Firestore:', matchId);
     return true;
   } catch (error) {
@@ -110,7 +110,7 @@ export const loadMatch = async (userId, matchId) => {
   try {
     const matchRef = doc(db, 'users', userId, 'matches', matchId);
     const matchDoc = await getDoc(matchRef);
-    
+
     if (matchDoc.exists()) {
       const data = matchDoc.data();
       console.log('✅ Match caricato da Firestore:', matchId);
@@ -141,14 +141,21 @@ export const loadMatch = async (userId, matchId) => {
  */
 export const saveChatMessage = async (userId, chatId, messageData) => {
   try {
-    const messagesRef = collection(db, 'users', userId, 'chats', chatId, 'messages');
+    const messagesRef = collection(
+      db,
+      'users',
+      userId,
+      'chats',
+      chatId,
+      'messages'
+    );
     const docRef = await addDoc(messagesRef, {
       ...messageData,
       userId,
       chatId,
-      timestamp: Timestamp.now()
+      timestamp: Timestamp.now(),
     });
-    
+
     console.log('✅ Messaggio chat salvato:', docRef.id);
     return docRef.id;
   } catch (error) {
@@ -162,18 +169,29 @@ export const saveChatMessage = async (userId, chatId, messageData) => {
  */
 export const loadChatHistory = async (userId, chatId, limitCount = 50) => {
   try {
-    const messagesRef = collection(db, 'users', userId, 'chats', chatId, 'messages');
-    const q = query(messagesRef, orderBy('timestamp', 'desc'), limit(limitCount));
+    const messagesRef = collection(
+      db,
+      'users',
+      userId,
+      'chats',
+      chatId,
+      'messages'
+    );
+    const q = query(
+      messagesRef,
+      orderBy('timestamp', 'desc'),
+      limit(limitCount)
+    );
     const querySnapshot = await getDocs(q);
-    
+
     const messages = [];
-    querySnapshot.forEach((doc) => {
+    querySnapshot.forEach(doc => {
       messages.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
-    
+
     console.log('✅ Cronologia chat caricata:', messages.length, 'messaggi');
     return messages.reverse(); // Cronologico
   } catch (error) {
@@ -187,18 +205,25 @@ export const loadChatHistory = async (userId, chatId, limitCount = 50) => {
  */
 export const listenToChatHistory = (userId, chatId, callback) => {
   try {
-    const messagesRef = collection(db, 'users', userId, 'chats', chatId, 'messages');
+    const messagesRef = collection(
+      db,
+      'users',
+      userId,
+      'chats',
+      chatId,
+      'messages'
+    );
     const q = query(messagesRef, orderBy('timestamp', 'asc'));
-    
-    return onSnapshot(q, (querySnapshot) => {
+
+    return onSnapshot(q, querySnapshot => {
       const messages = [];
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach(doc => {
         messages.push({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         });
       });
-      
+
       callback(messages);
     });
   } catch (error) {
@@ -216,12 +241,12 @@ export const saveTasks = async (userId, tasksData) => {
     await setDoc(tasksRef, {
       ...tasksData,
       userId,
-      updatedAt: Timestamp.now()
+      updatedAt: Timestamp.now(),
     });
-    
+
     // Cache locale
     localStorage.setItem('tasks_cache', JSON.stringify(tasksData));
-    
+
     console.log('✅ Task salvati in Firestore');
     return true;
   } catch (error) {
@@ -233,11 +258,11 @@ export const saveTasks = async (userId, tasksData) => {
 /**
  * Carica task coach (Step 5)
  */
-export const loadTasks = async (userId) => {
+export const loadTasks = async userId => {
   try {
     const tasksRef = doc(db, 'users', userId, 'tasks', 'current');
     const tasksDoc = await getDoc(tasksRef);
-    
+
     if (tasksDoc.exists()) {
       const data = tasksDoc.data();
       console.log('✅ Task caricati da Firestore');
@@ -272,9 +297,9 @@ export const saveKBSnapshot = async (userId, kbData) => {
     await setDoc(kbRef, {
       ...kbData,
       userId,
-      updatedAt: Timestamp.now()
+      updatedAt: Timestamp.now(),
     });
-    
+
     console.log('✅ KB snapshot salvato in Firestore');
     return true;
   } catch (error) {
@@ -286,11 +311,11 @@ export const saveKBSnapshot = async (userId, kbData) => {
 /**
  * Carica snapshot knowledge base
  */
-export const loadKBSnapshot = async (userId) => {
+export const loadKBSnapshot = async userId => {
   try {
     const kbRef = doc(db, 'users', userId, 'kb_snapshot', 'current');
     const kbDoc = await getDoc(kbRef);
-    
+
     if (kbDoc.exists()) {
       const data = kbDoc.data();
       console.log('✅ KB snapshot caricato da Firestore');
@@ -335,22 +360,22 @@ export const clearLocalCache = () => {
 /**
  * Sincronizza cache locale con Firestore
  */
-export const syncCacheWithFirestore = async (userId) => {
+export const syncCacheWithFirestore = async userId => {
   try {
     console.log('🔄 Sincronizzazione cache locale con Firestore...');
-    
+
     // Sincronizza roster
     const roster = await loadRoster(userId);
     if (roster) {
       localStorage.setItem('roster_cache', JSON.stringify(roster));
     }
-    
+
     // Sincronizza task
     const tasks = await loadTasks(userId);
     if (tasks) {
       localStorage.setItem('tasks_cache', JSON.stringify(tasks));
     }
-    
+
     console.log('✅ Sincronizzazione completata');
   } catch (error) {
     console.error('❌ Errore sincronizzazione:', error);
@@ -372,5 +397,5 @@ export default {
   generateMatchId,
   generateChatId,
   clearLocalCache,
-  syncCacheWithFirestore
+  syncCacheWithFirestore,
 };

@@ -5,7 +5,7 @@ class PerformanceOptimizer {
     this.batchOperations = [];
     this.debounceTimers = new Map();
     this.connectionQuality = 'good';
-    
+
     // Monitora qualità connessione
     this.monitorConnectionQuality();
   }
@@ -14,16 +14,19 @@ class PerformanceOptimizer {
   monitorConnectionQuality() {
     if ('connection' in navigator) {
       const connection = navigator.connection;
-      
+
       const updateQuality = () => {
         if (connection.effectiveType === '4g' && connection.downlink > 2) {
           this.connectionQuality = 'excellent';
-        } else if (connection.effectiveType === '4g' || connection.effectiveType === '3g') {
+        } else if (
+          connection.effectiveType === '4g' ||
+          connection.effectiveType === '3g'
+        ) {
           this.connectionQuality = 'good';
         } else {
           this.connectionQuality = 'poor';
         }
-        
+
         console.log(`📶 Qualità connessione: ${this.connectionQuality}`);
       };
 
@@ -33,25 +36,26 @@ class PerformanceOptimizer {
   }
 
   // Cache per query
-  cacheQuery(key, data, ttl = 60000) { // 1 minuto default
+  cacheQuery(key, data, ttl = 60000) {
+    // 1 minuto default
     this.queryCache.set(key, {
       data,
       timestamp: Date.now(),
-      ttl
+      ttl,
     });
   }
 
   // Recupera query dalla cache
   getCachedQuery(key) {
     const cached = this.queryCache.get(key);
-    
+
     if (!cached) return null;
-    
+
     if (Date.now() - cached.timestamp > cached.ttl) {
       this.queryCache.delete(key);
       return null;
     }
-    
+
     return cached.data;
   }
 
@@ -72,7 +76,7 @@ class PerformanceOptimizer {
   // Batch operations per ridurre chiamate Firebase
   addToBatch(operation) {
     this.batchOperations.push(operation);
-    
+
     // Esegui batch quando raggiunge 10 operazioni o dopo 1 secondo
     if (this.batchOperations.length >= 10) {
       this.executeBatch();
@@ -119,32 +123,32 @@ class PerformanceOptimizer {
         if (loading || !hasMore) return [];
 
         loading = true;
-        
+
         try {
           // Implementa lazy loading con Firebase
           const results = await this.loadBatch(collection, lastDoc, batchSize);
-          
+
           if (results.length < batchSize) {
             hasMore = false;
           }
-          
+
           lastDoc = results[results.length - 1];
           loading = false;
-          
+
           return results;
         } catch (error) {
           loading = false;
           throw error;
         }
       },
-      
+
       hasMore: () => hasMore,
       isLoading: () => loading,
       reset: () => {
         lastDoc = null;
         hasMore = true;
         loading = false;
-      }
+      },
     };
   }
 
@@ -159,23 +163,23 @@ class PerformanceOptimizer {
   // Ottimizza query basandosi sulla qualità connessione
   optimizeQuery(query, options = {}) {
     const { limit, orderBy, where } = options;
-    
+
     // Riduci limit per connessioni lente
     if (this.connectionQuality === 'poor') {
       return {
         ...query,
-        limit: Math.min(limit || 50, 20)
+        limit: Math.min(limit || 50, 20),
       };
     }
-    
+
     // Aggiungi limit per query senza limit
     if (!limit) {
       return {
         ...query,
-        limit: this.connectionQuality === 'excellent' ? 100 : 50
+        limit: this.connectionQuality === 'excellent' ? 100 : 50,
       };
     }
-    
+
     return query;
   }
 
@@ -184,7 +188,7 @@ class PerformanceOptimizer {
     const criticalPaths = [
       `dashboard_${userId}`,
       `players_${userId}`,
-      `matches_${userId}`
+      `matches_${userId}`,
     ];
 
     console.log('🚀 Preload dati critici...');
@@ -209,13 +213,13 @@ class PerformanceOptimizer {
   cleanup() {
     // Pulisci cache
     this.queryCache.clear();
-    
+
     // Pulisci debounce timers
     for (const timer of this.debounceTimers.values()) {
       clearTimeout(timer);
     }
     this.debounceTimers.clear();
-    
+
     // Esegui batch operations rimanenti
     if (this.batchOperations.length > 0) {
       this.executeBatch();
@@ -228,7 +232,7 @@ class PerformanceOptimizer {
       queryCacheSize: this.queryCache.size,
       pendingBatchOperations: this.batchOperations.length,
       connectionQuality: this.connectionQuality,
-      debounceTimers: this.debounceTimers.size
+      debounceTimers: this.debounceTimers.size,
     };
   }
 }
@@ -237,20 +241,25 @@ class PerformanceOptimizer {
 export const performanceOptimizer = new PerformanceOptimizer();
 
 // Utility functions per integrazione
-export const withPerformanceOptimization = (firebaseOperation) => {
+export const withPerformanceOptimization = firebaseOperation => {
   return async (...args) => {
     const startTime = performance.now();
-    
+
     try {
       const result = await firebaseOperation(...args);
       const endTime = performance.now();
-      
-      console.log(`⚡ Operazione completata in ${(endTime - startTime).toFixed(2)}ms`);
-      
+
+      console.log(
+        `⚡ Operazione completata in ${(endTime - startTime).toFixed(2)}ms`
+      );
+
       return result;
     } catch (error) {
       const endTime = performance.now();
-      console.error(`❌ Operazione fallita dopo ${(endTime - startTime).toFixed(2)}ms:`, error);
+      console.error(
+        `❌ Operazione fallita dopo ${(endTime - startTime).toFixed(2)}ms:`,
+        error
+      );
       throw error;
     }
   };
@@ -258,7 +267,9 @@ export const withPerformanceOptimization = (firebaseOperation) => {
 
 // Hook per performance monitoring
 export const usePerformanceMonitoring = () => {
-  const [stats, setStats] = React.useState(performanceOptimizer.getPerformanceStats());
+  const [stats, setStats] = React.useState(
+    performanceOptimizer.getPerformanceStats()
+  );
 
   React.useEffect(() => {
     const interval = setInterval(() => {

@@ -1,9 +1,9 @@
 export type EfbUploadType =
-  | "ROSTER"
-  | "MATCH_STATS"
-  | "VOTES"
-  | "HEATMAP"
-  | "OPPONENT_FORMATION";
+  | 'ROSTER'
+  | 'MATCH_STATS'
+  | 'VOTES'
+  | 'HEATMAP'
+  | 'OPPONENT_FORMATION';
 
 export type EfbFields =
   | RosterFields
@@ -13,19 +13,19 @@ export type EfbFields =
   | OpponentFields;
 
 export type RosterFields = {
-  formation?: string;               // es. "4-2-1-3"
-  coach?: string;                   // es. "Martínez"
-  teamName?: string;                // es. "Corinthians"
-  forzaTotale?: number;             // es. 3245
+  formation?: string; // es. "4-2-1-3"
+  coach?: string; // es. "Martínez"
+  teamName?: string; // es. "Corinthians"
+  forzaTotale?: number; // es. 3245
   players: Array<{
     name: string;
-    role?: string;                  // PT, DC, CC, SP, TRQ, TD, TS, CLD, CLS...
+    role?: string; // PT, DC, CC, SP, TRQ, TD, TS, CLD, CLS...
     ovr?: number;
     club?: string;
-    build?: string;                 // es. Finalizzatore, Regista, Marcatore…
-    booster?: string[];             // "Difesa +2", "Tiro +2", …
-    skills?: string[];              // Intercettazione, Tiro a giro, Muro…
-    stiliIA?: string[];             // Funambolo, Treno in corsa, Crossatore…
+    build?: string; // es. Finalizzatore, Regista, Marcatore…
+    booster?: string[]; // "Difesa +2", "Tiro +2", …
+    skills?: string[]; // Intercettazione, Tiro a giro, Muro…
+    stiliIA?: string[]; // Funambolo, Treno in corsa, Crossatore…
   }>;
 };
 
@@ -54,7 +54,7 @@ export type HeatmapFields = {
 };
 
 export type OpponentFields = {
-  image: string;                    // url storage
+  image: string; // url storage
   markers?: Array<{ x: number; y: number; roleGuess?: string }>;
   notes?: string;
 };
@@ -65,7 +65,8 @@ export type OcrDoc = {
   source: {
     storagePath: string;
     downloadURL?: string;
-    width?: number; height?: number;
+    width?: number;
+    height?: number;
   };
   vision: {
     engine: string;
@@ -78,8 +79,9 @@ export type OcrDoc = {
     matchId?: string;
     detectedLanguage?: string;
     confidence?: number;
-    sideUser?: "LEFT" | "RIGHT" | "UNKNOWN";
-    teamNameUser?: string; teamNameOppo?: string;
+    sideUser?: 'LEFT' | 'RIGHT' | 'UNKNOWN';
+    teamNameUser?: string;
+    teamNameOppo?: string;
   };
   status: { parsed: boolean; needsReview: boolean; errors: string[] };
   createdAt?: any;
