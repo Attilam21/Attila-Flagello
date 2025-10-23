@@ -3,7 +3,7 @@ import { auth, db } from '../services/firebaseClient';
 import { onSnapshot, doc } from 'firebase/firestore';
 // OCR callable disabilitata: si usa il trigger Storage + listener Firestore
 import { uploadImageForOCR, simulateUpload } from '../services/uploadHelper';
-import { saveMatch, generateMatchId } from '../services/firestoreWrapper';
+import { generateMatchId } from '../services/firestoreWrapper';
 import { Card, Button, Badge } from '../components/ui';
 import { Upload, BarChart3, CheckCircle } from 'lucide-react';
 import ErrorBoundary from '../components/ErrorBoundary';
@@ -17,7 +17,6 @@ const CaricaUltimaPartita = () => {
   });
 
   const [uploadProgress, setUploadProgress] = useState({});
-  const [ocrStatus, setOcrStatus] = useState({});
   const [matchData, setMatchData] = useState({
     stats: {},
     kpis: {},
@@ -192,8 +191,7 @@ const CaricaUltimaPartita = () => {
     console.log('🤖 Avvio elaborazione OCR con Cloud Functions...');
 
     try {
-      const userId = auth.currentUser.uid;
-      const matchId = currentMatchId;
+      // i dati verranno popolati dai listener in tempo reale
 
       // Nessuna chiamata callable: il trigger Storage processa e scrive su Firestore.
       // Qui passiamo direttamente alla sezione analisi; i listener aggiorneranno i dati.

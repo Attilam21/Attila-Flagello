@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Plus,
-  Camera,
-  UserPlus,
-  Save,
-  Users,
-  Target,
-  BarChart3,
-} from 'lucide-react';
+import { Camera, UserPlus, Save, Users } from 'lucide-react';
 import { auth } from '../services/firebaseClient';
 import {
   listenToPlayers,

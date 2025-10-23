@@ -4,26 +4,19 @@ import {
   TrendingUp,
   Target,
   Users,
-  Zap,
   Shield,
   AlertCircle,
   CheckCircle,
-  Filter,
   Eye,
   Activity,
-  Brain,
-  Map,
   Network,
   Crosshair,
-  Lock,
-  Clock,
   Trophy,
   Star,
   ArrowRight,
   Plus,
-  Settings,
 } from 'lucide-react';
-import { Card, Button, Badge, EmptyState } from '../components/ui';
+import { Card, Badge, EmptyState } from '../components/ui';
 import {
   Table,
   TableHeader,

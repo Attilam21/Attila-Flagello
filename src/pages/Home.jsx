@@ -4,19 +4,12 @@ import {
   Target,
   Eye,
   Clock,
-  Brain,
-  Zap,
   TrendingUp,
-  Users,
   Shield,
-  BarChart3,
-  Upload,
-  MessageSquare,
   CheckCircle,
   ArrowRight,
   Star,
   Activity,
-  TrendingDown,
 } from 'lucide-react';
 import { auth, db } from '../services/firebaseClient';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
