@@ -254,9 +254,29 @@ const Rosa = ({ onPageChange }) => {
                         </div>
                       </div>
                       <div className="player-actions">
-                        <button className="btn-icon">✏️</button>
+                        <button
+                          className="btn-icon"
+                          onClick={() => {
+                            setShowManualModal(true);
+                            // Passeremo initialData al modal con i dati del player
+                          }}
+                        >
+                          ✏️
+                        </button>
                         <button className="btn-icon">📋</button>
-                        <button className="btn-icon">🗑️</button>
+                        <button
+                          className="btn-icon"
+                          onClick={async () => {
+                            if (!user) return;
+                            try {
+                              await deletePlayerById(user.uid, player.id);
+                            } catch (e) {
+                              console.error('❌ Errore delete player:', e);
+                            }
+                          }}
+                        >
+                          🗑️
+                        </button>
                       </div>
                     </div>
                   ))
@@ -320,9 +340,28 @@ const Rosa = ({ onPageChange }) => {
                         </div>
                       </div>
                       <div className="player-actions">
-                        <button className="btn-icon">✏️</button>
+                        <button
+                          className="btn-icon"
+                          onClick={() => {
+                            setShowManualModal(true);
+                          }}
+                        >
+                          ✏️
+                        </button>
                         <button className="btn-icon">📋</button>
-                        <button className="btn-icon">🗑️</button>
+                        <button
+                          className="btn-icon"
+                          onClick={async () => {
+                            if (!user) return;
+                            try {
+                              await deletePlayerById(user.uid, player.id);
+                            } catch (e) {
+                              console.error('❌ Errore delete player:', e);
+                            }
+                          }}
+                        >
+                          🗑️
+                        </button>
                       </div>
                     </div>
                   ))
@@ -486,6 +525,7 @@ const Rosa = ({ onPageChange }) => {
         isOpen={showManualModal}
         onClose={() => setShowManualModal(false)}
         onPlayerSaved={handlePlayerSaved}
+        initialData={null}
       />
 
       {/* OCR Wizard Modal */}

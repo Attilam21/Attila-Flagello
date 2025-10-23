@@ -46,7 +46,7 @@ const TogglePill = ({ selected, children, onClick, disabled }) => {
   );
 };
 
-const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
+const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved, initialData }) => {
   const [currentTab, setCurrentTab] = useState('general');
   const [playerData, setPlayerData] = useState({
     // Dati Generali
@@ -113,6 +113,13 @@ const ManualPlayerModal = ({ isOpen, onClose, onPlayerSaved }) => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState({});
+
+  // Prefill when editing
+  useEffect(() => {
+    if (isOpen && initialData) {
+      setPlayerData(prev => ({ ...prev, ...initialData }));
+    }
+  }, [isOpen, initialData]);
 
   const tabs = [
     { id: 'general', label: 'Dati Generali', icon: User },
