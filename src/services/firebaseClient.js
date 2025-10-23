@@ -30,14 +30,14 @@ import {
   withErrorRecovery,
 } from '../utils/errorRecovery';
 
-// Configurazione Firebase
+// Configurazione Firebase (da variabili ambiente)
 const firebaseConfig = {
-  apiKey: 'AIzaSyBxD9-4kFNrY2136M5M-Ht7kXJ37LhzeJI',
-  authDomain: 'attila-475314.firebaseapp.com',
-  projectId: 'attila-475314',
-  storageBucket: 'attila-475314.appspot.com',
-  messagingSenderId: '814206807853',
-  appId: '1:814206807853:web:256884e64c9d867509eda4',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Inizializza Firebase

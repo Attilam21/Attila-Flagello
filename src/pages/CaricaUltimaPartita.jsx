@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { auth, db } from '../services/firebaseClient';
 import { onSnapshot, doc } from 'firebase/firestore';
-import { cloudFunctions } from '../services/cloudFunctions';
+// OCR callable disabilitata: si usa il trigger Storage + listener Firestore
 import { uploadImageForOCR, simulateUpload } from '../services/uploadHelper';
 import { saveMatch, generateMatchId } from '../services/firestoreWrapper';
 import { Card, Button, Badge } from '../components/ui';
@@ -195,49 +195,8 @@ const CaricaUltimaPartita = () => {
       const userId = auth.currentUser.uid;
       const matchId = currentMatchId;
 
-      // Elabora ogni immagine con OCR
-      const ocrResults = {};
-      for (const [type, imageData] of Object.entries(uploadImages)) {
-        if (!imageData || !imageData.url) continue;
-
-        try {
-          console.log(`🔍 Elaborando ${type}...`);
-          const result = await cloudFunctions.ocrParseImage(
-            matchId,
-            type,
-            imageData.url
-          );
-
-          if (result.success) {
-            ocrResults[type] = result.data;
-            setOcrStatus(prev => ({ ...prev, [type]: 'completed' }));
-          } else {
-            throw new Error(`OCR fallito per ${type}`);
-          }
-        } catch (error) {
-          console.error(`❌ Errore OCR per ${type}:`, error);
-          setOcrStatus(prev => ({ ...prev, [type]: 'error' }));
-        }
-      }
-
-      // Aggrega risultati
-      const aggregatedData = {
-        stats: ocrResults.stats || {},
-        ratings: ocrResults.ratings || [],
-        heatmaps: {
-          offensive: ocrResults.heatmapOffensive || null,
-          defensive: ocrResults.heatmapDefensive || null,
-        },
-        processedAt: new Date().toISOString(),
-        userId,
-        matchId,
-      };
-
-      // Salva in Firestore
-      await saveMatch(userId, matchId, aggregatedData);
-
-      // Aggiorna stato
-      setMatchData(aggregatedData);
+      // Nessuna chiamata callable: il trigger Storage processa e scrive su Firestore.
+      // Qui passiamo direttamente alla sezione analisi; i listener aggiorneranno i dati.
       setActiveSection('analysis');
 
       console.log('✅ Elaborazione OCR completata con successo!');

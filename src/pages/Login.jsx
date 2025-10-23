@@ -6,7 +6,6 @@ import {
 import { auth } from '../services/firebaseClient';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import Card from '../components/ui/Card';
 import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 
 const Login = ({ onLogin }) => {

@@ -54,18 +54,24 @@ const Rosa = ({ onPageChange }) => {
     setShowManualModal(true);
   };
 
-  const handlePlayerAdded = playerData => {
-    console.log('🎯 Giocatore aggiunto tramite OCR:', playerData);
-    // Qui salveremo il giocatore su Firestore
-    // addPlayer(user.uid, playerData);
-    setShowOCRWizard(false);
+  const handlePlayerAdded = async playerData => {
+    try {
+      if (!user) return;
+      await addPlayer(user.uid, playerData);
+      setShowOCRWizard(false);
+    } catch (e) {
+      console.error('❌ Errore salvataggio OCR player:', e);
+    }
   };
 
-  const handlePlayerSaved = playerData => {
-    console.log('💾 Giocatore salvato manualmente:', playerData);
-    // Qui salveremo il giocatore su Firestore
-    // addPlayer(user.uid, playerData);
-    setShowManualModal(false);
+  const handlePlayerSaved = async playerData => {
+    try {
+      if (!user) return;
+      await addPlayer(user.uid, playerData);
+      setShowManualModal(false);
+    } catch (e) {
+      console.error('❌ Errore salvataggio manuale:', e);
+    }
   };
 
   const handleSave = async () => {

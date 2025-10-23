@@ -1,16 +1,19 @@
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { auth } from './firebaseClient';
+import { auth, app } from './firebaseClient';
 
 /**
  * Cloud Functions Wrapper per pipeline eFootball
  * Chiama le funzioni server-side per OCR, Chat e Task
  */
 
-const functions = getFunctions();
+// Usa la stessa region delle Cloud Functions (europe-west1)
+const functions = getFunctions(app, 'europe-west1');
 
 /**
  * OCR Parse Image Function
  */
+// ATTENZIONE: lato server non c'è ancora una callable ocrParseImage.
+// Manteniamo la funzione per compatibilità, ma consigliato usare solo trigger Storage.
 export const ocrParseImage = async (userId, matchId, type, storageUrl) => {
   try {
     console.log('🔍 Calling OCR Parse Image:', { userId, matchId, type });
