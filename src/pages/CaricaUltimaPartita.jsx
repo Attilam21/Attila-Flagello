@@ -247,6 +247,18 @@ const CaricaUltimaPartita = () => {
     { key: 'goalsConceded', label: 'Gol Subiti', type: 'count' },
   ];
 
+  // Preset suggerimenti per una revisione rapida
+  const reviewPresets = {
+    possession: [45, 50, 55, 60, 65],
+    shots: [8, 10, 12, 15],
+    shotsOnTarget: [3, 5, 7, 9],
+    passAccuracy: [80, 85, 90, 92],
+    corners: [2, 4, 6],
+    fouls: [6, 8, 10, 12],
+    goalsScored: [0, 1, 2, 3, 4],
+    goalsConceded: [0, 1, 2, 3, 4],
+  };
+
   const setReviewValue = (key, value) => {
     setReviewStats(prev => ({ ...(prev || {}), [key]: value }));
   };
@@ -410,19 +422,36 @@ const CaricaUltimaPartita = () => {
           {activeSection === 'review' && (
             <div className="lg:col-span-1">
               <Card className="p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">
+                <h2 className="text-xl font-semibold text-white mb-1">
                   Revisione Statistiche
                 </h2>
-                <div className="space-y-3">
+                <p className="text-xs text-white/60 mb-4">Suggerimenti rapidi: clicca sui chip per impostare il valore.</p>
+                <div className="space-y-4">
                   {reviewFields.map(f => (
-                    <div key={f.key} className="flex items-center justify-between gap-3">
-                      <label className="text-white/80 text-sm">{f.label}</label>
-                      <input
-                        type="number"
-                        className="w-32 bg-white/10 text-white rounded px-2 py-1"
-                        value={reviewStats?.[f.key] ?? ''}
-                        onChange={e => setReviewValue(f.key, Number(e.target.value) || 0)}
-                      />
+                    <div key={f.key} className="space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <label className="text-white/80 text-sm">{f.label}</label>
+                        <input
+                          type="number"
+                          className="w-32 bg-white/10 text-white rounded px-2 py-1"
+                          value={reviewStats?.[f.key] ?? ''}
+                          onChange={e => setReviewValue(f.key, Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      {Array.isArray(reviewPresets[f.key]) && (
+                        <div className="flex flex-wrap gap-2">
+                          {reviewPresets[f.key].map(val => (
+                            <Badge
+                              key={`${f.key}-${val}`}
+                              className="cursor-pointer hover:bg-white/20"
+                              onClick={() => setReviewValue(f.key, val)}
+                            >
+                              {val}
+                              {f.type === 'percent' ? '%' : ''}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
