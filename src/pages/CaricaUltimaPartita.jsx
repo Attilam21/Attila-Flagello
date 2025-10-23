@@ -27,6 +27,9 @@ const CaricaUltimaPartita = () => {
   const [currentMatchId, setCurrentMatchId] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [reviewStats, setReviewStats] = useState(null);
+  const [reviewRatings, setReviewRatings] = useState([]);
+  const [reviewHeatmap, setReviewHeatmap] = useState({ left: '', center: '', right: '' });
+  const [reviewTab, setReviewTab] = useState('stats');
 
   // Inizializza matchId
   useEffect(() => {
@@ -71,6 +74,12 @@ const CaricaUltimaPartita = () => {
             ...prev,
             ratings: data,
           }));
+          const arr = Array.isArray(data?.votes)
+            ? data.votes
+            : Array.isArray(data?.ratings)
+            ? data.ratings
+            : [];
+          setReviewRatings(arr);
         }
       }
     );
@@ -86,6 +95,9 @@ const CaricaUltimaPartita = () => {
             ...prev,
             heatmaps: { ...prev.heatmaps, ...data },
           }));
+          if (data?.attackAreas) {
+            setReviewHeatmap(prev => ({ ...prev, ...data.attackAreas }));
+          }
         }
       }
     );
@@ -111,7 +123,7 @@ const CaricaUltimaPartita = () => {
   }, [currentMatchId]);
 
   // Salva le modifiche di revisione nelle stats
-  const handleSaveReview = async () => {
+  const handleSaveReviewStats = async () => {
     try {
       if (!auth.currentUser || !currentMatchId || !reviewStats) return;
       const userId = auth.currentUser.uid;
@@ -134,6 +146,51 @@ const CaricaUltimaPartita = () => {
       console.error('❌ Errore salvataggio review:', e);
       alert('Errore nel salvataggio');
     }
+  };
+
+  // Salva voti giocatori
+  const handleSaveReviewRatings = async () => {
+    try {
+      if (!auth.currentUser || !currentMatchId) return;
+      const userId = auth.currentUser.uid;
+      const ref = doc(db, 'users', userId, 'matches', currentMatchId, 'votes', 'main');
+      await setDoc(
+        ref,
+        { votes: reviewRatings, _updatedAt: new Date() },
+        { merge: true }
+      );
+      alert('✅ Voti aggiornati');
+    } catch (e) {
+      console.error('❌ Errore salvataggio voti:', e);
+      alert('Errore nel salvataggio');
+    }
+  };
+
+  // Salva heatmap
+  const handleSaveReviewHeatmap = async () => {
+    try {
+      if (!auth.currentUser || !currentMatchId) return;
+      const userId = auth.currentUser.uid;
+      const ref = doc(db, 'users', userId, 'matches', currentMatchId, 'heatmap', 'main');
+      const payload = {
+        attackAreas: {
+          left: Number(reviewHeatmap.left) || 0,
+          center: Number(reviewHeatmap.center) || 0,
+          right: Number(reviewHeatmap.right) || 0,
+        },
+      };
+      await setDoc(ref, { ...payload, _updatedAt: new Date() }, { merge: true });
+      alert('✅ Heatmap aggiornata');
+    } catch (e) {
+      console.error('❌ Errore salvataggio heatmap:', e);
+      alert('Errore nel salvataggio');
+    }
+  };
+
+  const handleSaveCurrentReview = () => {
+    if (reviewTab === 'stats') return void handleSaveReviewStats();
+    if (reviewTab === 'ratings') return void handleSaveReviewRatings();
+    if (reviewTab === 'heatmap') return void handleSaveReviewHeatmap();
   };
 
   // Handler per upload immagini
@@ -422,42 +479,178 @@ const CaricaUltimaPartita = () => {
           {activeSection === 'review' && (
             <div className="lg:col-span-1">
               <Card className="p-6">
-                <h2 className="text-xl font-semibold text-white mb-1">
-                  Revisione Statistiche
-                </h2>
-                <p className="text-xs text-white/60 mb-4">Suggerimenti rapidi: clicca sui chip per impostare il valore.</p>
-                <div className="space-y-4">
-                  {reviewFields.map(f => (
-                    <div key={f.key} className="space-y-2">
-                      <div className="flex items-center justify-between gap-3">
-                        <label className="text-white/80 text-sm">{f.label}</label>
-                        <input
-                          type="number"
-                          className="w-32 bg-white/10 text-white rounded px-2 py-1"
-                          value={reviewStats?.[f.key] ?? ''}
-                          onChange={e => setReviewValue(f.key, Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      {Array.isArray(reviewPresets[f.key]) && (
-                        <div className="flex flex-wrap gap-2">
-                          {reviewPresets[f.key].map(val => (
-                            <Badge
-                              key={`${f.key}-${val}`}
-                              className="cursor-pointer hover:bg-white/20"
-                              onClick={() => setReviewValue(f.key, val)}
-                            >
-                              {val}
-                              {f.type === 'percent' ? '%' : ''}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                <h2 className="text-xl font-semibold text-white mb-2">Revisione</h2>
+                <div className="flex gap-2 mb-4">
+                  {[
+                    { key: 'stats', label: 'Statistiche' },
+                    { key: 'ratings', label: 'Voti' },
+                    { key: 'heatmap', label: 'Heatmap' },
+                  ].map(tab => (
+                    <Button
+                      key={tab.key}
+                      className={
+                        'text-xs px-3 py-1 ' +
+                        (reviewTab === tab.key
+                          ? 'bg-emerald-500 hover:bg-emerald-600 text-[#0b1223]'
+                          : 'bg-white/10 hover:bg-white/20 text-white')
+                      }
+                      onClick={() => setReviewTab(tab.key)}
+                    >
+                      {tab.label}
+                    </Button>
                   ))}
                 </div>
-                <div className="mt-4 flex justify-end gap-2">
-                  <Button className="bg-white/10 hover:bg-white/20" onClick={() => setActiveSection('analysis')}>Salta</Button>
-                  <Button onClick={handleSaveReview}>Salva modifiche</Button>
+
+                {/* Stats subtab */}
+                {reviewTab === 'stats' && (
+                  <>
+                    <p className="text-xs text-white/60 mb-3">
+                      Suggerimenti rapidi: clicca sui chip per impostare il valore.
+                    </p>
+                    <div className="space-y-4">
+                      {reviewFields.map(f => (
+                        <div key={f.key} className="space-y-2">
+                          <div className="flex items-center justify-between gap-3">
+                            <label className="text-white/80 text-sm">{f.label}</label>
+                            <input
+                              type="number"
+                              className="w-32 bg-white/10 text-white rounded px-2 py-1"
+                              value={reviewStats?.[f.key] ?? ''}
+                              onChange={e => setReviewValue(f.key, Number(e.target.value) || 0)}
+                            />
+                          </div>
+                          {Array.isArray(reviewPresets[f.key]) && (
+                            <div className="flex flex-wrap gap-2">
+                              {reviewPresets[f.key].map(val => (
+                                <Badge
+                                  key={`${f.key}-${val}`}
+                                  className="cursor-pointer hover:bg-white/20"
+                                  onClick={() => setReviewValue(f.key, val)}
+                                >
+                                  {val}
+                                  {f.type === 'percent' ? '%' : ''}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Ratings subtab */}
+                {reviewTab === 'ratings' && (
+                  <div className="space-y-3">
+                    {(!reviewRatings || reviewRatings.length === 0) && (
+                      <p className="text-xs text-white/60">Nessun voto rilevato. Aggiungi righe manualmente.</p>
+                    )}
+                    {reviewRatings?.map((r, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          placeholder="Giocatore"
+                          className="flex-1 bg-white/10 text-white rounded px-2 py-1"
+                          value={r.name || r.player || ''}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setReviewRatings(prev => {
+                              const next = [...prev];
+                              next[idx] = { ...(next[idx] || {}), name: val };
+                              return next;
+                            });
+                          }}
+                        />
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          max="10"
+                          className="w-24 bg-white/10 text-white rounded px-2 py-1"
+                          value={r.vote ?? r.rating ?? ''}
+                          onChange={e => {
+                            const val = Number(e.target.value) || 0;
+                            setReviewRatings(prev => {
+                              const next = [...prev];
+                              next[idx] = { ...(next[idx] || {}), vote: val };
+                              return next;
+                            });
+                          }}
+                        />
+                        <Button
+                          className="bg-red-500/80 hover:bg-red-500 text-white"
+                          onClick={() =>
+                            setReviewRatings(prev => prev.filter((_, i) => i !== idx))
+                          }
+                        >
+                          Rimuovi
+                        </Button>
+                      </div>
+                    ))}
+                    <div className="flex justify-between mt-2">
+                      <Button
+                        className="bg-white/10 hover:bg-white/20 text-white"
+                        onClick={() =>
+                          setReviewRatings(prev => [
+                            ...prev,
+                            { name: '', vote: 6.0 },
+                          ])
+                        }
+                      >
+                        + Aggiungi giocatore
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Heatmap subtab */}
+                {reviewTab === 'heatmap' && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <label className="text-white/80 text-sm">Sinistra (%)</label>
+                      <input
+                        type="number"
+                        className="w-28 bg-white/10 text-white rounded px-2 py-1"
+                        value={reviewHeatmap.left}
+                        onChange={e =>
+                          setReviewHeatmap(prev => ({ ...prev, left: e.target.value }))
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <label className="text-white/80 text-sm">Centro (%)</label>
+                      <input
+                        type="number"
+                        className="w-28 bg-white/10 text-white rounded px-2 py-1"
+                        value={reviewHeatmap.center}
+                        onChange={e =>
+                          setReviewHeatmap(prev => ({ ...prev, center: e.target.value }))
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <label className="text-white/80 text-sm">Destra (%)</label>
+                      <input
+                        type="number"
+                        className="w-28 bg-white/10 text-white rounded px-2 py-1"
+                        value={reviewHeatmap.right}
+                        onChange={e =>
+                          setReviewHeatmap(prev => ({ ...prev, right: e.target.value }))
+                        }
+                      />
+                    </div>
+                    <p className="text-[11px] text-white/50">Suggerimento: la somma tipica è ~100%.</p>
+                  </div>
+                )}
+
+                <div className="mt-5 flex justify-end gap-2">
+                  <Button
+                    className="bg-white/10 hover:bg-white/20"
+                    onClick={() => setActiveSection('analysis')}
+                  >
+                    Salta
+                  </Button>
+                  <Button onClick={handleSaveCurrentReview}>Salva modifiche</Button>
                 </div>
               </Card>
             </div>
