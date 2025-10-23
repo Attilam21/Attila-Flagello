@@ -9,8 +9,6 @@ import {
   Shield,
   Target,
   Upload,
-  CheckCircle,
-  AlertCircle,
 } from 'lucide-react';
 
 // Console log per debug import

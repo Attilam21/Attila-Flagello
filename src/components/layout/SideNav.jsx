@@ -1,12 +1,8 @@
 import {
   Home,
   Users,
-  Target,
   BarChart3,
-  UserCheck,
   LogOut,
-  Camera,
-  Brain,
   Upload,
   Lightbulb,
   Shield,

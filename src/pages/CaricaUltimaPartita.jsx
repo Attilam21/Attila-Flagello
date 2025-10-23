@@ -1,23 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { auth, db } from '../services/firebaseClient';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { cloudFunctions } from '../services/cloudFunctions';
 import { uploadImageForOCR, simulateUpload } from '../services/uploadHelper';
 import { saveMatch, generateMatchId } from '../services/firestoreWrapper';
-import { Card, Button, Badge, Table, EmptyState } from '../components/ui';
-import {
-  Upload,
-  BarChart3,
-  Users,
-  Target,
-  TrendingUp,
-  AlertCircle,
-  CheckCircle,
-  X,
-} from 'lucide-react';
+import { Card, Button, Badge } from '../components/ui';
+import { Upload, BarChart3, CheckCircle } from 'lucide-react';
 import ErrorBoundary from '../components/ErrorBoundary';
 
-const CaricaUltimaPartita = ({ onPageChange }) => {
+const CaricaUltimaPartita = () => {
   const [uploadImages, setUploadImages] = useState({
     stats: null,
     ratings: null,
