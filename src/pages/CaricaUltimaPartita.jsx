@@ -216,11 +216,9 @@ const CaricaUltimaPartita = () => {
     console.log('🤖 Avvio elaborazione OCR con Cloud Functions...');
 
     try {
-      // i dati verranno popolati dai listener in tempo reale
-
-      // Nessuna chiamata callable: il trigger Storage processa e scrive su Firestore.
-      // Qui passiamo direttamente alla sezione analisi; i listener aggiorneranno i dati.
-      setActiveSection('analysis');
+      // i dati verranno popolati dai listener in tempo reale dal trigger OCR
+      // Vai alla sezione di revisione per confermare/correggere i campi estratti
+      setActiveSection('review');
 
       console.log('✅ Elaborazione OCR completata con successo!');
       alert('✅ Elaborazione completata! I dati sono stati salvati.');
@@ -236,6 +234,21 @@ const CaricaUltimaPartita = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const reviewFields = [
+    { key: 'possession', label: 'Possesso (%)', type: 'percent' },
+    { key: 'shots', label: 'Tiri', type: 'count' },
+    { key: 'shotsOnTarget', label: 'Tiri in Porta', type: 'count' },
+    { key: 'passAccuracy', label: 'Precisione Passaggi (%)', type: 'percent' },
+    { key: 'corners', label: 'Calci d\'angolo', type: 'count' },
+    { key: 'fouls', label: 'Falli', type: 'count' },
+    { key: 'goalsScored', label: 'Gol Segnati', type: 'count' },
+    { key: 'goalsConceded', label: 'Gol Subiti', type: 'count' },
+  ];
+
+  const setReviewValue = (key, value) => {
+    setReviewStats(prev => ({ ...(prev || {}), [key]: value }));
   };
 
   // Genera dati demo per testare l'interfaccia
@@ -393,26 +406,29 @@ const CaricaUltimaPartita = () => {
             </Card>
           </div>
 
-          {/* Analysis Section */}
-          {activeSection === 'analysis' && (
+          {/* Review Section */}
+          {activeSection === 'review' && (
             <div className="lg:col-span-1">
               <Card className="p-6">
                 <h2 className="text-xl font-semibold text-white mb-4">
-                  Analisi Completata
+                  Revisione Statistiche
                 </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-green-400">
-                    <CheckCircle size={20} />
-                    <span>Statistiche elaborate</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-400">
-                    <CheckCircle size={20} />
-                    <span>Voti giocatori analizzati</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-400">
-                    <CheckCircle size={20} />
-                    <span>Heatmaps processate</span>
-                  </div>
+                <div className="space-y-3">
+                  {reviewFields.map(f => (
+                    <div key={f.key} className="flex items-center justify-between gap-3">
+                      <label className="text-white/80 text-sm">{f.label}</label>
+                      <input
+                        type="number"
+                        className="w-32 bg-white/10 text-white rounded px-2 py-1"
+                        value={reviewStats?.[f.key] ?? ''}
+                        onChange={e => setReviewValue(f.key, Number(e.target.value) || 0)}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex justify-end gap-2">
+                  <Button className="bg-white/10 hover:bg-white/20" onClick={() => setActiveSection('analysis')}>Salta</Button>
+                  <Button onClick={handleSaveReview}>Salva modifiche</Button>
                 </div>
               </Card>
             </div>
