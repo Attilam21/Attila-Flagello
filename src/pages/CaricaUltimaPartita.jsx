@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { auth, db } from '../services/firebaseClient';
-import { onSnapshot, doc } from 'firebase/firestore';
+import { onSnapshot, doc, setDoc } from 'firebase/firestore';
 // OCR callable disabilitata: si usa il trigger Storage + listener Firestore
 import { uploadImageForOCR, simulateUpload } from '../services/uploadHelper';
 import { generateMatchId } from '../services/firestoreWrapper';
@@ -26,6 +26,7 @@ const CaricaUltimaPartita = () => {
   const [activeSection, setActiveSection] = useState('upload');
   const [currentMatchId, setCurrentMatchId] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [reviewStats, setReviewStats] = useState(null);
 
   // Inizializza matchId
   useEffect(() => {
@@ -46,14 +47,15 @@ const CaricaUltimaPartita = () => {
     // Listener per stats
     const unsubscribeStats = onSnapshot(
       doc(db, 'users', userId, 'matches', matchId, 'stats', 'main'),
-      doc => {
-        if (doc.exists()) {
-          const data = doc.data();
+      snap => {
+        if (snap.exists()) {
+          const data = snap.data();
           console.log('📊 Real-time stats update:', data);
           setMatchData(prev => ({
             ...prev,
             stats: data,
           }));
+          setReviewStats(prev => ({ ...(prev || {}), ...data }));
         }
       }
     );
@@ -61,9 +63,9 @@ const CaricaUltimaPartita = () => {
     // Listener per votes
     const unsubscribeVotes = onSnapshot(
       doc(db, 'users', userId, 'matches', matchId, 'votes', 'main'),
-      doc => {
-        if (doc.exists()) {
-          const data = doc.data();
+      snap => {
+        if (snap.exists()) {
+          const data = snap.data();
           console.log('📊 Real-time votes update:', data);
           setMatchData(prev => ({
             ...prev,
@@ -76,9 +78,9 @@ const CaricaUltimaPartita = () => {
     // Listener per heatmap
     const unsubscribeHeatmap = onSnapshot(
       doc(db, 'users', userId, 'matches', matchId, 'heatmap', 'main'),
-      doc => {
-        if (doc.exists()) {
-          const data = doc.data();
+      snap => {
+        if (snap.exists()) {
+          const data = snap.data();
           console.log('📊 Real-time heatmap update:', data);
           setMatchData(prev => ({
             ...prev,
@@ -88,17 +90,14 @@ const CaricaUltimaPartita = () => {
       }
     );
 
-    // Listener per roster
+    // Listener per roster (documento stabile 'current')
     const unsubscribeRoster = onSnapshot(
-      doc(db, 'users', userId, 'roster'),
-      doc => {
-        if (doc.exists()) {
-          const data = doc.data();
+      doc(db, 'users', userId, 'roster', 'current'),
+      snap => {
+        if (snap.exists()) {
+          const data = snap.data();
           console.log('📊 Real-time roster update:', data);
-          setMatchData(prev => ({
-            ...prev,
-            roster: data,
-          }));
+          setMatchData(prev => ({ ...prev, roster: data }));
         }
       }
     );
@@ -110,6 +109,32 @@ const CaricaUltimaPartita = () => {
       unsubscribeRoster();
     };
   }, [currentMatchId]);
+
+  // Salva le modifiche di revisione nelle stats
+  const handleSaveReview = async () => {
+    try {
+      if (!auth.currentUser || !currentMatchId || !reviewStats) return;
+      const userId = auth.currentUser.uid;
+      const ref = doc(
+        db,
+        'users',
+        userId,
+        'matches',
+        currentMatchId,
+        'stats',
+        'main'
+      );
+      await setDoc(
+        ref,
+        { ...reviewStats, _updatedAt: new Date() },
+        { merge: true }
+      );
+      alert('✅ Dati aggiornati');
+    } catch (e) {
+      console.error('❌ Errore salvataggio review:', e);
+      alert('Errore nel salvataggio');
+    }
+  };
 
   // Handler per upload immagini
   const handleImageUpload = async (type, file) => {
