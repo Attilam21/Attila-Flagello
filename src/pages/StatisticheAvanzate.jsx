@@ -54,18 +54,14 @@ const StatisticheAvanzate = ({ onPageChange }) => {
   // Firestore data loading functions
   const loadMatchesData = async (userId, range) => {
     try {
-      const matchesRef = collection(db, 'matches');
+      const matchesRef = collection(db, 'users', userId, 'matches');
       const q = query(
         matchesRef,
-        where('userId', '==', userId),
-        orderBy('date', 'desc'),
+        orderBy('updatedAt', 'desc'),
         limit(parseInt(range))
       );
       const querySnapshot = await getDocs(q);
-      const matches = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const matches = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setMatchesData(matches);
       return matches;
     } catch (error) {
@@ -76,13 +72,9 @@ const StatisticheAvanzate = ({ onPageChange }) => {
 
   const loadPlayersData = async userId => {
     try {
-      const playersRef = collection(db, 'players');
-      const q = query(playersRef, where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-      const players = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const playersRef = collection(db, 'users', userId, 'players');
+      const querySnapshot = await getDocs(playersRef);
+      const players = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setPlayersData(players);
       return players;
     } catch (error) {
@@ -93,13 +85,9 @@ const StatisticheAvanzate = ({ onPageChange }) => {
 
   const loadTasksData = async userId => {
     try {
-      const tasksRef = collection(db, 'tasks');
-      const q = query(tasksRef, where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-      const tasks = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const tasksRef = collection(db, 'users', userId, 'tasks');
+      const querySnapshot = await getDocs(tasksRef);
+      const tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setTasksData(tasks);
       return tasks;
     } catch (error) {
@@ -478,7 +466,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       if (!auth.currentUser) return;
 
       const userId = auth.currentUser.uid;
-      const taskRef = doc(collection(db, 'tasks'));
+      const taskRef = doc(collection(db, 'users', userId, 'tasks'));
 
       const taskData = {
         ...task,
@@ -505,7 +493,7 @@ const StatisticheAvanzate = ({ onPageChange }) => {
       const userId = auth.currentUser.uid;
 
       for (const task of suggestedTasks) {
-        const taskRef = doc(collection(db, 'tasks'));
+        const taskRef = doc(collection(db, 'users', userId, 'tasks'));
         const taskData = {
           ...task,
           userId,
