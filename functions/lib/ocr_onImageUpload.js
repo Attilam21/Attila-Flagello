@@ -102,8 +102,9 @@ Ritorna un JSON: {"fields":{...},"meta":{"detectedLanguage":"it","confidence":0.
     // 5) Write-through sui documenti operativi (per la tua dashboard)
     const base = db.doc(`users/${uid}/matches/${matchId}`);
     if (type === 'ROSTER') {
+        // Documento stabile per riepilogo roster
         await db
-            .doc(`users/${uid}/roster`)
+            .doc(`users/${uid}/roster/current`)
             .set({ ...geminiFields, _updatedAt: new Date() }, { merge: true });
     }
     else if (type === 'MATCH_STATS') {
