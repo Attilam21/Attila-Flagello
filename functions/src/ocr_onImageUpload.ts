@@ -102,6 +102,7 @@ export const onImageUpload = onObjectFinalized(
     const uid = metadata.uid as string | undefined;
     const type = metadata.type as EfbUploadType | undefined;
     const matchId = (metadata.matchId as string | undefined) || 'current';
+    const variant = (metadata.variant as string | undefined) || undefined;
     if (!uid || !type) return;
 
     // Evita duplicati: se abbiamo già OCR per lo stesso storagePath, stop
@@ -240,10 +241,11 @@ Ritorna un JSON: {"fields":{...},"meta":{"detectedLanguage":"it","confidence":0.
         .doc('main')
         .set({ ...geminiFields, _updatedAt: new Date() }, { merge: true });
     } else if (type === 'HEATMAP') {
+      const docId = variant === 'offensive' ? 'offensive' : variant === 'defensive' ? 'defensive' : 'main';
       await base
         .collection('heatmap')
-        .doc('main')
-        .set({ ...geminiFields, _updatedAt: new Date() }, { merge: true });
+        .doc(docId)
+        .set({ ...geminiFields, variant: variant || 'main', _updatedAt: new Date() }, { merge: true });
     } else if (type === 'OPPONENT_FORMATION') {
       await db
         .doc(`users/${uid}/opponent/${matchId}`)

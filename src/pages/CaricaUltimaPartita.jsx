@@ -24,7 +24,15 @@ const CaricaUltimaPartita = () => {
     heatmaps: { offensive: null, defensive: null },
   });
   const [activeSection, setActiveSection] = useState('upload');
-  const [currentMatchId, setCurrentMatchId] = useState(null);
+  // Genera e persiste un matchId stabile per evitare mismatch con il trigger
+  const [currentMatchId, setCurrentMatchId] = useState(() => {
+    try {
+      const saved = localStorage.getItem('current_match_id');
+      return saved || generateMatchId();
+    } catch {
+      return generateMatchId();
+    }
+  });
   const [isProcessing, setIsProcessing] = useState(false);
   const [reviewStats, setReviewStats] = useState(null);
   const [reviewRatings, setReviewRatings] = useState([]);
@@ -35,11 +43,13 @@ const CaricaUltimaPartita = () => {
   });
   const [reviewTab, setReviewTab] = useState('stats');
 
-  // Inizializza matchId
+  // Salva sempre il matchId corrente in locale
   useEffect(() => {
-    if (!currentMatchId) {
-      setCurrentMatchId(generateMatchId());
-    }
+    try {
+      if (currentMatchId) {
+        localStorage.setItem('current_match_id', currentMatchId);
+      }
+    } catch {}
   }, [currentMatchId]);
 
   // Listener per aggiornamenti real-time da OCR trigger
@@ -226,6 +236,12 @@ const CaricaUltimaPartita = () => {
 
     if (!file) return;
 
+    // Garanzia che il matchId sia definito prima dell'upload (evita fallback a 'current')
+    if (!currentMatchId) {
+      const newId = generateMatchId();
+      setCurrentMatchId(newId);
+    }
+
     // Validazione file
     if (!file.type.startsWith('image/')) {
       alert('Seleziona un file immagine valido');
@@ -246,7 +262,9 @@ const CaricaUltimaPartita = () => {
       // Prova upload diretto su Storage con trigger OCR, fallback a simulazione
       let uploadResult;
       try {
-        uploadResult = await uploadImageForOCR(file, type, currentMatchId);
+        const matchIdToUse = currentMatchId;
+        console.log('📌 Using matchId for OCR upload:', matchIdToUse);
+        uploadResult = await uploadImageForOCR(file, type, matchIdToUse);
         console.log(
           '✅ Image uploaded to Storage with OCR trigger:',
           uploadResult.url

@@ -38,6 +38,9 @@ export const uploadImageForOCR = async (file, type, matchId = 'current') => {
         uid: userId,
         type: metadataType,
         matchId: matchId,
+        // Variante esplicita per heatmap offensiva/difensiva
+        variant:
+          type === 'heatmapOffensive' ? 'offensive' : type === 'heatmapDefensive' ? 'defensive' : undefined,
       },
     });
 
