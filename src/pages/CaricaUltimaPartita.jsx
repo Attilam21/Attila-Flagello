@@ -98,20 +98,35 @@ const CaricaUltimaPartita = () => {
       }
     );
 
-    // Listener per heatmap
-    const unsubscribeHeatmap = onSnapshot(
-      doc(db, 'users', userId, 'matches', matchId, 'heatmap', 'main'),
+    // Listener per heatmap (offensiva)
+    const unsubscribeHeatmapOff = onSnapshot(
+      doc(db, 'users', userId, 'matches', matchId, 'heatmap', 'offensive'),
       snap => {
         if (snap.exists()) {
           const data = snap.data();
-          console.log('📊 Real-time heatmap update:', data);
+          console.log('📊 Real-time offensive heatmap update:', data);
           setMatchData(prev => ({
             ...prev,
-            heatmaps: { ...prev.heatmaps, ...data },
+            heatmaps: { ...prev.heatmaps, offensive: data },
           }));
           if (data?.attackAreas) {
             setReviewHeatmap(prev => ({ ...prev, ...data.attackAreas }));
           }
+        }
+      }
+    );
+
+    // Listener per heatmap (difensiva)
+    const unsubscribeHeatmapDef = onSnapshot(
+      doc(db, 'users', userId, 'matches', matchId, 'heatmap', 'defensive'),
+      snap => {
+        if (snap.exists()) {
+          const data = snap.data();
+          console.log('📊 Real-time defensive heatmap update:', data);
+          setMatchData(prev => ({
+            ...prev,
+            heatmaps: { ...prev.heatmaps, defensive: data },
+          }));
         }
       }
     );
@@ -131,7 +146,8 @@ const CaricaUltimaPartita = () => {
     return () => {
       unsubscribeStats();
       unsubscribeVotes();
-      unsubscribeHeatmap();
+      unsubscribeHeatmapOff();
+      unsubscribeHeatmapDef();
       unsubscribeRoster();
     };
   }, [currentMatchId]);
