@@ -28,7 +28,11 @@ const CaricaUltimaPartita = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [reviewStats, setReviewStats] = useState(null);
   const [reviewRatings, setReviewRatings] = useState([]);
-  const [reviewHeatmap, setReviewHeatmap] = useState({ left: '', center: '', right: '' });
+  const [reviewHeatmap, setReviewHeatmap] = useState({
+    left: '',
+    center: '',
+    right: '',
+  });
   const [reviewTab, setReviewTab] = useState('stats');
 
   // Inizializza matchId
@@ -77,8 +81,8 @@ const CaricaUltimaPartita = () => {
           const arr = Array.isArray(data?.votes)
             ? data.votes
             : Array.isArray(data?.ratings)
-            ? data.ratings
-            : [];
+              ? data.ratings
+              : [];
           setReviewRatings(arr);
         }
       }
@@ -153,7 +157,15 @@ const CaricaUltimaPartita = () => {
     try {
       if (!auth.currentUser || !currentMatchId) return;
       const userId = auth.currentUser.uid;
-      const ref = doc(db, 'users', userId, 'matches', currentMatchId, 'votes', 'main');
+      const ref = doc(
+        db,
+        'users',
+        userId,
+        'matches',
+        currentMatchId,
+        'votes',
+        'main'
+      );
       await setDoc(
         ref,
         { votes: reviewRatings, _updatedAt: new Date() },
@@ -171,7 +183,15 @@ const CaricaUltimaPartita = () => {
     try {
       if (!auth.currentUser || !currentMatchId) return;
       const userId = auth.currentUser.uid;
-      const ref = doc(db, 'users', userId, 'matches', currentMatchId, 'heatmap', 'main');
+      const ref = doc(
+        db,
+        'users',
+        userId,
+        'matches',
+        currentMatchId,
+        'heatmap',
+        'main'
+      );
       const payload = {
         attackAreas: {
           left: Number(reviewHeatmap.left) || 0,
@@ -179,7 +199,11 @@ const CaricaUltimaPartita = () => {
           right: Number(reviewHeatmap.right) || 0,
         },
       };
-      await setDoc(ref, { ...payload, _updatedAt: new Date() }, { merge: true });
+      await setDoc(
+        ref,
+        { ...payload, _updatedAt: new Date() },
+        { merge: true }
+      );
       alert('✅ Heatmap aggiornata');
     } catch (e) {
       console.error('❌ Errore salvataggio heatmap:', e);
@@ -298,7 +322,7 @@ const CaricaUltimaPartita = () => {
     { key: 'shots', label: 'Tiri', type: 'count' },
     { key: 'shotsOnTarget', label: 'Tiri in Porta', type: 'count' },
     { key: 'passAccuracy', label: 'Precisione Passaggi (%)', type: 'percent' },
-    { key: 'corners', label: 'Calci d\'angolo', type: 'count' },
+    { key: 'corners', label: "Calci d'angolo", type: 'count' },
     { key: 'fouls', label: 'Falli', type: 'count' },
     { key: 'goalsScored', label: 'Gol Segnati', type: 'count' },
     { key: 'goalsConceded', label: 'Gol Subiti', type: 'count' },
@@ -479,7 +503,9 @@ const CaricaUltimaPartita = () => {
           {activeSection === 'review' && (
             <div className="lg:col-span-1">
               <Card className="p-6">
-                <h2 className="text-xl font-semibold text-white mb-2">Revisione</h2>
+                <h2 className="text-xl font-semibold text-white mb-2">
+                  Revisione
+                </h2>
                 <div className="flex gap-2 mb-4">
                   {[
                     { key: 'stats', label: 'Statistiche' },
@@ -505,18 +531,26 @@ const CaricaUltimaPartita = () => {
                 {reviewTab === 'stats' && (
                   <>
                     <p className="text-xs text-white/60 mb-3">
-                      Suggerimenti rapidi: clicca sui chip per impostare il valore.
+                      Suggerimenti rapidi: clicca sui chip per impostare il
+                      valore.
                     </p>
                     <div className="space-y-4">
                       {reviewFields.map(f => (
                         <div key={f.key} className="space-y-2">
                           <div className="flex items-center justify-between gap-3">
-                            <label className="text-white/80 text-sm">{f.label}</label>
+                            <label className="text-white/80 text-sm">
+                              {f.label}
+                            </label>
                             <input
                               type="number"
                               className="w-32 bg-white/10 text-white rounded px-2 py-1"
                               value={reviewStats?.[f.key] ?? ''}
-                              onChange={e => setReviewValue(f.key, Number(e.target.value) || 0)}
+                              onChange={e =>
+                                setReviewValue(
+                                  f.key,
+                                  Number(e.target.value) || 0
+                                )
+                              }
                             />
                           </div>
                           {Array.isArray(reviewPresets[f.key]) && (
@@ -543,7 +577,9 @@ const CaricaUltimaPartita = () => {
                 {reviewTab === 'ratings' && (
                   <div className="space-y-3">
                     {(!reviewRatings || reviewRatings.length === 0) && (
-                      <p className="text-xs text-white/60">Nessun voto rilevato. Aggiungi righe manualmente.</p>
+                      <p className="text-xs text-white/60">
+                        Nessun voto rilevato. Aggiungi righe manualmente.
+                      </p>
                     )}
                     {reviewRatings?.map((r, idx) => (
                       <div key={idx} className="flex items-center gap-2">
@@ -580,7 +616,9 @@ const CaricaUltimaPartita = () => {
                         <Button
                           className="bg-red-500/80 hover:bg-red-500 text-white"
                           onClick={() =>
-                            setReviewRatings(prev => prev.filter((_, i) => i !== idx))
+                            setReviewRatings(prev =>
+                              prev.filter((_, i) => i !== idx)
+                            )
                           }
                         >
                           Rimuovi
@@ -607,39 +645,56 @@ const CaricaUltimaPartita = () => {
                 {reviewTab === 'heatmap' && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between gap-3">
-                      <label className="text-white/80 text-sm">Sinistra (%)</label>
+                      <label className="text-white/80 text-sm">
+                        Sinistra (%)
+                      </label>
                       <input
                         type="number"
                         className="w-28 bg-white/10 text-white rounded px-2 py-1"
                         value={reviewHeatmap.left}
                         onChange={e =>
-                          setReviewHeatmap(prev => ({ ...prev, left: e.target.value }))
+                          setReviewHeatmap(prev => ({
+                            ...prev,
+                            left: e.target.value,
+                          }))
                         }
                       />
                     </div>
                     <div className="flex items-center justify-between gap-3">
-                      <label className="text-white/80 text-sm">Centro (%)</label>
+                      <label className="text-white/80 text-sm">
+                        Centro (%)
+                      </label>
                       <input
                         type="number"
                         className="w-28 bg-white/10 text-white rounded px-2 py-1"
                         value={reviewHeatmap.center}
                         onChange={e =>
-                          setReviewHeatmap(prev => ({ ...prev, center: e.target.value }))
+                          setReviewHeatmap(prev => ({
+                            ...prev,
+                            center: e.target.value,
+                          }))
                         }
                       />
                     </div>
                     <div className="flex items-center justify-between gap-3">
-                      <label className="text-white/80 text-sm">Destra (%)</label>
+                      <label className="text-white/80 text-sm">
+                        Destra (%)
+                      </label>
                       <input
                         type="number"
                         className="w-28 bg-white/10 text-white rounded px-2 py-1"
                         value={reviewHeatmap.right}
                         onChange={e =>
-                          setReviewHeatmap(prev => ({ ...prev, right: e.target.value }))
+                          setReviewHeatmap(prev => ({
+                            ...prev,
+                            right: e.target.value,
+                          }))
                         }
                       />
                     </div>
-                    <p className="text-[11px] text-white/50">Suggerimento: la somma tipica è ~100%.</p>
+                    <p className="text-[11px] text-white/50">
+                      Suggerimento: la somma tipica è ~100%.
+                    </p>
                   </div>
                 )}
 
@@ -650,7 +705,9 @@ const CaricaUltimaPartita = () => {
                   >
                     Salta
                   </Button>
-                  <Button onClick={handleSaveCurrentReview}>Salva modifiche</Button>
+                  <Button onClick={handleSaveCurrentReview}>
+                    Salva modifiche
+                  </Button>
                 </div>
               </Card>
             </div>

@@ -61,7 +61,10 @@ const StatisticheAvanzate = ({ onPageChange }) => {
         limit(parseInt(range))
       );
       const querySnapshot = await getDocs(q);
-      const matches = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const matches = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setMatchesData(matches);
       return matches;
     } catch (error) {
@@ -74,7 +77,10 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     try {
       const playersRef = collection(db, 'users', userId, 'players');
       const querySnapshot = await getDocs(playersRef);
-      const players = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const players = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setPlayersData(players);
       return players;
     } catch (error) {
@@ -87,7 +93,10 @@ const StatisticheAvanzate = ({ onPageChange }) => {
     try {
       const tasksRef = collection(db, 'users', userId, 'tasks');
       const querySnapshot = await getDocs(tasksRef);
-      const tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const tasks = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setTasksData(tasks);
       return tasks;
     } catch (error) {

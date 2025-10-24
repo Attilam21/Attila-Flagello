@@ -3,6 +3,7 @@
 Sistema integrato per l'analisi OCR dei tabellini eFootball utilizzando Firebase (Hosting/Auth/Firestore/Storage) + Google Vision API. Opzionale: arricchimento con Gemini/Vertex AI.
 
 ## 🚀 Funzionalità
+
 - Autenticazione (Email/Password)
 - Upload immagini match e giocatori
 - OCR automatico via Cloud Functions (trigger Storage)
@@ -10,13 +11,16 @@ Sistema integrato per l'analisi OCR dei tabellini eFootball utilizzando Firebase
 - Salvataggio su Firestore e UI realtime
 
 ## 📋 Prerequisiti
+
 1. Node.js v18+ e npm
 2. Firebase Project (es. `attila-475314`)
 3. Vision API abilitata
 4. Firebase CLI installata
 
 ## ⚙️ Setup
+
 ### 1) Configurazione Firebase
+
 ```bash
 npx firebase-tools login
 npx firebase-tools use attila-475314
@@ -24,6 +28,7 @@ npx firebase-tools use attila-475314
 ```
 
 ### 2) Variabili Ambiente (.env.local)
+
 ```env
 VITE_FIREBASE_API_KEY=xxx
 VITE_FIREBASE_AUTH_DOMAIN=xxx
@@ -36,6 +41,7 @@ VITE_GEMINI_API_KEY=xxx
 ```
 
 ### 3) Installazione
+
 ```bash
 # Client
 npm install
@@ -44,6 +50,7 @@ cd functions && npm install && cd ..
 ```
 
 ### 4) Sviluppo e Deploy
+
 ```bash
 npm run dev                  # avvio UI
 cd functions && npm run build  # build funzioni
@@ -52,6 +59,7 @@ npm run deploy:hosting       # deploy hosting
 ```
 
 ## 🏗️ Architettura (semplificata)
+
 ```
 Auth → Upload (Storage users/{uid}/images/type_timestamp.jpg)
             ↓ (trigger)
@@ -65,6 +73,7 @@ React UI (listener realtime)
 ```
 
 ## 📁 Struttura rilevante
+
 ```
 src/
   pages/ (Home, Login, Rosa, CaricaUltimaPartita, StatisticheAvanzate)
@@ -75,18 +84,22 @@ functions/
 ```
 
 ## 🔧 Cloud Function: onImageUpload
+
 - Trigger: Storage onFinalize (region: europe-west1)
 - Input: metadata { uid, type, matchId }
 - Steps: Vision OCR → parseByType → optional Gemini → write-through su Firestore
 
 ## 🔒 Sicurezza
+
 - Niente segreti nel repo; usare .env.local
 - Regole Firestore/Storage per isolare per uid
 
 ## 🧪 Test (parser)
+
 - Vitest per unit test su `functions/src/efb_parse.ts` (da aggiungere)
 
 ## 🚨 Troubleshooting
+
 - Autenticazione/Permessi: `npx firebase-tools login`
 - Vision API non abilitata: abilitarla su GCP
 - Emulator: `npx firebase-tools emulators:start`
