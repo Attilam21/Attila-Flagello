@@ -32,6 +32,8 @@ export const uploadImageForOCR = async (file, type, matchId = 'current') => {
     const storageRef = ref(storage, `users/${userId}/images/${fileName}`);
 
     const uploadTask = uploadBytesResumable(storageRef, file, {
+      // Imposta il content type per evitare preflight anomali
+      contentType: file.type || 'application/octet-stream',
       customMetadata: {
         uid: userId,
         type: metadataType,
