@@ -16,12 +16,28 @@ const Login = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Quick config sanity check for better DX
+  const firebaseEnvOk = [
+    import.meta.env.VITE_FIREBASE_API_KEY,
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    import.meta.env.VITE_FIREBASE_APP_ID,
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  ].every(v => v && v !== 'xxx' && v !== '<PROJECT_ID>' && v !== '<PROJECT-ID>');
+
   const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
+      if (!firebaseEnvOk) {
+        throw Object.assign(new Error('Firebase non configurato'), {
+          code: 'auth/invalid-api-key',
+        });
+      }
+
       if (isSignUp) {
         await createUserWithEmailAndPassword(auth, email, password);
         console.log('✅ User created successfully');
@@ -35,13 +51,13 @@ const Login = ({ onLogin }) => {
       }
     } catch (error) {
       console.error('❌ Auth error:', error);
-      setError(getErrorMessage(error.code));
+      setError(getErrorMessage(error.code, error.message));
     } finally {
       setLoading(false);
     }
   };
 
-  const getErrorMessage = errorCode => {
+  const getErrorMessage = (errorCode, message = '') => {
     switch (errorCode) {
       case 'auth/user-not-found':
         return "Utente non trovato. Verifica l'email.";
@@ -55,7 +71,21 @@ const Login = ({ onLogin }) => {
         return 'Email non valida.';
       case 'auth/too-many-requests':
         return 'Troppi tentativi. Riprova più tardi.';
+      case 'auth/invalid-api-key':
+      case 'auth/api-key-not-valid':
+        return 'Configurazione Firebase non valida: API key mancante o errata. Aggiorna .env.local e riavvia il server.';
+      case 'auth/operation-not-allowed':
+        return "Metodo di accesso non abilitato. Abilita 'Email/Password' in Firebase Console > Authentication.";
+      case 'auth/network-request-failed':
+        return 'Problema di rete. Controlla la connessione e riprova.';
+      case 'auth/user-disabled':
+        return 'Account disabilitato. Contatta il supporto.';
+      case 'auth/invalid-credential':
+        return 'Credenziali non valide. Verifica email e password.';
       default:
+        if (message?.toLowerCase()?.includes('api key')) {
+          return 'Configurazione Firebase non valida: API key errata. Verifica le variabili e rebuild.';
+        }
         return 'Errore di autenticazione. Riprova.';
     }
   };
@@ -72,6 +102,13 @@ const Login = ({ onLogin }) => {
             {isSignUp ? 'Crea il tuo account' : 'Accedi al tuo account'}
           </p>
         </div>
+
+        {!firebaseEnvOk && (
+          <div className="error-message" style={{ marginBottom: 12 }}>
+            <span className="error-icon">⚠️</span>
+            Configurazione Firebase mancante o incompleta. Aggiorna il file .env.local e riavvia il server di sviluppo.
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
